@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUGUSTX HOME COFFEE</title>
+    <style>
+        :root {
+            --blue: #1a365d;
+            --black: #111111;
+            --white: #f8f9fa;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--white);
+            color: var(--black);
+            margin: 0;
+            padding: 0;
+            background-image: url('images/bg.jpg');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+        header { background-color: var(--blue); color: white; text-align: center; padding: 2rem 1rem; }
+        header h1 { margin: 0; font-size: 2.5rem; letter-spacing: 2px; font-weight: 900; }
+        header p { margin-top: 5px; font-size: 1.2rem; letter-spacing: 4px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+        .category-title {
+            text-align: center; font-size: 2rem; font-weight: bold; margin-top: 2rem;
+            margin-bottom: 1rem; border-bottom: 2px solid var(--black); display: inline-block; padding-bottom: 5px;
+        }
+        .text-center { text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+        .card {
+            background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 1.5rem; text-align: center; border-left: 5px solid var(--blue);
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .product-image {
+            width: 100%; height: 250px; object-fit: cover; border-radius: 6px; margin-bottom: 15px;
+            background-color: #eee;
+        }
+        .card h3 { margin: 0 0 15px 0; font-size: 1.1rem; text-transform: uppercase; }
+        select { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
+        button.add-btn {
+            background-color: var(--black); color: white; border: none; padding: 10px 15px;
+            width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; margin-top: auto;
+        }
+        button.add-btn:hover { background-color: var(--blue); }
+        .cart-icon {
+            position: fixed; top: 20px; right: 20px; background: var(--black); color: white;
+            padding: 10px 20px; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 100;
+        }
+        .cart-sidebar {
+            position: fixed; top: 0; right: -400px; width: 350px; height: 100%;
+            background: white; box-shadow: -4px 0 10px rgba(0,0,0,0.1); transition: 0.3s; padding: 20px; z-index: 101; overflow-y: auto;
+        }
+        .cart-sidebar.open { right: 0; }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--blue); padding-bottom: 10px; margin-bottom: 10px; }
+        .close-cart { cursor: pointer; font-size: 1.5rem; font-weight: bold; }
+        
+        .receipt-bill { background: white; border: 1px dashed #ccc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .receipt-header { text-align: center; font-size: 1.2rem; font-weight: bold; color: var(--blue); margin-bottom: 15px; }
+        .cart-item { display: flex; flex-direction: column; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        .item-row-1 { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .item-name { font-weight: bold; font-size: 0.95rem; max-width: 65%; line-height: 1.3; }
+        .item-price { font-weight: bold; font-size: 0.95rem; }
+        .item-row-2 { display: flex; justify-content: space-between; align-items: center; }
+        .qty-controls { display: flex; align-items: center; gap: 12px; }
+        .qty-btn { background: #f1f1f1; border: 1px solid #ddd; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1rem; color: var(--black); }
+        .qty-btn:hover { background: #e2e2e2; }
+        .remove-btn { color: #dc3545; background: none; border: none; cursor: pointer; font-size: 0.9rem; text-decoration: underline; padding: 0; font-family: inherit;}
+        
+        .item-note-input {
+            width: 100%; padding: 8px; margin-top: 10px; border: 1px solid #ddd;
+            border-radius: 4px; font-size: 0.85rem; font-family: inherit; box-sizing: border-box; background-color: #fafafa;
+        }
+        .item-note-input:focus { border-color: var(--blue); outline: none; background-color: white;}
+        .receipt-total { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; margin-top: 15px; padding-top: 15px; border-top: 2px solid var(--black); }
+
+        .checkout-btn {
+            background-color: var(--black); color: white; border: none; padding: 15px; width: 100%;
+            font-size: 1.1rem; border-radius: 8px; cursor: pointer; margin-top: 20px; font-weight: bold;
+        }
+        .checkout-btn:hover { background-color: #333; }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center;
+            z-index: 1000; backdrop-filter: blur(3px);
+        }
+        .receipt-wrapper { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .receipt-slip-preview {
+            background: #fff; border: 1px solid #eee; padding: 20px; border-radius: 5px; 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.03); font-family: 'Courier New', Courier, monospace;
+            color: #333; margin-bottom: 20px;
+        }
+        
+        .preview-brand { text-align: center; margin: 0; font-size: 1.8rem; font-weight: 900; letter-spacing: 1px; }
+        .preview-sub { text-align: center; margin: 3px 0 12px; font-size: 0.9rem; letter-spacing: 2px; }
+        
+        .preview-date { text-align: center; font-size: 0.8rem; margin-bottom: 5px; }
+        .preview-order-num { text-align: center; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; color: var(--blue); }
+        .preview-dashed { border-top: 1px dashed #aaa; margin: 10px 0; }
+        
+        .preview-item-group { margin-bottom: 18px; }
+        
+        .preview-item { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.95rem; }
+        .preview-item-left { max-width: 75%; line-height: 1.4; }
+        .preview-item-qty { font-weight: bold; color: var(--blue); }
+        .preview-item-note { font-size: 0.8rem; color: #777; margin-left: 18px; font-style: italic;}
+        
+        .preview-total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; margin: 15px 0; }
+        
+        .preview-warning { 
+            text-align: center; 
+            font-size: 0.85rem; 
+            color: #d9534f; 
+            margin-top: 10px; 
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        .modal-actions { display: flex; gap: 10px; }
+        .btn-back { flex: 1; padding: 12px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; font-weight: bold; color: #333; }
+        .btn-confirm { flex: 2; padding: 12px; border: none; background: #25D366; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-confirm:hover { background: #128C7E; }
+    </style>
+</head>
+<body>
+
+    <div class="cart-icon" onclick="toggleCart()">🛒 ຕາຕະລາງ (<span id="cart-count">0</span>)</div>
+
+    <header>
+        <h1>AUGUSTX</h1>
+        <p>HOME COFFEE</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- BASIC COFFEE -->
+        <div class="text-center"><h2 class="category-title">BASIC COFFEE</h2></div>
+        <div class="grid">
+            <div class="card">
+                <img src="images/Americano.jpeg" alt="Americano" class="product-image" onerror="if(this.src.includes('.jpeg')) {this.src='images/Americano.jpg'} else if(this.src.includes('.jpg')) {this.src='images/Americano.png'} else if(this.src.includes('.png')) {this.src='images/Americano.webp'}">
+                <h3>1. Americano</h3>
+                <select id="opt-1"><option value="Hot|39000">Hot</option><option value="Iced|45000">Iced</option></select>
+                <button class="add-btn" onclick="addToCart('1. Americano', 'opt-1', null)">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/Latte.jpeg" alt="Latte" class="product-image" onerror="if(this.src.includes('.jpeg')) {this.src='images/Latte.jpg'} else if(this.src.includes('.jpg')) {this.src='images/Latte.png'} else if(this.src.includes('.png')) {this.src='images/Latte.webp'}">
+                <h3>2. Latte</h3>
+                <select id="opt-2"><option value="Hot|43000">Hot</option><option value="Iced|49000">Iced</option></select>
+                <select id="sweet-2">
+                    <option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option>
+                    <option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option>
+                </select>
+                <button class="add-btn" onclick="addToCart('2. Latte', 'opt-2', 'sweet-2')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/Capucino.jpeg" alt="Capucino" class="product-image" onerror="if(this.src.includes('.jpeg')) {this.src='images/Capucino.jpg'} else if(this.src.includes('.jpg')) {this.src='images/Capucino.png'} else if(this.src.includes('.png')) {this.src='images/Capucino.webp'}">
+                <h3>3. Capucino</h3>
+                <select id="opt-3"><option value="Hot|43000">Hot</option><option value="Iced|49000">Iced</option></select>
+                <select id="sweet-3">
+                    <option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option>
+                    <option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option>
+                </select>
+                <button class="add-btn" onclick="addToCart('3. Capucino', 'opt-3', 'sweet-3')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/Mocha.jpeg" alt="Mocha" class="product-image" onerror="if(this.src.includes('.jpeg')) {this.src='images/Mocha.jpg'} else if(this.src.includes('.jpg')) {this.src='images/Mocha.png'} else if(this.src.includes('.png')) {this.src='images/Mocha.webp'}">
+                <h3>4. Mocha</h3>
+                <select id="opt-4"><option value="Hot|45000">Hot</option><option value="Iced|51000">Iced</option></select>
+                <select id="sweet-4">
+                    <option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option>
+                    <option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option>
+                </select>
+                <button class="add-btn" onclick="addToCart('4. Mocha', 'opt-4', 'sweet-4')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/Milk Espresso.jpeg" alt="Milk Espresso" class="product-image" onerror="if(this.src.includes('.jpeg')) {this.src='images/Milk Espresso.jpg'} else if(this.src.includes('.jpg')) {this.src='images/Milk Espresso.png'} else if(this.src.includes('.png')) {this.src='images/Milk Espresso.webp'}">
+                <h3>5. Milk Espresso (Iced)</h3>
+                <select id="sweet-5">
+                    <option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option>
+                    <option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option>
+                </select>
+                <button class="add-btn" onclick="addSingleToCart('5. Milk Espresso (Iced)', 46000, 'sweet-5')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/Caramel Machiato.jpeg" alt="Caramel Machiato" class="product-image" onerror="if(this.src.includes('.jpeg')) {this.src='images/Caramel Machiato.jpg'} else if(this.src.includes('.jpg')) {this.src='images/Caramel Machiato.png'} else if(this.src.includes('.png')) {this.src='images/Caramel Machiato.webp'}">
+                <h3>6. Caramel Machiato</h3>
+                <select id="opt-6"><option value="Hot|45000">Hot</option><option value="Iced|51000">Iced</option></select>
+                <select id="sweet-6">
+                    <option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option>
+                    <option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option>
+                </select>
+                <button class="add-btn" onclick="addToCart('6. Caramel Machiato', 'opt-6', 'sweet-6')">Add to Cart</button>
+            </div>
+        </div>
+
+        <!-- BLACK SIGNATURE -->
+        <div class="text-center"><h2 class="category-title">BLACK SIGNATURE</h2></div>
+        <div class="grid">
+            <div class="card">
+                <img src="images/august-x.png" alt="Tripple Berry" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>7. Tripple Berry</h3>
+                <select id="opt-7"><option value="Speed|85000">Speed</option><option value="Steam|95000">Steam</option><option value="Drip|95000">Drip</option></select>
+                <button class="add-btn" onclick="addToCart('7. Tripple Berry', 'opt-7', null)">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/august-x.png" alt="Peace Candies" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>8. Peace Candies</h3>
+                <select id="opt-8"><option value="Speed|85000">Speed</option><option value="Steam|95000">Steam</option><option value="Drip|95000">Drip</option></select>
+                <button class="add-btn" onclick="addToCart('8. Peace Candies', 'opt-8', null)">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/august-x.png" alt="Vanila Whisky" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>9. Vanila Whisky</h3>
+                <select id="opt-9"><option value="Speed|125000">Speed</option><option value="Steam|125000">Steam</option><option value="Drip|135000">Drip</option></select>
+                <button class="add-btn" onclick="addToCart('9. Vanila Whisky', 'opt-9', null)">Add to Cart</button>
+            </div>
+        </div>
+
+        <!-- ANOTHER COFFEE FLAVOR -->
+        <div class="text-center"><h2 class="category-title">ANOTHER COFFEE FLAVOR</h2></div>
+        <div class="grid">
+            <div class="card">
+                <img src="images/august-x.png" alt="Black Vanila Almond Milk" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>10. Black Vanila Almond Milk (Iced)</h3>
+                <select id="sweet-10"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
+                <button class="add-btn" onclick="addSingleToCart('10. Black Vanila Almond Milk (Iced)', 65000, 'sweet-10')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/august-x.png" alt="Black Coconut" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>11. Black Coconut (Iced)</h3>
+                <select id="sweet-11"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
+                <button class="add-btn" onclick="addSingleToCart('11. Black Coconut (Iced)', 49000, 'sweet-11')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/august-x.png" alt="Black Oat Milk" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>12. Black Oat Milk (Iced)</h3>
+                <select id="sweet-12"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
+                <button class="add-btn" onclick="addSingleToCart('12. Black Oat Milk (Iced)', 49000, 'sweet-12')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/august-x.png" alt="Black Honey Lemon" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>13. Black Honey Lemon (Iced)</h3>
+                <select id="sweet-13"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
+                <button class="add-btn" onclick="addSingleToCart('13. Black Honey Lemon (Iced)', 49000, 'sweet-13')">Add to Cart</button>
+            </div>
+        </div>
+
+        <!-- GREEN SELECTION -->
+        <div class="text-center"><h2 class="category-title">GREEN SELECTION</h2></div>
+        <div class="grid">
+            <div class="card">
+                <img src="images/august-x.png" alt="Clear Yame" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>14. Clear Yame (Iced)</h3>
+                <select id="sweet-14"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
+                <button class="add-btn" onclick="addSingleToCart('14. Clear Yame (Iced)', 85000, 'sweet-14')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/august-x.png" alt="Yame Latte" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>15. Yame Latte (Iced)</h3>
+                <select id="sweet-15"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
+                <button class="add-btn" onclick="addSingleToCart('15. Yame Latte (Iced)', 95000, 'sweet-15')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/august-x.png" alt="Yame Cold Whish" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>16. Yame Cold Whish (Iced)</h3>
+                <select id="sweet-16"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
+                <button class="add-btn" onclick="addSingleToCart('16. Yame Cold Whish (Iced)', 95000, 'sweet-16')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/august-x.png" alt="Yame Coconut" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>17. Yame Coconut (Iced)</h3>
+                <select id="sweet-17"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
+                <button class="add-btn" onclick="addSingleToCart('17. Yame Coconut (Iced)', 95000, 'sweet-17')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/august-x.png" alt="Yame Coconut Cold Foam" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>18. Yame Coconut Cold Foam (Iced)</h3>
+                <select id="sweet-18"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
+                <button class="add-btn" onclick="addSingleToCart('18. Yame Coconut Cold Foam (Iced)', 115000, 'sweet-18')">Add to Cart</button>
+            </div>
+        </div>
+
+        <!-- NON-COFFEE -->
+        <div class="text-center"><h2 class="category-title">NON-COFFEE</h2></div>
+        <div class="grid">
+            <div class="card">
+                <img src="images/august-x.png" alt="Chocolate" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>19. Chocolate (Iced)</h3>
+                <select id="sweet-19"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
+                <button class="add-btn" onclick="addSingleToCart('19. Chocolate (Iced)', 45000, 'sweet-19')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/august-x.png" alt="Honey Lemon Soda" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>20. Honey Lemon Soda (Iced)</h3>
+                <select id="sweet-20"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
+                <button class="add-btn" onclick="addSingleToCart('20. Honey Lemon Soda (Iced)', 45000, 'sweet-20')">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/august-x.png" alt="Fruity Soda" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>21. Fruity Soda (Iced)</h3>
+                <select id="sweet-21"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
+                <button class="add-btn" onclick="addSingleToCart('21. Fruity Soda (Iced)', 45000, 'sweet-21')">Add to Cart</button>
+            </div>
+            
+            <div class="card">
+                <img src="images/august-x.png" alt="Water" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>22. Water</h3>
+                <button class="add-btn" onclick="addSingleToCart('22. Water', 15000, null)">Add to Cart</button>
+            </div>
+            <div class="card">
+                <img src="images/august-x.png" alt="Cup & Ice" class="product-image" onerror="this.src='images/bg.jpg'">
+                <h3>23. Cup & Ice</h3>
+                <button class="add-btn" onclick="addSingleToCart('23. Cup & Ice', 6000, null)">Add to Cart</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ແຖບຕາຕະລາງສິນຄ້າ (Sidebar) -->
+    <div class="cart-sidebar" id="cart">
+        <div class="cart-header">
+            <h2>Your Order</h2>
+            <span class="close-cart" onclick="toggleCart()">×</span>
+        </div>
+        
+        <div id="receipt-area" class="receipt-bill">
+            <div class="receipt-header">ລາຍການສັ່ງຊື້</div>
+            <div id="cart-items"></div>
+            <div class="receipt-total">
+                <span>Total:</span>
+                <span><span id="total-price">0</span> LAK</span>
+            </div>
+        </div>
+
+        <button class="checkout-btn" onclick="showReceiptPreview()">ກວດສອບບິນ (Preview)</button>
+    </div>
+
+    <!-- ສ່ວນຂອງ Modal ພຣີວິວໃບບິນ -->
+    <div id="receipt-modal" class="modal-overlay">
+        <div class="receipt-wrapper">
+            <div class="receipt-slip-preview">
+                <div class="preview-brand">AUGUSTX</div>
+                <div class="preview-sub">HOME COFFEE</div>
+                <div class="preview-date" id="preview-date"></div>
+                <div class="preview-order-num" id="preview-order-num"></div>
+                
+                <div class="preview-dashed"></div>
+                <div id="preview-items"></div>
+                <div class="preview-dashed"></div>
+                
+                <div class="preview-total-row">
+                    <span>TOTAL</span>
+                    <span id="preview-total">0 LAK</span>
+                </div>
+                <div class="preview-dashed"></div>
+                
+                <div class="preview-warning">
+                    Order incomplete. Please send your order to WhatsApp to make a payment<br>
+                    ການສັ່ງຊື້ຍັງບໍ່ສຳເລັດ ກະລຸນາສົ່ງອໍເດີ້ທ່ານໄປຍັງ Whats App ເພື່ອຊຳລະເງິນ
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn-back" onclick="closeReceiptPreview()">ແກ້ໄຂ</button>
+                <button class="btn-confirm" onclick="confirmWhatsApp()">ສົ່ງເຂົ້າ WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        let currentOrderNumberStr = ""; 
+        let nextOrderCountToSave = 1; 
+        let orderDateToSave = ""; 
+
+        function toggleCart() { document.getElementById('cart').classList.toggle('open'); }
+
+        function addToCart(itemName, selectId, sweetId) {
+            let cleanName = itemName.replace(/^\d+\.\s*/, '');
+            
+            let select = document.getElementById(selectId);
+            let [type, price] = select.value.split('|');
+            let sweetness = sweetId ? document.getElementById(sweetId).value : "";
+            let fullName = `${cleanName} (${type})`;
+            if (sweetness) fullName += ` [${sweetness}]`;
+            addToList(fullName, parseInt(price));
+        }
+
+        function addSingleToCart(itemName, price, sweetId) {
+            let cleanName = itemName.replace(/^\d+\.\s*/, '');
+            
+            let sweetness = sweetId ? document.getElementById(sweetId).value : "";
+            let fullName = cleanName;
+            if (sweetness) fullName += ` [${sweetness}]`;
+            addToList(fullName, price);
+        }
+
+        function addToList(name, price) {
+            let existingItem = cart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                cart.push({ name: name, unitPrice: price, qty: 1, note: "" });
+            }
+            
+            updateCartUI();
+            
+            if(event && event.target) {
+                let btn = event.target;
+                let originalText = btn.innerText;
+                btn.innerText = "Added!";
+                btn.style.backgroundColor = "#25D366";
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = "var(--black)";
+                }, 1000);
+            }
+        }
+
+        function changeQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateNote(index, value) {
+            cart[index].note = value;
+        }
+
+        function updateCartUI() {
+            let html = '';
+            let total = 0;
+            let totalItems = 0;
+            cart.forEach((item, index) => {
+                let itemTotal = item.unitPrice * item.qty;
+                total += itemTotal;
+                totalItems += item.qty;
+                
+                html += `
+                    <div class="cart-item">
+                        <div class="item-row-1">
+                            <span class="item-name">${item.name}</span>
+                            <span class="item-price">${itemTotal.toLocaleString()} LAK</span>
+                        </div>
+                        <div class="item-row-2">
+                            <div class="qty-controls">
+                                <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
+                                <span>${item.qty}</span>
+                                <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+                            </div>
+                            <button class="remove-btn" onclick="removeItem(${index})">ລົບລາຍການ</button>
+                        </div>
+                        <input type="text" class="item-note-input" maxlength="100" placeholder="ໝາຍເຫດ (ບໍ່ເກີນ 100 ຕົວອັກສອນ)..." value="${item.note || ''}" oninput="updateNote(${index}, this.value)">
+                    </div>
+                `;
+            });
+            document.getElementById('cart-items').innerHTML = html || '<p style="text-align:center; color:#888;">ຕະກ່າວ່າງເປົ່າ</p>';
+            document.getElementById('total-price').innerText = total.toLocaleString();
+            document.getElementById('cart-count').innerText = totalItems;
+        }
+
+        function generateRandomString(length) {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return result;
+        }
+
+        function generateOrderNumberData() {
+            let d = new Date();
+            let day = String(d.getDate()).padStart(2, '0');
+            let month = String(d.getMonth() + 1).padStart(2, '0');
+            let year = String(d.getFullYear()).slice(-2);
+            let dateStr = day + month + year; 
+
+            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            let prefix = isMobile ? "MB" : "PC";
+
+            let savedDate = localStorage.getItem('augustx_order_date');
+            let savedCount = localStorage.getItem('augustx_order_count');
+            let nextCount = 1;
+
+            if (savedDate === dateStr && savedCount) {
+                nextCount = parseInt(savedCount) + 1;
+            }
+            
+            let countStr = String(nextCount).padStart(3, '0');
+            let randomSuffix = generateRandomString(3);
+            
+            return {
+                orderNum: prefix + dateStr + countStr + "-" + randomSuffix,
+                dateStr: dateStr,
+                nextCount: nextCount
+            };
+        }
+
+        function showReceiptPreview() {
+            if (cart.length === 0) {
+                alert('ກະລຸນາເລືອກສິນຄ້າກ່ອນ!');
+                return;
+            }
+            
+            let d = new Date();
+            let dateDisplay = d.toLocaleDateString('th-TH') + ' ' + d.toLocaleTimeString('th-TH').slice(0,5);
+            document.getElementById('preview-date').innerText = dateDisplay;
+
+            let orderData = generateOrderNumberData();
+            currentOrderNumberStr = orderData.orderNum;
+            orderDateToSave = orderData.dateStr;
+            nextOrderCountToSave = orderData.nextCount;
+
+            document.getElementById('preview-order-num').innerText = "Order No: " + currentOrderNumberStr;
+
+            let html = '';
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                let itemTotal = item.unitPrice * item.qty;
+                total += itemTotal;
+                
+                html += `<div class="preview-item-group">`;
+                html += `
+                    <div class="preview-item">
+                        <div class="preview-item-left"><strong>${index + 1}.</strong> ${item.name} <span class="preview-item-qty">x ${item.qty}</span> ແກ້ວ</div>
+                        <div>${itemTotal.toLocaleString()}</div>
+                    </div>
+                `;
+                if (item.note && item.note.trim() !== '') {
+                    html += `<div class="preview-item-note">* ${item.note.trim()}</div>`;
+                }
+                html += `</div>`;
+            });
+            
+            document.getElementById('preview-items').innerHTML = html;
+            document.getElementById('preview-total').innerText = total.toLocaleString() + ' LAK';
+            
+            document.getElementById('cart').classList.remove('open');
+            document.getElementById('receipt-modal').style.display = 'flex';
+        }
+
+        function closeReceiptPreview() {
+            document.getElementById('receipt-modal').style.display = 'none';
+            document.getElementById('cart').classList.add('open');
+        }
+
+        function confirmWhatsApp() {
+            localStorage.setItem('augustx_order_date', orderDateToSave);
+            localStorage.setItem('augustx_order_count', nextOrderCountToSave);
+
+            let text = `ສະບາຍດີ ຕ້ອງການສັ່ງອໍເດີ້ຈາກເວັບໄຊຕ໌:\n`;
+            text += `ເລກທີອໍເດີ້: ${currentOrderNumberStr}\n\n`;
+            
+            cart.forEach((item, index) => { 
+                text += `${index + 1}. ${item.name} x ${item.qty} ແກ້ວ\n`; 
+                if (item.note && item.note.trim() !== "") {
+                    text += `  *ໝາຍເຫດ: ${item.note.trim()}\n`;
+                }
+            });
+            
+            text += `\nລົບກວນທາງຮ້ານສະຫຼຸບຍອດ ແລະ ຂໍຄິວອາໂຄດສຳລັບຊຳລະເງິນດ້ວຍຄຮັບ/ຄ่ะ`;
+            
+            let waUrl = `https://wa.me/8562077666667?text=${encodeURIComponent(text)}`;
+            window.open(waUrl, '_blank');
+            
+            document.getElementById('receipt-modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
