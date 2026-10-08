@@ -129,7 +129,7 @@
                 <button onclick="clearCart()" style="background:none; border:none; color:var(--red); font-size:13px; cursor:pointer; font-weight:bold; padding:6px;">ล้างตะกร้า</button>
             </div>
             <div class="cart-items" id="cart-items-container">
-                <div style="text-align:center; color:#94a3b8; margin-top:40px;">ຍັງບໍ່ມີສິນຄ້າໃນตะกร້</div>
+                <div style="text-align:center; color:#94a3b8; margin-top:40px;">ຍັງບໍ່ມີສິນຄ້າໃນตะกร้า</div>
             </div>
             <div class="cart-footer">
                 <div class="summary-row">
@@ -255,7 +255,6 @@
             snap.forEach(child => { 
                 let item = child.val(); 
                 item.id = child.key; 
-                // แปลงและป้องกันราคาให้เป็นตัวเลขเสมอ
                 let rawPrice = item.priceOptions;
                 if (typeof rawPrice === 'string' && rawPrice.includes('|')) {
                     rawPrice = rawPrice.split(',')[0].split('|')[1];
@@ -342,6 +341,7 @@
             document.getElementById('receipt-change').innerText = (rec - total >= 0 ? rec - total : 0).toLocaleString() + ' ₭';
         }
 
+        // ฟังก์ชันสั่งพิมพ์ผ่าน RawBT แบบ Base64 เรียบร้อยสมบูรณ์
         function printViaRawBTDirect() {
             let total = cart.reduce((s, c) => s + (Number(c.price || 0) * c.quantity), 0);
             let table = document.getElementById('checkout-table-select').value;
@@ -360,8 +360,8 @@
             text += "================================\n";
             text += "Thank you for coming!\n\n\n";
 
-            let encodedText = encodeURIComponent(text);
-            window.location.href = "rawbt:data:text/plain;charset=utf-8," + encodedText;
+            let base64Encoder = btoa(unescape(encodeURIComponent(text)));
+            window.location.href = "rawbt:data:base64," + base64Encoder;
         }
 
         function confirmCheckout() {
@@ -378,33 +378,9 @@
             }).then(() => {
                 window.print();
                 alert("บันทึกและส่ง Order สำเร็จ!");
-                closeCheckoutModal(); clearCart();
+                closeCheckoutModal(); clearCard();
             });
         }
     </script>
 </body>
 </html>
-
-// ฟังก์ชันสั่งพิมพ์ผ่าน RawBT แบบเข้ารหัส Base64 (แก้ปัญหาพิมพ์ออกเป็นตัวหนังสือขยะ)
-        function printViaRawBTDirect() {
-            let total = cart.reduce((s, c) => s + (Number(c.price || 0) * c.quantity), 0);
-            let table = document.getElementById('checkout-table-select').value;
-            
-            let text = "AUGUSTX COFFEE\n";
-            text += "--------------------------------\n";
-            text += "Date: " + new Date().toLocaleString('en-GB') + "\n";
-            if(table) text += "Table: " + table + "\n";
-            text += "Type: " + currentOrderType + "\n";
-            text += "--------------------------------\n";
-            cart.forEach(c => {
-                text += `${c.name} x${c.quantity}  ${(Number(c.price||0)*c.quantity).toLocaleString()} K\n`;
-            });
-            text += "--------------------------------\n";
-            text += "TOTAL: " + total.toLocaleString() + " K\n";
-            text += "================================\n";
-            text += "Thank you for coming!\n\n\n";
-
-            // แปลงข้อความให้อยู่ในรูป Base64 เพื่อให้ RawBT ถอดรหัสพิมพ์ออกเครื่องพิมพ์ได้อย่างถูกต้อง 100%
-            let base64Encoder = btoa(unescape(encodeURIComponent(text)));
-            window.location.href = "rawbt:data:base64," + base64Encoder;
-        }
