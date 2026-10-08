@@ -10,95 +10,102 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root { --blue: #1a365d; --green: #689f38; --red: #ef4444; --orange: #f59e0b; --bg: #f4f6f8; --white: #ffffff; --text: #334155; --border: #e0e0e0; }
-        * { font-family: 'Noto Sans Lao', sans-serif, 'Segoe UI', Tahoma; box-sizing: border-box; }
-        body { background-color: var(--bg); margin: 0; padding: 0; color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        * { font-family: 'Noto Sans Lao', sans-serif, 'Segoe UI', Tahoma; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html { height: 100%; }
+        body { background-color: var(--bg); margin: 0; padding: 0; color: var(--text); height: 100vh; height: 100dvh; overflow: hidden; touch-action: manipulation; }
 
-        .pos-container { display: flex; width: 100vw; height: 100vh; }
-        .menu-section { flex: 2; padding: 20px; display: flex; flex-direction: column; overflow-y: auto; background: var(--bg); }
-        .cart-section { width: 440px; background: var(--white); border-left: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: -2px 0 10px rgba(0,0,0,0.02); }
+        .pos-container { display: flex; width: 100%; height: 100%; }
+        .menu-section { flex: 1; min-width: 0; min-height: 0; padding: 10px 14px; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+        .cart-section { width: clamp(300px, 34vw, 400px); flex-shrink: 0; height: 100%; min-height: 0; background: var(--white); border-left: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: -2px 0 10px rgba(0,0,0,0.02); }
 
-        .pos-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .pos-header h1 { margin: 0; color: var(--blue); font-size: 1.8rem; }
-        
-        .top-controls { display: flex; align-items: center; gap: 10px; }
-        .top-btn { background: var(--blue); color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        /* ===== HEADER (แถวเดียว ไม่ตัดบรรทัด) ===== */
+        .pos-header { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .pos-header h1 { margin: 0; color: var(--blue); font-size: 1.25rem; white-space: nowrap; }
+
+        .top-controls { display: flex; align-items: center; gap: 8px; }
+        .top-btn { background: var(--blue); color: white; padding: 7px 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
         .top-btn.kitchen { background: var(--orange); }
-        
-        .order-type-switch { display: flex; background: var(--blue); border-radius: 6px; overflow: hidden; border: 1px solid var(--blue); }
-        .type-btn { background: transparent; color: white; border: none; padding: 8px 14px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; }
-        .type-btn.active { background: #0f172a; color: white; }
-        .type-divider { width: 1px; background: rgba(255,255,255,0.2); }
 
-        .nav-tabs-bar { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-        .nav-tab-btn { padding: 10px 24px; background: white; border: 1px solid var(--border); border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; color: var(--blue); transition: 0.2s; }
+        /* ===== แถวแท็บ + Dine-in/Take away ===== */
+        .nav-row { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+        .nav-tabs-bar { display: flex; gap: 8px; overflow-x: auto; min-width: 0; flex: 1; }
+        .nav-tab-btn { padding: 8px 16px; background: white; border: 1px solid var(--border); border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; color: var(--blue); transition: 0.2s; white-space: nowrap; flex-shrink: 0; }
         .nav-tab-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
         .nav-tab-btn.delivery-tab.active { background: var(--orange); border-color: var(--orange); }
 
-        .categories-bar { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
-        .cat-btn { padding: 10px 20px; background: white; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.2s; }
+        .order-type-switch { flex-shrink: 0; display: flex; background: var(--blue); border-radius: 6px; overflow: hidden; border: 1px solid var(--blue); }
+        .type-btn { background: transparent; color: white; border: none; padding: 8px 12px; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        .type-btn.active { background: #0f172a; color: white; }
+        .type-divider { width: 1px; background: rgba(255,255,255,0.2); }
+
+        /* ===== หมวดหมู่ ===== */
+        .categories-bar { flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 6px; }
+        .cat-btn { padding: 7px 14px; background: white; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; white-space: nowrap; flex-shrink: 0; transition: 0.2s; }
         .cat-btn.active, .cat-btn:hover { background: var(--blue); color: white; border-color: var(--blue); }
 
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; overflow-y: auto; padding-bottom: 20px; }
-        .menu-card { background: url('images/bg.jpg') center/cover no-repeat; border-radius: 10px; padding: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid transparent; position: relative; }
+        /* ===== รายการสินค้า (เลื่อนเฉพาะส่วนนี้) ===== */
+        .menu-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; align-content: start; overflow-y: auto; padding-bottom: 10px; -webkit-overflow-scrolling: touch; }
+        .menu-card { background: url('images/bg.jpg') center/cover no-repeat; border-radius: 10px; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid transparent; position: relative; }
         .menu-card::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.85); border-radius: 8px; z-index: 1; }
         .menu-card > * { position: relative; z-index: 2; }
         .menu-card:hover { transform: translateY(-3px); border-color: var(--green); }
-        .menu-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; background: #e2e8f0; }
-        .menu-name { font-weight: bold; font-size: 14px; margin-bottom: 5px; color: var(--blue); }
-        .menu-price { font-size: 13px; color: #64748b; }
+        .menu-card img { width: 100%; height: 85px; object-fit: cover; border-radius: 6px; margin-bottom: 6px; background: #e2e8f0; }
+        .menu-name { font-weight: bold; font-size: 13px; margin-bottom: 3px; color: var(--blue); }
+        .menu-price { font-size: 12px; color: #64748b; }
 
-        .cart-header { padding: 20px; border-bottom: 1px solid var(--border); font-size: 1.2rem; font-weight: bold; color: var(--blue); display: flex; justify-content: space-between; align-items: center; }
-        .cart-items { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
-        
-        .cart-item-card { background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 8px; }
+        /* ===== ตะกร้า ===== */
+        .cart-header { flex-shrink: 0; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 1.05rem; font-weight: bold; color: var(--blue); display: flex; justify-content: space-between; align-items: center; }
+        .cart-items { flex: 1; min-height: 0; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; -webkit-overflow-scrolling: touch; }
+
+        .cart-item-card { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
         .cart-item-top { display: flex; justify-content: space-between; align-items: flex-start; }
         .cart-item-info { flex: 1; }
         .cart-item-name { font-weight: bold; font-size: 14px; color: var(--blue); }
         .cart-item-details { font-size: 12px; color: #64748b; margin-top: 2px; }
-        
-        .cart-item-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #cbd5e1; padding-top: 8px; }
-        .cart-item-controls { display: flex; align-items: center; gap: 8px; }
-        .qty-btn { width: 26px; height: 26px; background: #e2e8f0; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .qty-btn:hover { background: #cbd5e1; }
-        
-        .edit-cart-btn { background: none; border: none; cursor: pointer; font-size: 14px; color: var(--blue); padding: 2px 5px; border-radius: 4px; }
-        .edit-cart-btn:hover { background: #e2e8f0; }
-        
-        .cart-item-note-input { width: 100%; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: #fff; margin-top: 4px; }
 
-        .cart-footer { padding: 20px; border-top: 1px solid var(--border); background: #f8fafc; }
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px; }
-        .summary-row.total { font-size: 1.3rem; font-weight: bold; color: var(--blue); margin-bottom: 15px; }
-        .checkout-btn { width: 100%; padding: 14px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .cart-item-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #cbd5e1; padding-top: 6px; }
+        .cart-item-controls { display: flex; align-items: center; gap: 8px; }
+        .qty-btn { width: 32px; height: 32px; background: #e2e8f0; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .qty-btn:hover { background: #cbd5e1; }
+
+        .edit-cart-btn { background: none; border: none; cursor: pointer; font-size: 16px; color: var(--blue); padding: 4px 8px; border-radius: 4px; }
+        .edit-cart-btn:hover { background: #e2e8f0; }
+
+        .cart-item-note-input { width: 100%; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: #fff; }
+
+        .cart-footer { flex-shrink: 0; padding: 10px 14px; border-top: 1px solid var(--border); background: #f8fafc; }
+        .summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 13px; }
+        .summary-row.total { font-size: 1.15rem; font-weight: bold; color: var(--blue); margin-bottom: 8px; }
+        .checkout-btn { width: 100%; padding: 12px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .checkout-btn:hover { background: #558b2f; }
 
-        /* Modal Styles */
+        /* ===== Modal ===== */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-box-large { background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 650px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; gap: 25px; }
-        .modal-left { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
-        .modal-left img { width: 100%; height: 220px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); background: #e2e8f0; }
+        .modal-box-large { background: white; padding: 20px; border-radius: 16px; width: 92%; max-width: 650px; max-height: 90vh; max-height: 90dvh; overflow-y: auto; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; gap: 20px; }
+        .modal-left { width: 170px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+        .modal-left img { width: 100%; height: 170px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); background: #e2e8f0; }
         .modal-right { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        
-        .receipt-modal-box { background: #fff; width: 90%; max-width: 420px; border-radius: 8px; max-height: 95vh; overflow-y: auto; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px dashed #cbd5e1; }
-        .receipt-header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 15px; margin-bottom: 15px; }
-        .receipt-header img { width: 100%; max-height: 100px; object-fit: contain; margin-bottom: 8px; display: block; }
+
+        .receipt-modal-box { background: #fff; width: 90%; max-width: 420px; border-radius: 8px; max-height: 95vh; max-height: 95dvh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px dashed #cbd5e1; }
+        .receipt-header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 12px; margin-bottom: 12px; }
+        .receipt-header img { width: 100%; max-height: 80px; object-fit: contain; margin-bottom: 8px; display: block; }
         .receipt-title { font-size: 1.3rem; font-weight: bold; letter-spacing: 1px; margin: 0; color: #000; }
         .receipt-subtitle { font-size: 0.85rem; font-weight: bold; color: #555; margin-top: 2px; }
-        
+
         .receipt-meta { font-size: 12px; color: #333; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
         .receipt-items-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 15px; }
         .receipt-items-table th { border-bottom: 1px solid #333; padding-bottom: 5px; text-align: left; }
         .receipt-items-table td { padding: 6px 0; border-bottom: 1px dotted #e2e8f0; vertical-align: top; }
-        
+
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 3px; font-weight: bold; font-size: 12px; color: #555; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; }
-        
+        .form-group input, .form-group select { width: 100%; padding: 10px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; }
+
         .receipt-totals { border-top: 1px dashed #333; padding-top: 10px; margin-top: 10px; font-size: 13px; display: flex; flex-direction: column; gap: 5px; }
         .receipt-totals .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 15px; color: #000; }
-        
+
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; }
-        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; }
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; }
         .btn-green { background: var(--green); }
         .btn-red { background: var(--red); }
         .btn-blue { background: var(--blue); }
@@ -106,6 +113,27 @@
         .variant-option-btn { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 12px 15px; margin-bottom: 8px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .variant-option-btn:hover { border-color: var(--green); background: #f0fdf4; }
         .variant-option-btn.selected { border-color: var(--green); background: #f0fdf4; color: #166534; }
+
+        /* ===== จอเตี้ย (แท็บเล็ต/มือถือแนวนอน) ย่อให้แน่นขึ้นอีก ===== */
+        @media (max-height: 500px) {
+            .menu-section { padding: 8px 12px; }
+            .pos-header { margin-bottom: 6px; }
+            .pos-header h1 { font-size: 1.1rem; }
+            .top-btn { padding: 6px 10px; font-size: 12px; }
+            .nav-row { margin-bottom: 6px; padding-bottom: 6px; }
+            .nav-tab-btn { padding: 6px 14px; font-size: 13px; }
+            .type-btn { padding: 6px 10px; font-size: 12px; }
+            .categories-bar { padding-bottom: 6px; margin-bottom: 4px; }
+            .cat-btn { padding: 6px 12px; font-size: 12px; }
+            .menu-card img { height: 70px; }
+            .cart-header { padding: 8px 12px; font-size: 1rem; }
+            .cart-footer { padding: 8px 12px; }
+            .summary-row { margin-bottom: 3px; font-size: 12px; }
+            .summary-row.total { font-size: 1.05rem; margin-bottom: 6px; }
+            .checkout-btn { padding: 10px; font-size: 1rem; }
+            .modal-left { width: 130px; }
+            .modal-left img { height: 130px; }
+        }
     </style>
 </head>
 <body>
@@ -117,17 +145,19 @@
                 <div class="top-controls">
                     <a href="kitchen.html" class="top-btn kitchen">👨‍🍳 ไปหน้าจอครัว</a>
                     <a href="admin.html" class="top-btn">⚙️ ไปหน้า Admin</a>
-                    <div class="order-type-switch">
-                        <button class="type-btn active" id="btn-dine-in" onclick="setOrderType('Dine-in', this)">Dine-in</button>
-                        <div class="type-divider"></div>
-                        <button class="type-btn" id="btn-take-away" onclick="setOrderType('Take away', this)">Take away</button>
-                    </div>
                 </div>
             </div>
 
-            <!-- NAVIGATION TABS -->
-            <div class="nav-tabs-bar" id="nav-tabs-container">
-                <button class="nav-tab-btn active" onclick="switchMainTab('store', this)">Cashier</button>
+            <!-- NAVIGATION TABS + ORDER TYPE (แถวเดียวกัน) -->
+            <div class="nav-row">
+                <div class="nav-tabs-bar" id="nav-tabs-container">
+                    <button class="nav-tab-btn active" onclick="switchMainTab('store', this)">Cashier</button>
+                </div>
+                <div class="order-type-switch">
+                    <button class="type-btn active" id="btn-dine-in" onclick="setOrderType('Dine-in', this)">Dine-in</button>
+                    <div class="type-divider"></div>
+                    <button class="type-btn" id="btn-take-away" onclick="setOrderType('Take away', this)">Take away</button>
+                </div>
             </div>
 
             <!-- CATEGORIES BAR -->
@@ -143,14 +173,16 @@
         <div class="cart-section">
             <div class="cart-header">
                 <span>ตะกร้าสินค้า (Cart)</span>
-                <button onclick="clearCart()" style="background:none; border:none; color:var(--red); font-size:13px; cursor:pointer; font-weight:bold;">ล้างตะกร้า</button>
+                <button onclick="clearCart()" style="background:none; border:none; color:var(--red); font-size:13px; cursor:pointer; font-weight:bold; padding:6px;">ล้างตะกร้า</button>
             </div>
             <div class="cart-items" id="cart-items-container">
                 <div style="text-align:center; color:#94a3b8; margin-top:40px;">ຍັງບໍ່ມີສິນຄ້າໃນตะกร้า</div>
             </div>
             <div class="cart-footer">
-                <div class="summary-row"><span>ประเภท (Type):</span><strong id="cart-type-display" style="color:var(--green);">Dine-in</strong></div>
-                <div class="summary-row"><span>ช่องทาง (Source):</span><strong id="cart-source-display" style="color:var(--blue);">Cashier (Store)</strong></div>
+                <div class="summary-row">
+                    <span>ประเภท: <strong id="cart-type-display" style="color:var(--green);">Dine-in</strong></span>
+                    <span>ช่องทาง: <strong id="cart-source-display" style="color:var(--blue);">Cashier (Store)</strong></span>
+                </div>
                 <div class="summary-row"><span>รวมสินค้า</span><span id="cart-item-count">0 รายการ</span></div>
                 <div class="summary-row total"><span>ยอดสุทธิ (Total)</span><span id="cart-total-price">0 ₭</span></div>
                 <button class="checkout-btn" onclick="openCheckoutModal()">ชำระเงิน (Checkout)</button>
@@ -167,7 +199,7 @@
             <div class="modal-right">
                 <div>
                     <h2 id="modal-item-title" style="margin: 0 0 15px 0; color: var(--blue); border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 1.4rem;">MOCHA</h2>
-                    
+
                     <div id="variants-section" style="margin-bottom: 15px;">
                         <label style="font-weight:bold; font-size:13px; color:var(--blue); margin-bottom:6px; display:block;">Variants (ขนาด / ประเภท)</label>
                         <div id="variant-buttons-container"></div>
@@ -225,7 +257,7 @@
                     <option value="">-- เลือกลูกค้าทั่วไป --</option>
                 </select>
             </div>
-            
+
             <div class="form-group">
                 <label>ประเภทการชำระเงิน (Payment Method)</label>
                 <select id="payment-method" onchange="handlePaymentMethodChange()">
@@ -270,7 +302,7 @@
         let currentOrderSource = 'store';
         let currentOrderType = 'Dine-in';
         let cart = [];
-        
+
         let activeItemForModal = null;
         let selectedVariantName = '';
         let selectedVariantPrice = 0;
@@ -316,8 +348,11 @@
                 }, 300000);
             }
         }
+        // รองรับทั้งเมาส์และการสัมผัสบนแท็บเล็ต
         window.addEventListener('mousemove', resetInactivityTimer);
         window.addEventListener('keypress', resetInactivityTimer);
+        window.addEventListener('touchstart', resetInactivityTimer, { passive: true });
+        window.addEventListener('click', resetInactivityTimer);
 
         database.ref('delivery_partners').on('value', snap => {
             globalDeliveryPartners = [];

@@ -10,115 +10,186 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root { --blue: #1a365d; --green: #689f38; --red: #ef4444; --orange: #f59e0b; --bg: #f4f6f8; --white: #ffffff; --text: #334155; --border: #e0e0e0; }
-        * { font-family: 'Noto Sans Lao', sans-serif, 'Segoe UI', Tahoma; box-sizing: border-box; }
-        body { background-color: var(--bg); margin: 0; padding: 20px; color: var(--text); }
+        * { font-family: 'Noto Sans Lao', sans-serif, 'Segoe UI', Tahoma; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html { height: 100%; }
+        body { background-color: var(--bg); margin: 0; padding: 0; color: var(--text); height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; touch-action: manipulation; }
 
-        .kitchen-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: var(--white); padding: 15px 25px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .kitchen-header h1 { margin: 0; color: var(--blue); font-size: 1.6rem; }
-        .nav-links { display: flex; gap: 10px; }
-        .nav-btn { background: var(--blue); color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; }
-        .nav-btn.admin { background: var(--orange); }
+        /* HEADER */
+        .kitchen-header { flex-shrink: 0; background: var(--white); padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .kitchen-header h1 { margin: 0; color: var(--blue); font-size: 1.3rem; display: flex; align-items: center; gap: 8px; }
+        
+        .top-controls { display: flex; align-items: center; gap: 10px; }
+        .top-btn { background: var(--blue); color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+        .top-btn.cashier { background: var(--green); }
 
-        .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .order-card { background: var(--white); border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid var(--orange); display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s; }
-        .order-card.completed { border-top-color: var(--green); opacity: 0.7; }
-        
-        .order-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 12px; }
-        .order-customer { font-weight: bold; font-size: 1.1rem; color: var(--blue); }
-        .order-source { font-size: 12px; background: #e0f2fe; color: var(--blue); padding: 3px 8px; border-radius: 4px; font-weight: bold; }
-        
-        .order-items-list { list-style: none; padding: 0; margin: 0 0 15px 0; display: flex; flex-direction: column; gap: 8px; }
-        .order-item-row { display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px dashed #f1f5f9; padding-bottom: 5px; }
-        .order-item-name { font-weight: bold; }
-        .order-item-qty { color: var(--blue); font-weight: bold; }
+        /* KITCHEN CONTENT CONTAINER */
+        .kitchen-content { flex: 1; min-height: 0; padding: 15px; overflow-x: auto; overflow-y: hidden; display: flex; gap: 15px; -webkit-overflow-scrolling: touch; }
 
-        .order-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; }
-        .order-time { font-size: 12px; color: #64748b; }
+        /* COLUMNS */
+        .kitchen-column { flex: 1; min-width: 320px; max-width: 400px; background: #e2e8f0; border-radius: 12px; display: flex; flex-direction: column; height: 100%; max-height: 100%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03); }
+        .column-header { padding: 12px 15px; font-weight: bold; font-size: 1.05rem; display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 12px; border-top-right-radius: 12px; flex-shrink: 0; color: white; }
+        .column-header.pending { background: var(--orange); }
+        .column-header.cooking { background: var(--blue); }
         
-        .action-btn { padding: 8px 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; text-transform: uppercase; font-size: 13px; }
-        .btn-pending { background: var(--orange); }
-        .btn-pending:hover { background: #d97706; }
-        .btn-completed { background: var(--green); }
+        .column-body { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; -webkit-overflow-scrolling: touch; }
+
+        /* ORDER CARD */
+        .order-card { background: var(--white); border-radius: 10px; padding: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); border-left: 6px solid var(--orange); display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; transition: 0.2s; }
+        .order-card.status-cooking { border-left-color: var(--blue); }
+
+        .order-card-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; }
+        .order-table-name { font-size: 1.1rem; font-weight: bold; color: var(--blue); }
+        .order-meta-info { font-size: 11px; color: #64748b; text-align: right; }
+
+        .order-items-list { display: flex; flex-direction: column; gap: 6px; }
+        .order-item-row { display: flex; justify-content: space-between; align-items: flex-start; font-size: 14px; }
+        .order-item-details { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+        .order-card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #cbd5e1; padding-top: 8px; margin-top: 2px; }
+        .order-time-ago { font-size: 11px; color: #94a3b8; font-weight: bold; }
+
+        /* ACTION BUTTONS */
+        .btn-action { padding: 8px 14px; border: none; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; color: white; transition: 0.2s; }
+        .btn-start { background: var(--blue); }
+        .btn-done { background: var(--green); }
+        .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* จอเตี้ยหรือมือถือแนวนอน */
+        @media (max-height: 500px) {
+            .kitchen-header { padding: 8px 15px; }
+            .kitchen-header h1 { font-size: 1.1rem; }
+            .top-btn { padding: 6px 10px; font-size: 12px; }
+            .kitchen-content { padding: 10px; gap: 10px; }
+            .kitchen-column { min-width: 280px; }
+        }
     </style>
 </head>
 <body>
     <div class="kitchen-header">
-        <h1>AUGUSTX - หน้าจอครัว (Kitchen Display)</h1>
-        <div class="nav-links">
-            <a href="index.html" class="nav-btn">⬅ กลับหน้า Cashier</a>
-            <a href="admin.html" class="nav-btn admin">⚙️ ไปหน้า Admin</a>
+        <h1>👨‍🍳 หน้าจอห้องครัว (Kitchen Display System)</h1>
+        <div class="top-controls">
+            <a href="index.html" class="top-btn cashier">🛒 ไปหน้า Cashier</a>
+            <a href="admin.html" class="top-btn">⚙️ ไปหน้า Admin</a>
         </div>
     </div>
 
-    <div class="orders-grid" id="kitchen-orders-container">
-        <div style="grid-column: 1/-1; text-align:center; color:#94a3b8; padding:50px;">กำลังโหลดออร์เดอร์...</div>
+    <div class="kitchen-content">
+        <!-- COLUMN: PENDING (รอดำเนินการ) -->
+        <div class="kitchen-column">
+            <div class="column-header pending">
+                <span>⏳ ລໍຖ້າເຮັດ (Pending)</span>
+                <span id="count-pending" style="background: rgba(0,0,0,0.15); padding: 2px 8px; border-radius: 12px; font-size: 12px;">0</span>
+            </div>
+            <div class="column-body" id="list-pending">
+                <div style="text-align:center; color:#64748b; margin-top:20px; font-size:13px;">ບໍ່ມີອໍເດີ້ລໍຖ້າ</div>
+            </div>
+        </div>
+
+        <!-- COLUMN: COOKING (กำลังทำ) -->
+        <div class="kitchen-column">
+            <div class="column-header cooking">
+                <span>🔥 ກຳລັງເຮັດ (Cooking)</span>
+                <span id="count-cooking" style="background: rgba(0,0,0,0.15); padding: 2px 8px; border-radius: 12px; font-size: 12px;">0</span>
+            </div>
+            <div class="column-body" id="list-cooking">
+                <div style="text-align:center; color:#64748b; margin-top:20px; font-size:13px;">ບໍ່ມີອໍເດີ້ກຳລັງເຮັດ</div>
+            </div>
+        </div>
     </div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDAJUEFUwkieMGFxRIZ6vRwzLbXF31c_BM", authDomain: "augx-d75c2.firebaseapp.com", databaseURL: "https://augx-d75c2-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "augx-d75c2", storageBucket: "augx-d75c2.firebasestorage.app" };
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
 
-        database.ref('orders').on('value', snapshot => {
-            let container = document.getElementById('kitchen-orders-container');
-            let orders = [];
+        // โหลดข้อมูลออร์เดอร์จาก Firebase Realtime Database แบบเรียลไทม์
+        database.ref('orders').on('value', snap => {
+            let pendingHtml = '';
+            let cookingHtml = '';
+            let pendingCount = 0;
+            let cookingCount = 0;
 
-            snapshot.forEach(child => {
+            snap.forEach(child => {
                 let order = child.val();
-                order.id = child.key;
-                orders.push(order);
-            });
+                let orderId = child.key;
+                let status = order.status || 'pending';
 
-            // เรียงลำดับจากใหม่ไปเก่า
-            orders.sort((a, b) => b.timestamp - a.timestamp);
+                // กรองเฉพาะออร์เดอร์ที่ยังไม่เสร็จ (pending หรือ cooking)
+                if (status === 'done') return;
 
-            if(orders.length === 0) {
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#94a3b8; padding:50px;">ยังไม่มีออร์เดอร์ในระบบ</div>';
-                return;
-            }
-
-            let html = '';
-            orders.forEach(o => {
-                let isCompleted = o.status === 'completed';
-                let timeStr = new Date(o.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
+                let timeAgo = timeSince(order.timestamp || Date.now());
+                let sourceBadge = order.source && order.source !== 'store' ? `<span style="background:var(--orange); color:white; padding:2px 6px; border-radius:4px; font-size:10px; margin-left:5px;">${order.source}</span>` : '';
+                
                 let itemsHtml = '';
-                if(o.items) {
-                    o.items.forEach(item => {
-                        itemsHtml += `<li class="order-item-row">
-                            <span class="order-item-name">${item.name} ${item.variant ? '(' + item.variant + ')' : ''}</span>
-                            <span class="order-item-qty">x${item.quantity}</span>
-                        </li>`;
+                if (order.items && Array.isArray(order.items)) {
+                    order.items.forEach(item => {
+                        let details = [item.variant, ...(item.modifiers || []).map(m => m.option), item.note ? '<b>Note: ' + item.note + '</b>' : ''].filter(Boolean).join(' | ');
+                        itemsHtml += `
+                            <div class="order-item-row">
+                                <div>
+                                    <div><b>${item.quantity}x</b> ${item.name}</div>
+                                    ${details ? '<div class="order-item-details">' + details + '</div>' : ''}
+                                </div>
+                            </div>
+                        `;
                     });
                 }
 
-                html += `<div class="order-card ${isCompleted ? 'completed' : ''}">
-                    <div>
+                let cardHtml = `
+                    <div class="order-card ${status === 'cooking' ? 'status-cooking' : ''}">
                         <div class="order-card-header">
-                            <span class="order-customer">👤 ${o.customer || 'ทั่วไป'}</span>
-                            <span class="order-source">${o.source === 'store' ? 'หน้าร้าน' : o.source}</span>
+                            <div>
+                                <span class="order-table-name">📌 ${order.customer || 'โต๊ะทั่วไป'}</span>
+                                ${sourceBadge}
+                            </div>
+                            <div class="order-meta-info">
+                                <div>${order.orderType || 'Dine-in'}</div>
+                                <div style="color:var(--text); font-weight:bold;">${order.date || ''}</div>
+                            </div>
                         </div>
-                        <ul class="order-items-list">
+                        <div class="order-items-list">
                             ${itemsHtml}
-                        </ul>
+                        </div>
+                        <div class="order-card-footer">
+                            <span class="order-time-ago">🕒 ${timeAgo}</span>
+                            ${status === 'pending' 
+                                ? `<button class="btn-action btn-start" onclick="updateOrderStatus('${orderId}', 'cooking')">เริ่มทำ 🔥</button>`
+                                : `<button class="btn-action btn-done" onclick="updateOrderStatus('${orderId}', 'done')">เสร็จสิ้น ✅</button>`
+                            }
+                        </div>
                     </div>
-                    <div class="order-footer">
-                        <span class="order-time">⏰ ${timeStr}</span>
-                        ${isCompleted ? 
-                            `<button class="action-btn btn-completed" onclick="updateOrderStatus('${o.id}', 'pending')">เสร็จแล้ว (ทำอีกรอบ)</button>` : 
-                            `<button class="action-btn btn-pending" onclick="updateOrderStatus('${o.id}', 'completed')">กดรับออร์เดอร์ / เสร็จ</button>`
-                        }
-                    </div>
-                </div>`;
+                `;
+
+                if (status === 'pending') {
+                    pendingHtml += cardHtml;
+                    pendingCount++;
+                } else if (status === 'cooking') {
+                    cookingHtml += cardHtml;
+                    cookingCount++;
+                }
             });
 
-            container.innerHTML = html;
+            document.getElementById('list-pending').innerHTML = pendingHtml || '<div style="text-align:center; color:#64748b; margin-top:20px; font-size:13px;">ບໍ່ມີອໍເດີ້ລໍຖ້າ</div>';
+            document.getElementById('list-cooking').innerHTML = cookingHtml || '<div style="text-align:center; color:#64748b; margin-top:20px; font-size:13px;">ບໍ່ມີອໍເດີ້ກຳລັງເຮັດ</div>';
+            document.getElementById('count-pending').innerText = pendingCount;
+            document.getElementById('count-cooking').innerText = cookingCount;
         });
 
+        // ฟังก์ชันอัปเดตสถานะออร์เดอร์ใน Firebase
         function updateOrderStatus(orderId, newStatus) {
-            database.ref('orders/' + orderId).update({ status: newStatus }).then(() => {
-                // อัปเดตสถานะสำเร็จ
+            database.ref('orders/' + orderId).update({ status: newStatus }).catch(error => {
+                alert("เกิดข้อผิดพลาดในการอัปเดตสถานะ: " + error.message);
             });
+        }
+
+        // ฟังก์ชันคำนวณเวลาผ่านไป
+        function timeSince(timestamp) {
+            let seconds = Math.floor((Date.now() - timestamp) / 1000);
+            let interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " ชั่วโมงที่แล้ว";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " นาทีที่แล้ว";
+            return Math.floor(seconds) + " วินาทีที่แล้ว";
         }
     </script>
 </body>

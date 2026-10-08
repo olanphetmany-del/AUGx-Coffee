@@ -10,50 +10,53 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root { --blue: #1a365d; --green: #689f38; --red: #ef4444; --orange: #f59e0b; --bg: #f4f6f8; --white: #ffffff; --text: #334155; --border: #e0e0e0; }
-        * { font-family: 'Noto Sans Lao', sans-serif, 'Segoe UI', Tahoma; box-sizing: border-box; }
-        body { background-color: var(--bg); margin: 0; padding: 0; color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        * { font-family: 'Noto Sans Lao', sans-serif, 'Segoe UI', Tahoma; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html { height: 100%; }
+        body { background-color: var(--bg); margin: 0; padding: 0; color: var(--text); height: 100vh; height: 100dvh; overflow: hidden; display: flex; touch-action: manipulation; }
         
-        .icon { width: 18px; height: 18px; vertical-align: text-bottom; margin-right: 8px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-        .sidebar { width: 260px; background-color: var(--blue); color: var(--white); display: flex; flex-direction: column; flex-shrink: 0; }
-        .sidebar-header { padding: 20px; font-size: 1.5rem; font-weight: bold; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); letter-spacing: 1px; }
-        .nav-menu { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; }
-        .nav-item { padding: 15px 20px; cursor: pointer; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; color: #fff; text-decoration: none; }
+        /* SIDEBAR NAVIGATION */
+        .sidebar { width: 260px; background-color: var(--blue); color: var(--white); display: flex; flex-direction: column; flex-shrink: 0; height: 100%; }
+        .sidebar-header { padding: 20px; font-size: 1.3rem; font-weight: bold; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); letter-spacing: 1px; flex-shrink: 0; }
+        .nav-menu { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .nav-item { padding: 14px 20px; cursor: pointer; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; color: #fff; text-decoration: none; font-size: 14px; }
         .nav-item:hover, .nav-item.active { background-color: rgba(255,255,255,0.1); border-left: 4px solid var(--green); }
-        .back-btn { margin: 20px; text-align: center; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; cursor: pointer; text-decoration: none; color: white; font-weight: bold; display: flex; justify-content: center; align-items: center; }
+        .sidebar-footer { padding: 15px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.1); }
+        .back-btn { text-align: center; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; cursor: pointer; text-decoration: none; color: white; font-weight: bold; display: flex; justify-content: center; align-items: center; font-size: 13px; }
         
-        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        /* MAIN CONTENT CONTAINER */
+        .main-content { flex: 1; min-width: 0; height: 100%; padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--bg); display: flex; flex-direction: column; }
+        .tab-content { display: none; flex: 1; flex-direction: column; min-height: 0; }
+        .tab-content.active { display: flex; }
         
-        h2 { margin-top: 0; color: var(--blue); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px; display: flex; align-items: center;}
+        h2 { margin-top: 0; color: var(--blue); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; font-size: 1.4rem; flex-shrink: 0; }
         
-        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 20px; }
-        .card { background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid var(--blue); }
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; flex-shrink: 0; }
+        .card { background: var(--white); padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid var(--blue); }
         .card.green { border-left-color: var(--green); }
         .card.orange { border-left-color: var(--orange); }
-        .card-title { font-size: 14px; color: #64748b; font-weight: bold; margin-bottom: 5px; }
-        .card-value { font-size: 24px; font-weight: bold; color: var(--blue); }
+        .card-title { font-size: 13px; color: #64748b; font-weight: bold; margin-bottom: 5px; }
+        .card-value { font-size: 22px; font-weight: bold; color: var(--blue); }
         
-        .box { background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .box { background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 15px; flex-shrink: 0; }
+        .box-scroll { flex: 1; min-height: 0; overflow-y: auto; background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 15px; display: flex; flex-direction: column; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 800px; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; white-space: nowrap; }
-        th { background-color: #f8fafc; font-weight: bold; color: #333; }
+        th { background-color: #f8fafc; font-weight: bold; color: #333; position: sticky; top: 0; z-index: 10; }
         
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; color: #555; }
-        input[type="text"], input[type="number"], select, input[type="file"] { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; background-color: #fff; }
-        .flex-row { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 13px; color: #555; }
+        input[type="text"], input[type="number"], select, input[type="file"] { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; background-color: #fff; font-size: 14px; }
+        .flex-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
         
-        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: var(--white); transition: 0.2s; text-transform: uppercase; display: inline-flex; align-items: center; gap: 5px;}
+        .btn { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: var(--white); transition: 0.2s; text-transform: uppercase; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
         .btn-green { background-color: var(--green); }
         .btn-blue { background-color: var(--blue); }
         .btn-red { background-color: var(--red); padding: 6px 12px; font-size: 12px; }
         .btn-orange { background-color: var(--orange); }
 
-        .item-section { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px; }
-        .hint { font-size: 13px; color: #777; }
-
+        .item-section { border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px; }
+        
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
@@ -63,31 +66,45 @@
 
         .variant-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-container { background: white; width: 90%; max-width: 800px; border-radius: 12px; max-height: 90vh; overflow-y: auto; padding: 30px; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .modal-container { background: white; width: 90%; max-width: 750px; border-radius: 12px; max-height: 90vh; max-height: 90dvh; overflow-y: auto; padding: 25px; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+
+        /* RESPONSIVE TABLET / MOBILE */
+        @media (max-width: 1024px) {
+            body { flex-direction: column; height: auto; overflow: auto; }
+            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
+            .nav-menu { display: flex; flex-wrap: wrap; overflow-x: auto; flex: none; max-height: 120px; }
+            .nav-item { flex: 1 1 auto; padding: 10px 12px; white-space: nowrap; border-left: none !important; border-bottom: 2px solid transparent; justify-content: center; }
+            .nav-item.active { border-bottom: 2px solid var(--green); background-color: rgba(255,255,255,0.15); }
+            .sidebar-footer { flex-direction: row; }
+            .back-btn { flex: 1; }
+            .main-content { height: auto; overflow-y: visible; padding: 15px; }
+            .tab-content { height: auto; }
+            .box-scroll { height: auto; overflow-y: visible; }
+        }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <div class="sidebar-header">AUGUSTX ADMIN</div>
         <ul class="nav-menu">
-            <li class="nav-item active" onclick="switchTab('tab-financial', this)">Financial & Reports</li>
-            <li class="nav-item" onclick="switchTab('tab-delivery', this)">Delivery Partners</li>
-            <li class="nav-item" onclick="switchTab('tab-tables', this)">ຈັດການໂຕະ (Tables)</li>
-            <li class="nav-item" onclick="switchTab('tab-customers', this)">ฐานข้อมูลลูกค้า (Customers)</li>
-            <li class="nav-item" onclick="switchTab('tab-inventory', this)">Inventory (ສະຕັອກ)</li>
+            <li class="nav-item active" onclick="switchTab('tab-financial', this)">📊 Financial & Reports</li>
+            <li class="nav-item" onclick="switchTab('tab-delivery', this)">🛵 Delivery Partners</li>
+            <li class="nav-item" onclick="switchTab('tab-tables', this)">📌 ຈັດການໂຕະ (Tables)</li>
+            <li class="nav-item" onclick="switchTab('tab-customers', this)">👥 ລູກຄ້າ (Customers)</li>
+            <li class="nav-item" onclick="switchTab('tab-inventory', this)">📦 Inventory (ສະຕັອກ)</li>
             
-            <li style="padding: 10px 20px; font-size: 12px; color: #94a3b8; font-weight: bold; margin-top: 10px;">PRODUCTS MANAGER</li>
-            <li class="nav-item" onclick="switchTab('tab-items', this)">Item list (ສິນຄ້າ)</li>
-            <li class="nav-item" onclick="switchTab('tab-categories', this)">Categories (ໝວດໝູ່)</li>
-            <li class="nav-item" onclick="switchTab('tab-modifiers', this)">Modifiers (ຕົວເລືອກເສີມ)</li>
+            <li style="padding: 8px 20px; font-size: 11px; color: #94a3b8; font-weight: bold; margin-top: 5px;">PRODUCTS MANAGER</li>
+            <li class="nav-item" onclick="switchTab('tab-items', this)">☕ Item list (ສິນຄ້າ)</li>
+            <li class="nav-item" onclick="switchTab('tab-categories', this)">🏷️ Categories (ໝວດໝູ່)</li>
+            <li class="nav-item" onclick="switchTab('tab-modifiers', this)">⚙️ Modifiers (ຕົວເລືອກເສີມ)</li>
 
-            <li style="padding: 10px 20px; font-size: 12px; color: #94a3b8; font-weight: bold; margin-top: 10px;">SYSTEM SETTINGS</li>
-            <li class="nav-item" onclick="switchTab('tab-printer', this)">Printer settings</li>
-            <li class="nav-item" onclick="switchTab('tab-settings', this)">Features & Settings</li>
+            <li style="padding: 8px 20px; font-size: 11px; color: #94a3b8; font-weight: bold; margin-top: 5px;">SYSTEM SETTINGS</li>
+            <li class="nav-item" onclick="switchTab('tab-printer', this)">🖨️ Printer settings</li>
+            <li class="nav-item" onclick="switchTab('tab-settings', this)">⚡ Features & Settings</li>
         </ul>
-        <div style="display:flex; flex-direction:column; gap:5px; margin: 15px;">
-            <a href="index.html" class="back-btn" style="margin:0; background:var(--green);">🛒 ไปหน้า Cashier</a>
-            <a href="kitchen.html" class="back-btn" style="margin:0; background:var(--orange);">👨‍🍳 ไปหน้าจอครัว</a>
+        <div class="sidebar-footer">
+            <a href="index.html" class="back-btn" style="background:var(--green);">🛒 ไปหน้า Cashier</a>
+            <a href="kitchen.html" class="back-btn" style="background:var(--orange);">👨‍🍳 ไปหน้าจอครัว</a>
         </div>
     </div>
 
@@ -113,7 +130,7 @@
                     <button class="btn btn-green" onclick="addDeliveryPartner()">ເພີ່ມ</button>
                 </div>
             </div>
-            <div class="box">
+            <div class="box-scroll">
                 <table>
                     <thead><tr><th>ຊື່ພາດເນີ</th><th>ຄ່າຄອມ (%)</th><th>ຈັດການ</th></tr></thead>
                     <tbody id="delivery-partner-table-body"></tbody>
@@ -131,7 +148,7 @@
                     <button class="btn btn-green" onclick="addTable()">เพิ่มโต๊ะ</button>
                 </div>
             </div>
-            <div class="box">
+            <div class="box-scroll">
                 <table>
                     <thead><tr><th>หมายเลขโต๊ะ</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
                     <tbody id="table-list-tbody"></tbody>
@@ -150,7 +167,7 @@
                     <button class="btn btn-green" onclick="addCustomer()">บันทึก</button>
                 </div>
             </div>
-            <div class="box">
+            <div class="box-scroll">
                 <table>
                     <thead><tr><th>ชื่อลูกค้า</th><th>เบอร์โทร</th><th>จัดการ</th></tr></thead>
                     <tbody id="customer-list-tbody"></tbody>
@@ -168,7 +185,7 @@
         <!-- ITEMS LIST -->
         <div id="tab-items" class="tab-content">
             <h2>Item list (ສິນຄ້າ) <span id="item-count-badge" style="font-size:14px; color:#64748b; font-weight:normal; margin-left:10px;"></span></h2>
-            <div class="box" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div class="box" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                 <div class="flex-row" style="gap: 10px; align-items: center; margin-bottom: 0; flex: 1;">
                     <label style="font-weight: bold; margin: 0;">ກັ່ນຕອງໝວດໝູ່:</label>
                     <select id="filter-category-select" onchange="renderItemListTable()" style="max-width: 250px; margin-bottom: 0;">
@@ -176,11 +193,11 @@
                     </select>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-orange" onclick="seedDefaultMenu()">📥 โหลด 23 เมนูกาแฟ</button>
+                    <button class="btn btn-orange" onclick="seedDefaultMenu()">📥 โหลด 23 เมนู</button>
                     <button class="btn btn-green" onclick="openItemModalForAdd()">+ Add Item</button>
                 </div>
             </div>
-            <div class="box">
+            <div class="box-scroll">
                 <table>
                     <thead><tr><th style="width:60px;">No.</th><th>Image</th><th>Category</th><th>Name</th><th>ລາຄາໜ້າຮ້ານ</th><th>Modifiers</th><th>Delivery</th><th>ຈັດການ</th></tr></thead>
                     <tbody id="menu-table-body"><tr><td colspan="8" align="center">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr></tbody>
@@ -197,7 +214,7 @@
                     <button class="btn btn-green" onclick="addCategory()">ADD CATEGORY</button>
                 </div>
             </div>
-            <div class="box">
+            <div class="box-scroll">
                 <table>
                     <thead><tr><th style="width:60px;">No.</th><th>Category Name</th><th>ຈັດການ</th></tr></thead>
                     <tbody id="category-table-body"></tbody>
@@ -208,7 +225,7 @@
         <!-- MODIFIERS -->
         <div id="tab-modifiers" class="tab-content">
             <h2>Modifiers (ຕົວເລືອກເສີມ) <span id="mod-count-badge" style="font-size:14px; color:#64748b; font-weight:normal; margin-left:10px;"></span></h2>
-            <div class="box" style="padding: 30px;">
+            <div class="box">
                 <div class="item-section">
                     <h3>Modifier Name</h3>
                     <div class="form-group"><input type="text" id="new-mod-name" placeholder="ເຊັ່ນ: Sugar Level"></div>
@@ -216,11 +233,11 @@
                 <div class="item-section">
                     <h3>Options</h3>
                     <div id="mod-options-container"></div>
-                    <button class="btn btn-blue" style="background:none; color:var(--green); border:none; padding:5px 0;" onclick="addModOptionRow()">+ ADD OPTION</button>
+                    <button class="btn btn-blue" style="background:none; color:var(--green); border:none; padding:5px 0; font-weight:bold; cursor:pointer;" onclick="addModOptionRow()">+ ADD OPTION</button>
                 </div>
                 <div style="text-align: right;"><button class="btn btn-green" onclick="saveModifier()">SAVE MODIFIER</button></div>
             </div>
-            <div class="box">
+            <div class="box-scroll">
                 <table>
                     <thead><tr><th style="width:60px;">No.</th><th>Modifier Name</th><th>Options</th><th>ຈັດການ</th></tr></thead>
                     <tbody id="modifier-table-body"></tbody>
@@ -290,7 +307,7 @@
                 <div style="margin-top:10px;">
                     <label style="font-weight:bold; font-size:13px;">Variants (ຕົວເລືອກຂະໜາດ)</label>
                     <div id="modal-variants-container"></div>
-                    <button class="btn btn-blue" style="background:none; color:var(--green); border:none; padding:5px 0;" onclick="addVariantRow('modal-variants-container')">+ ADD VARIANTS</button>
+                    <button class="btn btn-blue" style="background:none; color:var(--green); border:none; padding:5px 0; font-weight:bold; cursor:pointer;" onclick="addVariantRow('modal-variants-container')">+ ADD VARIANTS</button>
                 </div>
             </div>
             <div style="text-align: right; margin-top: 20px;">
