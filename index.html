@@ -1,580 +1,564 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="lo">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUGUSTX HOME COFFEE</title>
+    <title>AUGUSTX - Cashier POS</title>
+    <!-- Google Fonts: Noto Sans Lao -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root {
-            --blue: #1a365d;
-            --black: #111111;
-            --white: #f8f9fa;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--white);
-            color: var(--black);
-            margin: 0;
-            padding: 0;
-            background-image: url('images/bg.jpg');
-            background-size: cover;
-            background-attachment: fixed;
-            background-position: center;
-        }
-        header { background-color: var(--blue); color: white; text-align: center; padding: 2rem 1rem; }
-        header h1 { margin: 0; font-size: 2.5rem; letter-spacing: 2px; font-weight: 900; }
-        header p { margin-top: 5px; font-size: 1.2rem; letter-spacing: 4px; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
-        .category-title {
-            text-align: center; font-size: 2rem; font-weight: bold; margin-top: 2rem;
-            margin-bottom: 1rem; border-bottom: 2px solid var(--black); display: inline-block; padding-bottom: 5px;
-        }
-        .text-center { text-align: center; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
-        .card {
-            background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 1.5rem; text-align: center; border-left: 5px solid var(--blue);
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-        .product-image {
-            width: 100%; height: 250px; object-fit: cover; border-radius: 6px; margin-bottom: 15px;
-            background-color: #eee;
-        }
-        .card h3 { margin: 0 0 15px 0; font-size: 1.1rem; text-transform: uppercase; }
-        select { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
-        button.add-btn {
-            background-color: var(--black); color: white; border: none; padding: 10px 15px;
-            width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; margin-top: auto;
-        }
-        button.add-btn:hover { background-color: var(--blue); }
-        .cart-icon {
-            position: fixed; top: 20px; right: 20px; background: var(--black); color: white;
-            padding: 10px 20px; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2); z-index: 100;
-        }
-        .cart-sidebar {
-            position: fixed; top: 0; right: -400px; width: 350px; height: 100%;
-            background: white; box-shadow: -4px 0 10px rgba(0,0,0,0.1); transition: 0.3s; padding: 20px; z-index: 101; overflow-y: auto;
-        }
-        .cart-sidebar.open { right: 0; }
-        .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--blue); padding-bottom: 10px; margin-bottom: 10px; }
-        .close-cart { cursor: pointer; font-size: 1.5rem; font-weight: bold; }
-        
-        .receipt-bill { background: white; border: 1px dashed #ccc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        .receipt-header { text-align: center; font-size: 1.2rem; font-weight: bold; color: var(--blue); margin-bottom: 15px; }
-        .cart-item { display: flex; flex-direction: column; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        .item-row-1 { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .item-name { font-weight: bold; font-size: 0.95rem; max-width: 65%; line-height: 1.3; }
-        .item-price { font-weight: bold; font-size: 0.95rem; }
-        .item-row-2 { display: flex; justify-content: space-between; align-items: center; }
-        .qty-controls { display: flex; align-items: center; gap: 12px; }
-        .qty-btn { background: #f1f1f1; border: 1px solid #ddd; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1rem; color: var(--black); }
-        .qty-btn:hover { background: #e2e2e2; }
-        .remove-btn { color: #dc3545; background: none; border: none; cursor: pointer; font-size: 0.9rem; text-decoration: underline; padding: 0; font-family: inherit;}
-        
-        .item-note-input {
-            width: 100%; padding: 8px; margin-top: 10px; border: 1px solid #ddd;
-            border-radius: 4px; font-size: 0.85rem; font-family: inherit; box-sizing: border-box; background-color: #fafafa;
-        }
-        .item-note-input:focus { border-color: var(--blue); outline: none; background-color: white;}
-        .receipt-total { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; margin-top: 15px; padding-top: 15px; border-top: 2px solid var(--black); }
+        :root { --blue: #1a365d; --green: #689f38; --red: #ef4444; --orange: #f59e0b; --bg: #f4f6f8; --white: #ffffff; --text: #334155; --border: #e0e0e0; }
+        * { font-family: 'Noto Sans Lao', sans-serif, 'Segoe UI', Tahoma; box-sizing: border-box; }
+        body { background-color: var(--bg); margin: 0; padding: 0; color: var(--text); display: flex; height: 100vh; overflow: hidden; }
 
-        .checkout-btn {
-            background-color: var(--black); color: white; border: none; padding: 15px; width: 100%;
-            font-size: 1.1rem; border-radius: 8px; cursor: pointer; margin-top: 20px; font-weight: bold;
-        }
-        .checkout-btn:hover { background-color: #333; }
+        .pos-container { display: flex; width: 100vw; height: 100vh; }
+        .menu-section { flex: 2; padding: 20px; display: flex; flex-direction: column; overflow-y: auto; background: var(--bg); }
+        .cart-section { width: 440px; background: var(--white); border-left: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: -2px 0 10px rgba(0,0,0,0.02); }
 
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center;
-            z-index: 1000; backdrop-filter: blur(3px);
-        }
-        .receipt-wrapper { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .receipt-slip-preview {
-            background: #fff; border: 1px solid #eee; padding: 20px; border-radius: 5px; 
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.03); font-family: 'Courier New', Courier, monospace;
-            color: #333; margin-bottom: 20px;
-        }
+        .pos-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .pos-header h1 { margin: 0; color: var(--blue); font-size: 1.8rem; }
         
-        .preview-brand { text-align: center; margin: 0; font-size: 1.8rem; font-weight: 900; letter-spacing: 1px; }
-        .preview-sub { text-align: center; margin: 3px 0 12px; font-size: 0.9rem; letter-spacing: 2px; }
+        .top-controls { display: flex; align-items: center; gap: 10px; }
+        .top-btn { background: var(--blue); color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .top-btn.kitchen { background: var(--orange); }
         
-        .preview-date { text-align: center; font-size: 0.8rem; margin-bottom: 5px; }
-        .preview-order-num { text-align: center; font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; color: var(--blue); }
-        .preview-dashed { border-top: 1px dashed #aaa; margin: 10px 0; }
-        
-        .preview-item-group { margin-bottom: 18px; }
-        
-        .preview-item { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.95rem; }
-        .preview-item-left { max-width: 75%; line-height: 1.4; }
-        .preview-item-qty { font-weight: bold; color: var(--blue); }
-        .preview-item-note { font-size: 0.8rem; color: #777; margin-left: 18px; font-style: italic;}
-        
-        .preview-total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; margin: 15px 0; }
-        
-        .preview-warning { 
-            text-align: center; 
-            font-size: 0.85rem; 
-            color: #d9534f; 
-            margin-top: 10px; 
-            font-weight: bold;
-            line-height: 1.4;
-        }
+        .order-type-switch { display: flex; background: var(--blue); border-radius: 6px; overflow: hidden; border: 1px solid var(--blue); }
+        .type-btn { background: transparent; color: white; border: none; padding: 8px 14px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .type-btn.active { background: #0f172a; color: white; }
+        .type-divider { width: 1px; background: rgba(255,255,255,0.2); }
 
-        .modal-actions { display: flex; gap: 10px; }
-        .btn-back { flex: 1; padding: 12px; border: 1px solid #ccc; background: white; border-radius: 6px; cursor: pointer; font-weight: bold; color: #333; }
-        .btn-confirm { flex: 2; padding: 12px; border: none; background: #25D366; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-confirm:hover { background: #128C7E; }
+        .nav-tabs-bar { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .nav-tab-btn { padding: 10px 24px; background: white; border: 1px solid var(--border); border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; color: var(--blue); transition: 0.2s; }
+        .nav-tab-btn.active { background: var(--blue); color: white; border-color: var(--blue); }
+        .nav-tab-btn.delivery-tab.active { background: var(--orange); border-color: var(--orange); }
+
+        .categories-bar { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
+        .cat-btn { padding: 10px 20px; background: white; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.2s; }
+        .cat-btn.active, .cat-btn:hover { background: var(--blue); color: white; border-color: var(--blue); }
+
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; overflow-y: auto; padding-bottom: 20px; }
+        .menu-card { background: url('images/bg.jpg') center/cover no-repeat; border-radius: 10px; padding: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid transparent; position: relative; }
+        .menu-card::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.85); border-radius: 8px; z-index: 1; }
+        .menu-card > * { position: relative; z-index: 2; }
+        .menu-card:hover { transform: translateY(-3px); border-color: var(--green); }
+        .menu-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; background: #e2e8f0; }
+        .menu-name { font-weight: bold; font-size: 14px; margin-bottom: 5px; color: var(--blue); }
+        .menu-price { font-size: 13px; color: #64748b; }
+
+        .cart-header { padding: 20px; border-bottom: 1px solid var(--border); font-size: 1.2rem; font-weight: bold; color: var(--blue); display: flex; justify-content: space-between; align-items: center; }
+        .cart-items { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        
+        .cart-item-card { background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 8px; }
+        .cart-item-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .cart-item-info { flex: 1; }
+        .cart-item-name { font-weight: bold; font-size: 14px; color: var(--blue); }
+        .cart-item-details { font-size: 12px; color: #64748b; margin-top: 2px; }
+        
+        .cart-item-actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #cbd5e1; padding-top: 8px; }
+        .cart-item-controls { display: flex; align-items: center; gap: 8px; }
+        .qty-btn { width: 26px; height: 26px; background: #e2e8f0; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .qty-btn:hover { background: #cbd5e1; }
+        
+        .edit-cart-btn { background: none; border: none; cursor: pointer; font-size: 14px; color: var(--blue); padding: 2px 5px; border-radius: 4px; }
+        .edit-cart-btn:hover { background: #e2e8f0; }
+        
+        .cart-item-note-input { width: 100%; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; background: #fff; margin-top: 4px; }
+
+        .cart-footer { padding: 20px; border-top: 1px solid var(--border); background: #f8fafc; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px; }
+        .summary-row.total { font-size: 1.3rem; font-weight: bold; color: var(--blue); margin-bottom: 15px; }
+        .checkout-btn { width: 100%; padding: 14px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .checkout-btn:hover { background: #558b2f; }
+
+        /* Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-box-large { background: white; padding: 30px; border-radius: 16px; width: 90%; max-width: 650px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; gap: 25px; }
+        .modal-left { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+        .modal-left img { width: 100%; height: 220px; object-fit: cover; border-radius: 12px; border: 1px solid var(--border); background: #e2e8f0; }
+        .modal-right { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        .receipt-modal-box { background: #fff; width: 90%; max-width: 420px; border-radius: 8px; max-height: 95vh; overflow-y: auto; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px dashed #cbd5e1; }
+        .receipt-header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 15px; margin-bottom: 15px; }
+        .receipt-header img { width: 100%; max-height: 100px; object-fit: contain; margin-bottom: 8px; display: block; }
+        .receipt-title { font-size: 1.3rem; font-weight: bold; letter-spacing: 1px; margin: 0; color: #000; }
+        .receipt-subtitle { font-size: 0.85rem; font-weight: bold; color: #555; margin-top: 2px; }
+        
+        .receipt-meta { font-size: 12px; color: #333; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
+        .receipt-items-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 15px; }
+        .receipt-items-table th { border-bottom: 1px solid #333; padding-bottom: 5px; text-align: left; }
+        .receipt-items-table td { padding: 6px 0; border-bottom: 1px dotted #e2e8f0; vertical-align: top; }
+        
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 3px; font-weight: bold; font-size: 12px; color: #555; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; }
+        
+        .receipt-totals { border-top: 1px dashed #333; padding-top: 10px; margin-top: 10px; font-size: 13px; display: flex; flex-direction: column; gap: 5px; }
+        .receipt-totals .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 15px; color: #000; }
+        
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; }
+        .btn-green { background: var(--green); }
+        .btn-red { background: var(--red); }
+        .btn-blue { background: var(--blue); }
+
+        .variant-option-btn { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 12px 15px; margin-bottom: 8px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .variant-option-btn:hover { border-color: var(--green); background: #f0fdf4; }
+        .variant-option-btn.selected { border-color: var(--green); background: #f0fdf4; color: #166534; }
     </style>
 </head>
 <body>
-
-    <div class="cart-icon" onclick="toggleCart()">🛒 ຕາຕະລາງ (<span id="cart-count">0</span>)</div>
-
-    <header>
-        <h1>AUGUSTX</h1>
-        <p>HOME COFFEE</p>
-    </header>
-
-    <div class="container">
-        
-        <!-- BASIC COFFEE -->
-        <div class="text-center"><h2 class="category-title">BASIC COFFEE</h2></div>
-        <div class="grid">
-            <div class="card">
-                <img src="images/Americano.jpeg" alt="Americano" class="product-image" onerror="if(this.src.includes('.jpeg')) {this.src='images/Americano.jpg'} else if(this.src.includes('.jpg')) {this.src='images/Americano.png'} else if(this.src.includes('.png')) {this.src='images/Americano.webp'}">
-                <h3>1. Americano</h3>
-                <select id="opt-1"><option value="Hot|39000">Hot</option><option value="Iced|45000">Iced</option></select>
-                <button class="add-btn" onclick="addToCart('1. Americano', 'opt-1', null)">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/Latte.jpeg" alt="Latte" class="product-image" onerror="if(this.src.includes('.jpeg')) {this.src='images/Latte.jpg'} else if(this.src.includes('.jpg')) {this.src='images/Latte.png'} else if(this.src.includes('.png')) {this.src='images/Latte.webp'}">
-                <h3>2. Latte</h3>
-                <select id="opt-2"><option value="Hot|43000">Hot</option><option value="Iced|49000">Iced</option></select>
-                <select id="sweet-2">
-                    <option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option>
-                    <option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option>
-                </select>
-                <button class="add-btn" onclick="addToCart('2. Latte', 'opt-2', 'sweet-2')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/Capucino.jpeg" alt="Capucino" class="product-image" onerror="if(this.src.includes('.jpeg')) {this.src='images/Capucino.jpg'} else if(this.src.includes('.jpg')) {this.src='images/Capucino.png'} else if(this.src.includes('.png')) {this.src='images/Capucino.webp'}">
-                <h3>3. Capucino</h3>
-                <select id="opt-3"><option value="Hot|43000">Hot</option><option value="Iced|49000">Iced</option></select>
-                <select id="sweet-3">
-                    <option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option>
-                    <option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option>
-                </select>
-                <button class="add-btn" onclick="addToCart('3. Capucino', 'opt-3', 'sweet-3')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/Mocha.jpeg" alt="Mocha" class="product-image" onerror="if(this.src.includes('.jpeg')) {this.src='images/Mocha.jpg'} else if(this.src.includes('.jpg')) {this.src='images/Mocha.png'} else if(this.src.includes('.png')) {this.src='images/Mocha.webp'}">
-                <h3>4. Mocha</h3>
-                <select id="opt-4"><option value="Hot|45000">Hot</option><option value="Iced|51000">Iced</option></select>
-                <select id="sweet-4">
-                    <option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option>
-                    <option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option>
-                </select>
-                <button class="add-btn" onclick="addToCart('4. Mocha', 'opt-4', 'sweet-4')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/Milk Espresso.jpeg" alt="Milk Espresso" class="product-image" onerror="if(this.src.includes('.jpeg')) {this.src='images/Milk Espresso.jpg'} else if(this.src.includes('.jpg')) {this.src='images/Milk Espresso.png'} else if(this.src.includes('.png')) {this.src='images/Milk Espresso.webp'}">
-                <h3>5. Milk Espresso (Iced)</h3>
-                <select id="sweet-5">
-                    <option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option>
-                    <option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option>
-                </select>
-                <button class="add-btn" onclick="addSingleToCart('5. Milk Espresso (Iced)', 46000, 'sweet-5')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/Caramel Machiato.jpeg" alt="Caramel Machiato" class="product-image" onerror="if(this.src.includes('.jpeg')) {this.src='images/Caramel Machiato.jpg'} else if(this.src.includes('.jpg')) {this.src='images/Caramel Machiato.png'} else if(this.src.includes('.png')) {this.src='images/Caramel Machiato.webp'}">
-                <h3>6. Caramel Machiato</h3>
-                <select id="opt-6"><option value="Hot|45000">Hot</option><option value="Iced|51000">Iced</option></select>
-                <select id="sweet-6">
-                    <option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option>
-                    <option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option>
-                </select>
-                <button class="add-btn" onclick="addToCart('6. Caramel Machiato', 'opt-6', 'sweet-6')">Add to Cart</button>
-            </div>
-        </div>
-
-        <!-- BLACK SIGNATURE -->
-        <div class="text-center"><h2 class="category-title">BLACK SIGNATURE</h2></div>
-        <div class="grid">
-            <div class="card">
-                <img src="images/august-x.png" alt="Tripple Berry" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>7. Tripple Berry</h3>
-                <select id="opt-7"><option value="Speed|85000">Speed</option><option value="Steam|95000">Steam</option><option value="Drip|95000">Drip</option></select>
-                <button class="add-btn" onclick="addToCart('7. Tripple Berry', 'opt-7', null)">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/august-x.png" alt="Peace Candies" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>8. Peace Candies</h3>
-                <select id="opt-8"><option value="Speed|85000">Speed</option><option value="Steam|95000">Steam</option><option value="Drip|95000">Drip</option></select>
-                <button class="add-btn" onclick="addToCart('8. Peace Candies', 'opt-8', null)">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/august-x.png" alt="Vanila Whisky" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>9. Vanila Whisky</h3>
-                <select id="opt-9"><option value="Speed|125000">Speed</option><option value="Steam|125000">Steam</option><option value="Drip|135000">Drip</option></select>
-                <button class="add-btn" onclick="addToCart('9. Vanila Whisky', 'opt-9', null)">Add to Cart</button>
-            </div>
-        </div>
-
-        <!-- ANOTHER COFFEE FLAVOR -->
-        <div class="text-center"><h2 class="category-title">ANOTHER COFFEE FLAVOR</h2></div>
-        <div class="grid">
-            <div class="card">
-                <img src="images/august-x.png" alt="Black Vanila Almond Milk" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>10. Black Vanila Almond Milk (Iced)</h3>
-                <select id="sweet-10"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
-                <button class="add-btn" onclick="addSingleToCart('10. Black Vanila Almond Milk (Iced)', 65000, 'sweet-10')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/august-x.png" alt="Black Coconut" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>11. Black Coconut (Iced)</h3>
-                <select id="sweet-11"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
-                <button class="add-btn" onclick="addSingleToCart('11. Black Coconut (Iced)', 49000, 'sweet-11')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/august-x.png" alt="Black Oat Milk" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>12. Black Oat Milk (Iced)</h3>
-                <select id="sweet-12"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
-                <button class="add-btn" onclick="addSingleToCart('12. Black Oat Milk (Iced)', 49000, 'sweet-12')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/august-x.png" alt="Black Honey Lemon" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>13. Black Honey Lemon (Iced)</h3>
-                <select id="sweet-13"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
-                <button class="add-btn" onclick="addSingleToCart('13. Black Honey Lemon (Iced)', 49000, 'sweet-13')">Add to Cart</button>
-            </div>
-        </div>
-
-        <!-- GREEN SELECTION -->
-        <div class="text-center"><h2 class="category-title">GREEN SELECTION</h2></div>
-        <div class="grid">
-            <div class="card">
-                <img src="images/august-x.png" alt="Clear Yame" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>14. Clear Yame (Iced)</h3>
-                <select id="sweet-14"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
-                <button class="add-btn" onclick="addSingleToCart('14. Clear Yame (Iced)', 85000, 'sweet-14')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/august-x.png" alt="Yame Latte" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>15. Yame Latte (Iced)</h3>
-                <select id="sweet-15"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
-                <button class="add-btn" onclick="addSingleToCart('15. Yame Latte (Iced)', 95000, 'sweet-15')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/august-x.png" alt="Yame Cold Whish" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>16. Yame Cold Whish (Iced)</h3>
-                <select id="sweet-16"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
-                <button class="add-btn" onclick="addSingleToCart('16. Yame Cold Whish (Iced)', 95000, 'sweet-16')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/august-x.png" alt="Yame Coconut" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>17. Yame Coconut (Iced)</h3>
-                <select id="sweet-17"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
-                <button class="add-btn" onclick="addSingleToCart('17. Yame Coconut (Iced)', 95000, 'sweet-17')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/august-x.png" alt="Yame Coconut Cold Foam" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>18. Yame Coconut Cold Foam (Iced)</h3>
-                <select id="sweet-18"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
-                <button class="add-btn" onclick="addSingleToCart('18. Yame Coconut Cold Foam (Iced)', 115000, 'sweet-18')">Add to Cart</button>
-            </div>
-        </div>
-
-        <!-- NON-COFFEE -->
-        <div class="text-center"><h2 class="category-title">NON-COFFEE</h2></div>
-        <div class="grid">
-            <div class="card">
-                <img src="images/august-x.png" alt="Chocolate" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>19. Chocolate (Iced)</h3>
-                <select id="sweet-19"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
-                <button class="add-btn" onclick="addSingleToCart('19. Chocolate (Iced)', 45000, 'sweet-19')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/august-x.png" alt="Honey Lemon Soda" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>20. Honey Lemon Soda (Iced)</h3>
-                <select id="sweet-20"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
-                <button class="add-btn" onclick="addSingleToCart('20. Honey Lemon Soda (Iced)', 45000, 'sweet-20')">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/august-x.png" alt="Fruity Soda" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>21. Fruity Soda (Iced)</h3>
-                <select id="sweet-21"><option value="ຫວານ 100% (ປົກກະຕິ)">ຫວານ 100% (ປົກກະຕິ)</option><option value="ຫວານ 0%">ຫວານ 0%</option><option value="ຫວານ 50%">ຫວານ 50%</option><option value="ຫວານ 200%">ຫວານ 200%</option></select>
-                <button class="add-btn" onclick="addSingleToCart('21. Fruity Soda (Iced)', 45000, 'sweet-21')">Add to Cart</button>
-            </div>
-            
-            <div class="card">
-                <img src="images/august-x.png" alt="Water" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>22. Water</h3>
-                <button class="add-btn" onclick="addSingleToCart('22. Water', 15000, null)">Add to Cart</button>
-            </div>
-            <div class="card">
-                <img src="images/august-x.png" alt="Cup & Ice" class="product-image" onerror="this.src='images/bg.jpg'">
-                <h3>23. Cup & Ice</h3>
-                <button class="add-btn" onclick="addSingleToCart('23. Cup & Ice', 6000, null)">Add to Cart</button>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- ແຖບຕາຕະລາງສິນຄ້າ (Sidebar) -->
-    <div class="cart-sidebar" id="cart">
-        <div class="cart-header">
-            <h2>Your Order</h2>
-            <span class="close-cart" onclick="toggleCart()">×</span>
-        </div>
-        
-        <div id="receipt-area" class="receipt-bill">
-            <div class="receipt-header">ລາຍການສັ່ງຊື້</div>
-            <div id="cart-items"></div>
-            <div class="receipt-total">
-                <span>Total:</span>
-                <span><span id="total-price">0</span> LAK</span>
-            </div>
-        </div>
-
-        <button class="checkout-btn" onclick="showReceiptPreview()">ກວດສອບບິນ (Preview)</button>
-    </div>
-
-    <!-- ສ່ວນຂອງ Modal ພຣີວິວໃບບິນ -->
-    <div id="receipt-modal" class="modal-overlay">
-        <div class="receipt-wrapper">
-            <div class="receipt-slip-preview">
-                <div class="preview-brand">AUGUSTX</div>
-                <div class="preview-sub">HOME COFFEE</div>
-                <div class="preview-date" id="preview-date"></div>
-                <div class="preview-order-num" id="preview-order-num"></div>
-                
-                <div class="preview-dashed"></div>
-                <div id="preview-items"></div>
-                <div class="preview-dashed"></div>
-                
-                <div class="preview-total-row">
-                    <span>TOTAL</span>
-                    <span id="preview-total">0 LAK</span>
-                </div>
-                <div class="preview-dashed"></div>
-                
-                <div class="preview-warning">
-                    Order incomplete. Please send your order to WhatsApp to make a payment<br>
-                    ການສັ່ງຊື້ຍັງບໍ່ສຳເລັດ ກະລຸນາສົ່ງອໍເດີ້ທ່ານໄປຍັງ Whats App ເພື່ອຊຳລະເງິນ
+    <div class="pos-container">
+        <!-- MENU SECTION -->
+        <div class="menu-section">
+            <div class="pos-header">
+                <h1>AUGUSTX - POS</h1>
+                <div class="top-controls">
+                    <a href="kitchen.html" class="top-btn kitchen">👨‍🍳 ไปหน้าจอครัว</a>
+                    <a href="admin.html" class="top-btn">⚙️ ไปหน้า Admin</a>
+                    <div class="order-type-switch">
+                        <button class="type-btn active" id="btn-dine-in" onclick="setOrderType('Dine-in', this)">Dine-in</button>
+                        <div class="type-divider"></div>
+                        <button class="type-btn" id="btn-take-away" onclick="setOrderType('Take away', this)">Take away</button>
+                    </div>
                 </div>
             </div>
+
+            <!-- NAVIGATION TABS -->
+            <div class="nav-tabs-bar" id="nav-tabs-container">
+                <button class="nav-tab-btn active" onclick="switchMainTab('store', this)">Cashier</button>
+            </div>
+
+            <!-- CATEGORIES BAR -->
+            <div class="categories-bar" id="categories-container">
+                <button class="cat-btn active" onclick="filterCategory('ALL', this)">ທຸກເມນູ (All)</button>
+            </div>
+
+            <!-- MENU GRID -->
+            <div class="menu-grid" id="menu-grid-container"></div>
+        </div>
+
+        <!-- CART SECTION -->
+        <div class="cart-section">
+            <div class="cart-header">
+                <span>ตะกร้าสินค้า (Cart)</span>
+                <button onclick="clearCart()" style="background:none; border:none; color:var(--red); font-size:13px; cursor:pointer; font-weight:bold;">ล้างตะกร้า</button>
+            </div>
+            <div class="cart-items" id="cart-items-container">
+                <div style="text-align:center; color:#94a3b8; margin-top:40px;">ຍັງບໍ່ມີສິນຄ້າໃນตะกร้า</div>
+            </div>
+            <div class="cart-footer">
+                <div class="summary-row"><span>ประเภท (Type):</span><strong id="cart-type-display" style="color:var(--green);">Dine-in</strong></div>
+                <div class="summary-row"><span>ช่องทาง (Source):</span><strong id="cart-source-display" style="color:var(--blue);">Cashier (Store)</strong></div>
+                <div class="summary-row"><span>รวมสินค้า</span><span id="cart-item-count">0 รายการ</span></div>
+                <div class="summary-row total"><span>ยอดสุทธิ (Total)</span><span id="cart-total-price">0 ₭</span></div>
+                <button class="checkout-btn" onclick="openCheckoutModal()">ชำระเงิน (Checkout)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMART OPTIONS MODAL -->
+    <div class="modal-overlay" id="variant-modal">
+        <div class="modal-box-large">
+            <div class="modal-left">
+                <img id="modal-item-img" src="images/bg.jpg" alt="Item Image">
+            </div>
+            <div class="modal-right">
+                <div>
+                    <h2 id="modal-item-title" style="margin: 0 0 15px 0; color: var(--blue); border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 1.4rem;">MOCHA</h2>
+                    
+                    <div id="variants-section" style="margin-bottom: 15px;">
+                        <label style="font-weight:bold; font-size:13px; color:var(--blue); margin-bottom:6px; display:block;">Variants (ขนาด / ประเภท)</label>
+                        <div id="variant-buttons-container"></div>
+                    </div>
+
+                    <div id="modifiers-section" style="margin-bottom: 15px; display: none;">
+                        <label style="font-weight:bold; font-size:13px; color:var(--blue); margin-bottom:6px; display:block;">Modifiers (ตัวเลือกเสริม)</label>
+                        <div id="modifiers-checkboxes-container" style="display:flex; flex-direction:column; gap:8px;"></div>
+                    </div>
+                </div>
+
+                <div class="modal-actions" style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 10px;">
+                    <button class="btn btn-red" onclick="closeVariantModal()">ยกเลิก</button>
+                    <button id="add-to-cart-confirm-btn" class="btn btn-green" onclick="confirmAddToCartWithOptions()">เพิ่มลงตะกร้า</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECEIPT PREVIEW & CHECKOUT MODAL -->
+    <div class="modal-overlay" id="checkout-modal">
+        <div class="receipt-modal-box">
+            <div class="receipt-header">
+                <img id="receipt-logo-img" src="" alt="Logo" style="display:none;">
+                <div class="receipt-title">AUGUSTX</div>
+                <div class="receipt-subtitle">HOME COFFEE RECIPE</div>
+            </div>
+
+            <div class="receipt-meta">
+                <div><strong>วันที่:</strong> <span id="receipt-date">--/--/----</span></div>
+                <div><strong>ประเภท:</strong> <span id="receipt-type-text">Dine-in</span> | <strong>ช่องทาง:</strong> <span id="receipt-source-text">Store</span></div>
+            </div>
+
+            <table class="receipt-items-table">
+                <thead>
+                    <tr>
+                        <th>รายการ</th>
+                        <th style="text-align:center;">จำนวน</th>
+                        <th style="text-align:right;">ราคา</th>
+                    </tr>
+                </thead>
+                <tbody id="receipt-items-tbody"></tbody>
+            </table>
+
+            <div class="form-group" id="table-select-group">
+                <label>เลือกหมายเลขโต๊ะ (Table)</label>
+                <select id="checkout-table-select">
+                    <option value="">-- เลือกโต๊ะ --</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="customer-select-group">
+                <label>เลือกลูกค้า (Customer)</label>
+                <select id="checkout-customer-select">
+                    <option value="">-- เลือกลูกค้าทั่วไป --</option>
+                </select>
+            </div>
             
-            <div class="modal-actions">
-                <button class="btn-back" onclick="closeReceiptPreview()">ແກ້ໄຂ</button>
-                <button class="btn-confirm" onclick="confirmWhatsApp()">ສົ່ງເຂົ້າ WhatsApp</button>
+            <div class="form-group">
+                <label>ประเภทการชำระเงิน (Payment Method)</label>
+                <select id="payment-method" onchange="handlePaymentMethodChange()">
+                    <option value="cash">เงินสด (Cash)</option>
+                    <option value="transfer">โอนเงิน QR (BCEL One / Transfer)</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="cash-received-group">
+                <label>รับเงินมา (Cash Received)</label>
+                <input type="number" id="cash-received" placeholder="0" oninput="calculateChange()">
+            </div>
+
+            <div class="receipt-totals">
+                <div style="display:flex; justify-content:space-between;"><span>ยอดรวมสินค้า:</span> <span id="receipt-subtotal">0 ₭</span></div>
+                <div style="display:flex; justify-content:space-between;" id="receipt-change-row"><span>เงินทอน (Change):</span> <span id="receipt-change" style="color:var(--green); font-weight:bold;">0 ₭</span></div>
+                <div class="total-row" style="margin-top:5px; border-top:1px dashed #333; padding-top:5px;">
+                    <span>ยอดสุทธิ (Total):</span> <span id="receipt-grand-total" style="color:var(--red);">0 ₭</span>
+                </div>
+            </div>
+
+            <div class="modal-actions" style="margin-top:20px;">
+                <button class="btn btn-red" onclick="closeCheckoutModal()">ยกเลิก</button>
+                <button class="btn btn-green" onclick="confirmCheckout()">พิมพ์บิล & ส่งครัว</button>
             </div>
         </div>
     </div>
 
     <script>
+        const firebaseConfig = { apiKey: "AIzaSyDAJUEFUwkieMGFxRIZ6vRwzLbXF31c_BM", authDomain: "augx-d75c2.firebaseapp.com", databaseURL: "https://augx-d75c2-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "augx-d75c2", storageBucket: "augx-d75c2.firebasestorage.app" };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let globalCategories = [];
+        let globalItems = [];
+        let globalModifiersMaster = [];
+        let globalDeliveryPartners = [];
+        let globalTables = [];
+        let globalCustomers = [];
+        let globalStoreLogo = "";
+        let currentCategory = 'ALL';
+        let currentOrderSource = 'store';
+        let currentOrderType = 'Dine-in';
         let cart = [];
-        let currentOrderNumberStr = ""; 
-        let nextOrderCountToSave = 1; 
-        let orderDateToSave = ""; 
+        
+        let activeItemForModal = null;
+        let selectedVariantName = '';
+        let selectedVariantPrice = 0;
+        let editingCartIndex = null;
 
-        function toggleCart() { document.getElementById('cart').classList.toggle('open'); }
+        // Load Tables and Customers for Checkout dropdowns
+        database.ref('tables').on('value', snap => {
+            globalTables = [];
+            let html = '<option value="">-- เลือกโต๊ะ --</option>';
+            snap.forEach(child => { let t = child.val(); globalTables.push(t); html += `<option value="${t.name}">${t.name}</option>`; });
+            document.getElementById('checkout-table-select').innerHTML = html;
+        });
 
-        function addToCart(itemName, selectId, sweetId) {
-            let cleanName = itemName.replace(/^\d+\.\s*/, '');
-            
-            let select = document.getElementById(selectId);
-            let [type, price] = select.value.split('|');
-            let sweetness = sweetId ? document.getElementById(sweetId).value : "";
-            let fullName = `${cleanName} (${type})`;
-            if (sweetness) fullName += ` [${sweetness}]`;
-            addToList(fullName, parseInt(price));
+        database.ref('customers').on('value', snap => {
+            globalCustomers = [];
+            let html = '<option value="">-- เลือกลูกค้าทั่วไป --</option>';
+            snap.forEach(child => { let c = child.val(); globalCustomers.push(c); html += `<option value="${c.name} (${c.phone || '-'})">${c.name} (${c.phone || '-'})</option>`; });
+            document.getElementById('checkout-customer-select').innerHTML = html;
+        });
+
+        database.ref('store_logo').on('value', snap => {
+            let logoUrl = snap.val();
+            let logoImg = document.getElementById('receipt-logo-img');
+            if(logoUrl) { logoImg.src = logoUrl; logoImg.style.display = 'block'; } else { logoImg.style.display = 'none'; }
+        });
+
+        function setOrderType(type, btn) {
+            currentOrderType = type;
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('cart-type-display').innerText = type;
+            document.getElementById('cart-type-display').style.color = type === 'Dine-in' ? 'var(--green)' : 'var(--orange)';
         }
 
-        function addSingleToCart(itemName, price, sweetId) {
-            let cleanName = itemName.replace(/^\d+\.\s*/, '');
-            
-            let sweetness = sweetId ? document.getElementById(sweetId).value : "";
-            let fullName = cleanName;
-            if (sweetness) fullName += ` [${sweetness}]`;
-            addToList(fullName, price);
+        let inactivityTimer = null;
+        function resetInactivityTimer() {
+            if(inactivityTimer) clearTimeout(inactivityTimer);
+            if(currentOrderSource !== 'store') {
+                inactivityTimer = setTimeout(() => {
+                    alert("⏰ อยู่ในหน้า Delivery เกิน 5 นาที ระบบดีดกลับหน้า Cashier Home ให้อัตโนมัติ");
+                    let storeBtn = document.querySelector('.nav-tab-btn');
+                    if(storeBtn) switchMainTab('store', storeBtn);
+                }, 300000);
+            }
+        }
+        window.addEventListener('mousemove', resetInactivityTimer);
+        window.addEventListener('keypress', resetInactivityTimer);
+
+        database.ref('delivery_partners').on('value', snap => {
+            globalDeliveryPartners = [];
+            snap.forEach(child => { let p = child.val(); p.id = child.key; globalDeliveryPartners.push(p); });
+            renderNavTabs();
+        });
+
+        function renderNavTabs() {
+            let html = `<button class="nav-tab-btn ${currentOrderSource === 'store' ? 'active' : ''}" onclick="switchMainTab('store', this)">Cashier</button>`;
+            globalDeliveryPartners.forEach(p => {
+                let isActive = currentOrderSource === p.name ? 'active' : '';
+                html += `<button class="nav-tab-btn delivery-tab ${isActive}" onclick="switchMainTab('${p.name}', this)">${p.name}</button>`;
+            });
+            document.getElementById('nav-tabs-container').innerHTML = html;
         }
 
-        function addToList(name, price) {
-            let existingItem = cart.find(item => item.name === name);
-            if (existingItem) {
-                existingItem.qty += 1;
+        function switchMainTab(source, btn) {
+            currentOrderSource = source;
+            document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('cart-source-display').innerText = source === 'store' ? 'Cashier (Store)' : source;
+            document.getElementById('cart-source-display').style.color = source === 'store' ? 'var(--blue)' : 'var(--orange)';
+            resetInactivityTimer();
+            renderMenuGrid();
+        }
+
+        database.ref('categories').on('value', snap => {
+            globalCategories = [];
+            snap.forEach(child => { let cat = child.val(); cat.id = child.key; cat.order = cat.order !== undefined ? cat.order : Date.now(); globalCategories.push(cat); });
+            globalCategories.sort((a,b) => a.order - b.order);
+            let html = `<button class="cat-btn ${currentCategory === 'ALL' ? 'active' : ''}" onclick="filterCategory('ALL', this)">ທຸກເມນູ (All)</button>`;
+            globalCategories.forEach(c => { html += `<button class="cat-btn ${currentCategory === c.name ? 'active' : ''}" onclick="filterCategory('${c.name}', this)">${c.name}</button>`; });
+            document.getElementById('categories-container').innerHTML = html;
+        });
+
+        database.ref('modifiers').on('value', snap => {
+            globalModifiersMaster = [];
+            snap.forEach(child => { let m = child.val(); m.id = child.key; globalModifiersMaster.push(m); });
+        });
+
+        database.ref('menu_items').on('value', snap => {
+            globalItems = [];
+            snap.forEach(child => { let item = child.val(); item.id = child.key; item.order = item.order !== undefined ? item.order : Date.now(); globalItems.push(item); });
+            globalItems.sort((a,b) => a.order - b.order);
+            renderMenuGrid();
+        });
+
+        function filterCategory(catName, btn) {
+            currentCategory = catName;
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderMenuGrid();
+        }
+
+        function renderMenuGrid() {
+            let filtered = currentCategory === 'ALL' ? globalItems : globalItems.filter(i => i.category === currentCategory);
+            let html = '';
+            filtered.forEach(item => {
+                let priceOptions = item.priceOptions;
+                if(currentOrderSource !== 'store' && item.deliveryData && item.deliveryData[currentOrderSource]) {
+                    priceOptions = item.deliveryData[currentOrderSource].priceOptions || item.priceOptions;
+                }
+                let priceDisplay = '';
+                if(priceOptions && priceOptions.includes('|')) {
+                    let parts = priceOptions.split(',');
+                    let prices = parts.map(p => Number(p.split('|')[1]));
+                    let minPrice = Math.min(...prices); let maxPrice = Math.max(...prices);
+                    priceDisplay = minPrice === maxPrice ? (minPrice.toLocaleString() + ' ₭') : (minPrice.toLocaleString() + ' - ' + maxPrice.toLocaleString() + ' ₭');
+                } else {
+                    priceDisplay = (Number(priceOptions || 0)).toLocaleString() + ' ₭';
+                }
+                html += `<div class="menu-card" onclick="handleItemClick('${item.id}')"><img src="${item.image || 'images/bg.jpg'}" alt="${item.name}"><div><div class="menu-name">${item.name}</div><div class="menu-price">${priceDisplay}</div></div></div>`;
+            });
+            document.getElementById('menu-grid-container').innerHTML = html || '<div style="grid-column: 1/-1; text-align:center; color:#94a3b8; padding:40px;">ບໍ່ມີສິນຄ້າໃນໝວດໝູ່ນີ້</div>';
+        }
+
+        function handleItemClick(itemId, cartIndex = null) {
+            let item = globalItems.find(i => i.id === itemId);
+            if(!item) return;
+            activeItemForModal = item; editingCartIndex = cartIndex; selectedVariantName = ''; selectedVariantPrice = 0;
+            document.getElementById('modal-item-title').innerText = item.name;
+            document.getElementById('modal-item-img').src = item.image || 'images/bg.jpg';
+            let priceOptions = item.priceOptions; let assignedMods = item.modifiers || [];
+            if(currentOrderSource !== 'store' && item.deliveryData && item.deliveryData[currentOrderSource]) {
+                let dData = item.deliveryData[currentOrderSource];
+                if(dData.priceOptions) priceOptions = dData.priceOptions;
+                if(dData.modifiers) assignedMods = dData.modifiers;
+            }
+            let existingCartItem = cartIndex !== null ? cart[cartIndex] : null;
+            let varContainer = document.getElementById('variant-buttons-container');
+            if(priceOptions && priceOptions.includes('|')) {
+                document.getElementById('variants-section').style.display = 'block';
+                let varHtml = ''; let first = true;
+                priceOptions.split(',').forEach(v => {
+                    let parts = v.split('|'); let vName = parts[0]; let vPrice = Number(parts[1]);
+                    let isSelected = existingCartItem ? existingCartItem.variant === vName : first;
+                    if(isSelected) { selectedVariantName = vName; selectedVariantPrice = vPrice; }
+                    if(first) first = false;
+                    varHtml += `<button class="variant-option-btn ${vName === selectedVariantName ? 'selected' : ''}" onclick="selectVariant('${vName}', ${vPrice}, this)"><span>${vName}</span><span style="color:var(--green); font-weight:bold;">${vPrice.toLocaleString()} ₭</span></button>`;
+                });
+                varContainer.innerHTML = varHtml;
             } else {
-                cart.push({ name: name, unitPrice: price, qty: 1, note: "" });
+                document.getElementById('variants-section').style.display = 'none';
+                selectedVariantName = ''; selectedVariantPrice = Number(priceOptions || 0);
             }
-            
-            updateCartUI();
-            
-            if(event && event.target) {
-                let btn = event.target;
-                let originalText = btn.innerText;
-                btn.innerText = "Added!";
-                btn.style.backgroundColor = "#25D366";
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.style.backgroundColor = "var(--black)";
-                }, 1000);
-            }
+            setupModifiersForModal(assignedMods, existingCartItem);
+            document.getElementById('variant-modal').style.display = 'flex';
         }
 
-        function changeQty(index, delta) {
-            cart[index].qty += delta;
-            if (cart[index].qty <= 0) cart.splice(index, 1);
-            updateCartUI();
+        function selectVariant(vName, vPrice, btn) {
+            selectedVariantName = vName; selectedVariantPrice = vPrice;
+            document.querySelectorAll('.variant-option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
         }
 
-        function removeItem(index) {
-            cart.splice(index, 1);
-            updateCartUI();
+        function setupModifiersForModal(assignedMods, existingCartItem = null) {
+            let modContainer = document.getElementById('modifiers-checkboxes-container');
+            let modSection = document.getElementById('modifiers-section');
+            if(assignedMods.length > 0) {
+                modSection.style.display = 'block'; let html = '';
+                assignedMods.forEach(mObj => {
+                    let masterMod = globalModifiersMaster.find(m => m.id === mObj.id || m.name === mObj.name);
+                    if(masterMod && masterMod.options) {
+                        html += `<div style="background:#f8fafc; padding:10px; border-radius:6px; border:1px solid var(--border);"><div style="font-weight:bold; font-size:13px; margin-bottom:5px; color:var(--blue);">${masterMod.name}</div><div style="display:flex; flex-wrap:wrap; gap:12px;">`;
+                        masterMod.options.split(',').forEach(opt => {
+                            let p = opt.split('|'); let optName = p[0]; let optPrice = Number(p[1] || 0);
+                            let isChecked = existingCartItem && existingCartItem.modifiers ? existingCartItem.modifiers.some(m => m.group === masterMod.name && m.option === optName) : false;
+                            html += `<label style="display:flex; align-items:center; gap:5px; font-size:13px; cursor:pointer;"><input type="checkbox" class="modal-mod-option-cb" data-modname="${masterMod.name}" data-optname="${optName}" data-optprice="${optPrice}" ${isChecked ? 'checked' : ''}> ${optName} ${optPrice > 0 ? '(+₭' + optPrice.toLocaleString() + ')' : ''}</label>`;
+                        });
+                        html += `</div></div>`;
+                    }
+                });
+                modContainer.innerHTML = html;
+            } else { modSection.style.display = 'none'; modContainer.innerHTML = ''; }
         }
 
-        function updateNote(index, value) {
-            cart[index].note = value;
-        }
-
-        function updateCartUI() {
-            let html = '';
-            let total = 0;
-            let totalItems = 0;
-            cart.forEach((item, index) => {
-                let itemTotal = item.unitPrice * item.qty;
-                total += itemTotal;
-                totalItems += item.qty;
-                
-                html += `
-                    <div class="cart-item">
-                        <div class="item-row-1">
-                            <span class="item-name">${item.name}</span>
-                            <span class="item-price">${itemTotal.toLocaleString()} LAK</span>
-                        </div>
-                        <div class="item-row-2">
-                            <div class="qty-controls">
-                                <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
-                                <span>${item.qty}</span>
-                                <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
-                            </div>
-                            <button class="remove-btn" onclick="removeItem(${index})">ລົບລາຍການ</button>
-                        </div>
-                        <input type="text" class="item-note-input" maxlength="100" placeholder="ໝາຍເຫດ (ບໍ່ເກີນ 100 ຕົວອັກສອນ)..." value="${item.note || ''}" oninput="updateNote(${index}, this.value)">
-                    </div>
-                `;
+        function confirmAddToCartWithOptions() {
+            if(!activeItemForModal) return;
+            let finalPrice = selectedVariantPrice; let selectedModifiersList = [];
+            document.querySelectorAll('.modal-mod-option-cb:checked').forEach(cb => {
+                let mName = cb.dataset.modname; let oName = cb.dataset.optname; let oPrice = Number(cb.dataset.optprice);
+                finalPrice += oPrice; selectedModifiersList.push({ group: mName, option: oName, price: oPrice });
             });
-            document.getElementById('cart-items').innerHTML = html || '<p style="text-align:center; color:#888;">ຕະກ່າວ່າງເປົ່າ</p>';
-            document.getElementById('total-price').innerText = total.toLocaleString();
-            document.getElementById('cart-count').innerText = totalItems;
+            let modKey = selectedModifiersList.map(m => m.group + ':' + m.option).sort().join('_');
+            let cartId = activeItemForModal.id + '_' + (selectedVariantName || 'base') + '_' + modKey;
+            if(editingCartIndex !== null) {
+                cart[editingCartIndex].variant = selectedVariantName; cart[editingCartIndex].modifiers = selectedModifiersList;
+                cart[editingCartIndex].price = finalPrice; cart[editingCartIndex].id = cartId; editingCartIndex = null;
+            } else {
+                let cartItem = { id: cartId, itemId: activeItemForModal.id, name: activeItemForModal.name, variant: selectedVariantName, modifiers: selectedModifiersList, price: finalPrice, quantity: 1, note: '' };
+                let existing = cart.find(c => c.id === cartId);
+                if(existing) existing.quantity++; else cart.push(cartItem);
+            }
+            renderCart(); closeVariantModal();
         }
 
-        function generateRandomString(length) {
-            let result = '';
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            for (let i = 0; i < length; i++) {
-                result += characters.charAt(Math.floor(Math.random() * characters.length));
+        function closeVariantModal() { document.getElementById('variant-modal').style.display = 'none'; activeItemForModal = null; editingCartIndex = null; }
+        function updateQty(cartIndex, delta) { cart[cartIndex].quantity += delta; if(cart[cartIndex].quantity <= 0) cart.splice(cartIndex, 1); renderCart(); }
+        function updateCartNote(cartIndex, val) { cart[cartIndex].note = val; }
+        function clearCart() { cart = []; renderCart(); }
+
+        function renderCart() {
+            let container = document.getElementById('cart-items-container');
+            if(cart.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#94a3b8; margin-top:40px;">ຍັງບໍ່ມີສິນຄ້າໃນตะกร้า</div>';
+                document.getElementById('cart-item-count').innerText = '0 รายการ';
+                document.getElementById('cart-total-price').innerText = '0 ₭'; return;
             }
-            return result;
+            let html = ''; let totalQty = 0; let totalPrice = 0;
+            cart.forEach((c, index) => {
+                totalQty += c.quantity; let subTotal = c.price * c.quantity; totalPrice += subTotal;
+                let modsText = c.modifiers && c.modifiers.length > 0 ? '<br><span style="color:#0284c7;">' + c.modifiers.map(m => m.option + (m.price > 0 ? ' (+' + m.price.toLocaleString() + ')' : '')).join(', ') + '</span>' : '';
+                html += `<div class="cart-item-card"><div class="cart-item-top"><div class="cart-item-info"><div class="cart-item-name">${c.name}</div><div class="cart-item-details">${c.variant ? '<b>' + c.variant + '</b> | ' : ''}${c.price.toLocaleString()} ₭ ${modsText}</div></div><button class="edit-cart-btn" onclick="handleItemClick('${c.itemId}', ${index})" title="แก้ไขออร์เดอร์">✏️</button></div><div><input type="text" class="cart-item-note-input" placeholder="Noted: (เช่น หวานน้อย...)" value="${c.note || ''}" oninput="updateCartNote(${index}, this.value)"></div><div class="cart-item-actions"><span style="font-size:13px; font-weight:bold; color:var(--blue);">รวม: ${subTotal.toLocaleString()} ₭</span><div class="cart-item-controls"><button class="qty-btn" onclick="updateQty(${index}, -1)">-</button><span>${c.quantity}</span><button class="qty-btn" onclick="updateQty(${index}, 1)">+</button></div></div></div>`;
+            });
+            container.innerHTML = html;
+            document.getElementById('cart-item-count').innerText = totalQty + ' รายการ';
+            document.getElementById('cart-total-price').innerText = totalPrice.toLocaleString() + ' ₭';
         }
 
-        function generateOrderNumberData() {
-            let d = new Date();
-            let day = String(d.getDate()).padStart(2, '0');
-            let month = String(d.getMonth() + 1).padStart(2, '0');
-            let year = String(d.getFullYear()).slice(-2);
-            let dateStr = day + month + year; 
+        function openCheckoutModal() {
+            if(cart.length === 0) return alert("กรุณาเลือกสินค้าใส่ตะกร้าก่อนครับ!");
+            let totalPrice = cart.reduce((sum, c) => sum + (c.price * c.quantity), 0);
+            document.getElementById('receipt-date').innerText = new Date().toLocaleString('en-GB');
+            document.getElementById('receipt-type-text').innerText = currentOrderType;
+            document.getElementById('receipt-source-text').innerText = currentOrderSource === 'store' ? 'Store' : currentOrderSource;
 
-            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            let prefix = isMobile ? "MB" : "PC";
+            let tbodyHtml = '';
+            cart.forEach(c => {
+                let sub = c.price * c.quantity;
+                let details = [c.variant, ...(c.modifiers || []).map(m => m.option), c.note ? 'Note: ' + c.note : ''].filter(Boolean).join(' | ');
+                tbodyHtml += `<tr><td><b>${c.name}</b>${details ? '<br><span style="font-size:11px; color:#555;">' + details + '</span>' : ''}</td><td align="center">${c.quantity}</td><td align="right">${sub.toLocaleString()} ₭</td></tr>`;
+            });
+            document.getElementById('receipt-items-tbody').innerHTML = tbodyHtml;
+            document.getElementById('receipt-subtotal').innerText = totalPrice.toLocaleString() + ' ₭';
+            document.getElementById('receipt-grand-total').innerText = totalPrice.toLocaleString() + ' ₭';
+            document.getElementById('cash-received').value = '';
+            document.getElementById('receipt-change').innerText = '0 ₭';
+            document.getElementById('checkout-modal').style.display = 'flex';
+        }
 
-            let savedDate = localStorage.getItem('augustx_order_date');
-            let savedCount = localStorage.getItem('augustx_order_count');
-            let nextCount = 1;
+        function closeCheckoutModal() { document.getElementById('checkout-modal').style.display = 'none'; }
+        function handlePaymentMethodChange() {
+            let method = document.getElementById('payment-method').value;
+            document.getElementById('cash-received-group').style.display = method === 'cash' ? 'block' : 'none';
+            document.getElementById('receipt-change-row').style.display = method === 'cash' ? 'flex' : 'none';
+        }
+        function calculateChange() {
+            let totalPrice = cart.reduce((sum, c) => sum + (c.price * c.quantity), 0);
+            let received = parseFloat(document.getElementById('cash-received').value) || 0;
+            let change = received - totalPrice;
+            document.getElementById('receipt-change').innerText = (change >= 0 ? change.toLocaleString() : '0') + ' ₭';
+        }
 
-            if (savedDate === dateStr && savedCount) {
-                nextCount = parseInt(savedCount) + 1;
-            }
-            
-            let countStr = String(nextCount).padStart(3, '0');
-            let randomSuffix = generateRandomString(3);
-            
-            return {
-                orderNum: prefix + dateStr + countStr + "-" + randomSuffix,
-                dateStr: dateStr,
-                nextCount: nextCount
+        function confirmCheckout() {
+            let totalPrice = cart.reduce((sum, c) => sum + (c.price * c.quantity), 0);
+            let tableName = document.getElementById('checkout-table-select').value;
+            let customerName = document.getElementById('checkout-customer-select').value;
+            let finalCustomerStr = tableName ? `โต๊ะ: ${tableName}` : (customerName || (currentOrderSource === 'store' ? 'ทั่วไป' : currentOrderSource + ' Order'));
+            let paymentMethod = document.getElementById('payment-method').value;
+
+            let orderData = {
+                customer: finalCustomerStr,
+                table: tableName,
+                orderType: currentOrderType,
+                items: cart,
+                total: totalPrice,
+                paymentMethod: paymentMethod,
+                source: currentOrderSource,
+                status: 'pending',
+                date: new Date().toLocaleDateString('en-GB'),
+                timestamp: Date.now()
             };
-        }
 
-        function showReceiptPreview() {
-            if (cart.length === 0) {
-                alert('ກະລຸນາເລືອກສິນຄ້າກ່ອນ!');
-                return;
-            }
-            
-            let d = new Date();
-            let dateDisplay = d.toLocaleDateString('th-TH') + ' ' + d.toLocaleTimeString('th-TH').slice(0,5);
-            document.getElementById('preview-date').innerText = dateDisplay;
-
-            let orderData = generateOrderNumberData();
-            currentOrderNumberStr = orderData.orderNum;
-            orderDateToSave = orderData.dateStr;
-            nextOrderCountToSave = orderData.nextCount;
-
-            document.getElementById('preview-order-num').innerText = "Order No: " + currentOrderNumberStr;
-
-            let html = '';
-            let total = 0;
-            
-            cart.forEach((item, index) => {
-                let itemTotal = item.unitPrice * item.qty;
-                total += itemTotal;
-                
-                html += `<div class="preview-item-group">`;
-                html += `
-                    <div class="preview-item">
-                        <div class="preview-item-left"><strong>${index + 1}.</strong> ${item.name} <span class="preview-item-qty">x ${item.qty}</span> ແກ້ວ</div>
-                        <div>${itemTotal.toLocaleString()}</div>
-                    </div>
-                `;
-                if (item.note && item.note.trim() !== '') {
-                    html += `<div class="preview-item-note">* ${item.note.trim()}</div>`;
-                }
-                html += `</div>`;
-            });
-            
-            document.getElementById('preview-items').innerHTML = html;
-            document.getElementById('preview-total').innerText = total.toLocaleString() + ' LAK';
-            
-            document.getElementById('cart').classList.remove('open');
-            document.getElementById('receipt-modal').style.display = 'flex';
-        }
-
-        function closeReceiptPreview() {
-            document.getElementById('receipt-modal').style.display = 'none';
-            document.getElementById('cart').classList.add('open');
-        }
-
-        function confirmWhatsApp() {
-            localStorage.setItem('augustx_order_date', orderDateToSave);
-            localStorage.setItem('augustx_order_count', nextOrderCountToSave);
-
-            let text = `ສະບາຍດີ ຕ້ອງການສັ່ງອໍເດີ້ຈາກເວັບໄຊຕ໌:\n`;
-            text += `ເລກທີອໍເດີ້: ${currentOrderNumberStr}\n\n`;
-            
-            cart.forEach((item, index) => { 
-                text += `${index + 1}. ${item.name} x ${item.qty} ແກ້ວ\n`; 
-                if (item.note && item.note.trim() !== "") {
-                    text += `  *ໝາຍເຫດ: ${item.note.trim()}\n`;
+            database.ref('orders').push(orderData).then(() => {
+                alert("🎉 พิมพ์บิล & ส่ง Order เข้าครัวสำเร็จ!");
+                closeCheckoutModal(); clearCart();
+                if(currentOrderSource !== 'store') {
+                    let storeBtn = document.querySelector('.nav-tab-btn');
+                    if(storeBtn) switchMainTab('store', storeBtn);
                 }
             });
-            
-            text += `\nລົບກວນທາງຮ້ານສະຫຼຸບຍອດ ແລະ ຂໍຄິວອາໂຄດສຳລັບຊຳລະເງິນດ້ວຍຄຮັບ/ຄ่ะ`;
-            
-            let waUrl = `https://wa.me/8562077666667?text=${encodeURIComponent(text)}`;
-            window.open(waUrl, '_blank');
-            
-            document.getElementById('receipt-modal').style.display = 'none';
         }
     </script>
 </body>
