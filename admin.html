@@ -12,75 +12,65 @@
         :root { --blue: #1a365d; --green: #689f38; --red: #ef4444; --orange: #f59e0b; --bg: #f4f6f8; --white: #ffffff; --text: #334155; --border: #e0e0e0; }
         * { font-family: 'Noto Sans Lao', sans-serif, 'Segoe UI', Tahoma; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html { height: 100%; }
-        body { background-color: var(--bg); margin: 0; padding: 0; color: var(--text); height: 100vh; height: 100dvh; overflow: hidden; display: flex; touch-action: manipulation; }
+        body { background-color: var(--bg); margin: 0; padding: 0; color: var(--text); display: flex; height: 100vh; height: 100dvh; overflow: hidden; touch-action: manipulation; }
         
-        /* SIDEBAR NAVIGATION */
+        /* Sidebar Menu Layout */
         .sidebar { width: 260px; background-color: var(--blue); color: var(--white); display: flex; flex-direction: column; flex-shrink: 0; height: 100%; }
         .sidebar-header { padding: 20px; font-size: 1.3rem; font-weight: bold; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); letter-spacing: 1px; flex-shrink: 0; }
-        .nav-menu { list-style: none; padding: 0; margin: 0; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-        .nav-item { padding: 14px 20px; cursor: pointer; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; color: #fff; text-decoration: none; font-size: 14px; }
-        .nav-item:hover, .nav-item.active { background-color: rgba(255,255,255,0.1); border-left: 4px solid var(--green); }
-        .sidebar-footer { padding: 15px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.1); }
+        .nav-menu { list-style: none; padding: 0; margin: 0; flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .nav-item { padding: 14px 20px; cursor: pointer; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; color: #fff; text-decoration: none; font-size: 13.5px; white-space: nowrap; }
+        .nav-item:hover, .nav-item.active { background-color: rgba(255,255,255,0.12); border-left: 4px solid var(--green); }
+        .sidebar-footer { padding: 15px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid rgba(255,255,255,0.1); }
         .back-btn { text-align: center; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; cursor: pointer; text-decoration: none; color: white; font-weight: bold; display: flex; justify-content: center; align-items: center; font-size: 13px; }
+        .back-btn:hover { background: rgba(255,255,255,0.2); }
         
-        /* MAIN CONTENT CONTAINER */
-        .main-content { flex: 1; min-width: 0; height: 100%; padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--bg); display: flex; flex-direction: column; }
-        .tab-content { display: none; flex: 1; flex-direction: column; min-height: 0; }
-        .tab-content.active { display: flex; }
+        /* Main Content Layout (Fluid & Scrollable) */
+        .main-content { flex: 1; min-width: 0; height: 100%; padding: 20px 25px; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; }
+        .tab-content { display: none; flex: 1; }
+        .tab-content.active { display: block; }
         
-        h2 { margin-top: 0; color: var(--blue); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; font-size: 1.4rem; flex-shrink: 0; }
+        h2 { margin-top: 0; color: var(--blue); border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.35rem; }
         
-        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; flex-shrink: 0; }
-        .card { background: var(--white); padding: 18px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid var(--blue); }
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .card { background: var(--white); padding: 18px 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.04); border-left: 5px solid var(--blue); }
         .card.green { border-left-color: var(--green); }
         .card.orange { border-left-color: var(--orange); }
-        .card-title { font-size: 13px; color: #64748b; font-weight: bold; margin-bottom: 5px; }
+        .card-title { font-size: 13px; color: #64748b; font-weight: bold; margin-bottom: 6px; }
         .card-value { font-size: 22px; font-weight: bold; color: var(--blue); }
         
-        .box { background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 15px; flex-shrink: 0; }
-        .box-scroll { flex: 1; min-height: 0; overflow-y: auto; background: var(--white); padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 15px; display: flex; flex-direction: column; }
+        .box { background: var(--white); padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.04); margin-bottom: 20px; }
         
-        table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; white-space: nowrap; }
-        th { background-color: #f8fafc; font-weight: bold; color: #333; position: sticky; top: 0; z-index: 10; }
+        /* Table Responsive Container */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; margin-top: 5px; min-width: 650px; }
+        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 13.5px; white-space: nowrap; }
+        th { background-color: #f8fafc; font-weight: bold; color: #333; }
         
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 13px; color: #555; }
-        input[type="text"], input[type="number"], select, input[type="file"] { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; background-color: #fff; font-size: 14px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 13px; color: #555; }
+        input[type="text"], input[type="number"], select, input[type="file"] { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; background-color: #fff; font-size: 13.5px; }
         .flex-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
         
-        .btn { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: var(--white); transition: 0.2s; text-transform: uppercase; display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
+        .btn { padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: var(--white); transition: 0.2s; text-transform: uppercase; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; white-space: nowrap; }
         .btn-green { background-color: var(--green); }
+        .btn-green:hover { background-color: #558b2f; }
         .btn-blue { background-color: var(--blue); }
+        .btn-blue:hover { background-color: #0f172a; }
         .btn-red { background-color: var(--red); padding: 6px 12px; font-size: 12px; }
         .btn-orange { background-color: var(--orange); }
 
-        .item-section { border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px; }
-        
-        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .hint { font-size: 12px; color: #777; margin-top: 4px; }
+
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--green); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        .variant-row { display: flex; gap: 10px; margin-bottom: 8px; align-items: center; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-container { background: white; width: 90%; max-width: 750px; border-radius: 12px; max-height: 90vh; max-height: 90dvh; overflow-y: auto; padding: 25px; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-
-        /* RESPONSIVE TABLET / MOBILE */
-        @media (max-width: 1024px) {
-            body { flex-direction: column; height: auto; overflow: auto; }
-            .sidebar { width: 100%; height: auto; flex-shrink: 0; }
-            .nav-menu { display: flex; flex-wrap: wrap; overflow-x: auto; flex: none; max-height: 120px; }
-            .nav-item { flex: 1 1 auto; padding: 10px 12px; white-space: nowrap; border-left: none !important; border-bottom: 2px solid transparent; justify-content: center; }
-            .nav-item.active { border-bottom: 2px solid var(--green); background-color: rgba(255,255,255,0.15); }
-            .sidebar-footer { flex-direction: row; }
-            .back-btn { flex: 1; }
-            .main-content { height: auto; overflow-y: visible; padding: 15px; }
-            .tab-content { height: auto; }
-            .box-scroll { height: auto; overflow-y: visible; }
-        }
+        /* Modal Popup */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
+        .modal-container { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
@@ -89,18 +79,18 @@
         <ul class="nav-menu">
             <li class="nav-item active" onclick="switchTab('tab-financial', this)">📊 Financial & Reports</li>
             <li class="nav-item" onclick="switchTab('tab-delivery', this)">🛵 Delivery Partners</li>
-            <li class="nav-item" onclick="switchTab('tab-tables', this)">📌 ຈັດການໂຕະ (Tables)</li>
-            <li class="nav-item" onclick="switchTab('tab-customers', this)">👥 ລູກຄ້າ (Customers)</li>
+            <li class="nav-item" onclick="switchTab('tab-tables', this)">🪑 ຈັດການໂຕະ (Tables)</li>
+            <li class="nav-item" onclick="switchTab('tab-customers', this)">👥 ฐานข้อมูลลูกค้า (Customers)</li>
             <li class="nav-item" onclick="switchTab('tab-inventory', this)">📦 Inventory (ສະຕັອກ)</li>
             
-            <li style="padding: 8px 20px; font-size: 11px; color: #94a3b8; font-weight: bold; margin-top: 5px;">PRODUCTS MANAGER</li>
-            <li class="nav-item" onclick="switchTab('tab-items', this)">☕ Item list (ສິນຄ້າ)</li>
-            <li class="nav-item" onclick="switchTab('tab-categories', this)">🏷️ Categories (ໝວດໝູ່)</li>
-            <li class="nav-item" onclick="switchTab('tab-modifiers', this)">⚙️ Modifiers (ຕົວເລືອກເສີມ)</li>
+            <li style="padding: 10px 20px; font-size: 11px; color: #94a3b8; font-weight: bold; margin-top: 5px;">PRODUCTS MANAGER</li>
+            <li class="nav-item" onclick="switchTab('tab-items', this)">🛍️ Item list (ສິນຄ້າ)</li>
+            <li class="nav-item" onclick="switchTab('tab-categories', this)">📂 Categories (ໝວດໝູ່)</li>
+            <li class="nav-item" onclick="switchTab('tab-modifiers', this)">⭐ Modifiers (ຕົວເລືອກເສີມ)</li>
 
-            <li style="padding: 8px 20px; font-size: 11px; color: #94a3b8; font-weight: bold; margin-top: 5px;">SYSTEM SETTINGS</li>
+            <li style="padding: 10px 20px; font-size: 11px; color: #94a3b8; font-weight: bold; margin-top: 5px;">SYSTEM SETTINGS</li>
             <li class="nav-item" onclick="switchTab('tab-printer', this)">🖨️ Printer settings</li>
-            <li class="nav-item" onclick="switchTab('tab-settings', this)">⚡ Features & Settings</li>
+            <li class="nav-item" onclick="switchTab('tab-settings', this)">⚙️ Features & Settings</li>
         </ul>
         <div class="sidebar-footer">
             <a href="index.html" class="back-btn" style="background:var(--green);">🛒 ไปหน้า Cashier</a>
@@ -123,14 +113,14 @@
         <div id="tab-delivery" class="tab-content">
             <h2>Delivery Partners</h2>
             <div class="box">
-                <h3>ເພີ່ມພາດເນີ Delivery</h3>
+                <h3 style="margin-top:0; font-size:1rem; color:var(--blue);">ເພີ່ມພາດເນີ Delivery</h3>
                 <div class="flex-row">
-                    <div class="form-group" style="flex: 2;"><input type="text" id="new-deliv-name" placeholder="ຊື່ພາດເນີ"></div>
-                    <div class="form-group" style="flex: 1;"><input type="number" id="new-deliv-comm" placeholder="ຄ່າຄອມ (%)"></div>
+                    <div class="form-group" style="flex: 2; margin-bottom:0;"><input type="text" id="new-deliv-name" placeholder="ຊື່ພາດເນີ"></div>
+                    <div class="form-group" style="flex: 1; margin-bottom:0;"><input type="number" id="new-deliv-comm" placeholder="ຄ່າຄອມ (%)"></div>
                     <button class="btn btn-green" onclick="addDeliveryPartner()">ເພີ່ມ</button>
                 </div>
             </div>
-            <div class="box-scroll">
+            <div class="box table-responsive">
                 <table>
                     <thead><tr><th>ຊື່ພາດເນີ</th><th>ຄ່າຄອມ (%)</th><th>ຈັດການ</th></tr></thead>
                     <tbody id="delivery-partner-table-body"></tbody>
@@ -142,13 +132,13 @@
         <div id="tab-tables" class="tab-content">
             <h2>ຈັດການໂຕະ (Tables Management)</h2>
             <div class="box">
-                <h3>ເພີ່ມหมายเลขโต๊ะ (Table)</h3>
+                <h3 style="margin-top:0; font-size:1rem; color:var(--blue);">ເພີ່ມหมายเลขโต๊ะ (Table)</h3>
                 <div class="flex-row">
-                    <div class="form-group" style="flex: 2;"><input type="text" id="new-table-name" placeholder="เช่น Table 01"></div>
+                    <div class="form-group" style="flex: 2; margin-bottom:0;"><input type="text" id="new-table-name" placeholder="เช่น Table 01"></div>
                     <button class="btn btn-green" onclick="addTable()">เพิ่มโต๊ะ</button>
                 </div>
             </div>
-            <div class="box-scroll">
+            <div class="box table-responsive">
                 <table>
                     <thead><tr><th>หมายเลขโต๊ะ</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
                     <tbody id="table-list-tbody"></tbody>
@@ -160,14 +150,14 @@
         <div id="tab-customers" class="tab-content">
             <h2>ฐานข้อมูลลูกค้า (Customers Directory)</h2>
             <div class="box">
-                <h3>เพิ่มข้อมูลลูกค้า</h3>
+                <h3 style="margin-top:0; font-size:1rem; color:var(--blue);">เพิ่มข้อมูลลูกค้า</h3>
                 <div class="flex-row">
-                    <div class="form-group" style="flex: 1;"><input type="text" id="new-cust-name" placeholder="ชื่อลูกค้า"></div>
-                    <div class="form-group" style="flex: 1;"><input type="text" id="new-cust-phone" placeholder="เบอร์โทร"></div>
+                    <div class="form-group" style="flex: 1; margin-bottom:0;"><input type="text" id="new-cust-name" placeholder="ชื่อลูกค้า"></div>
+                    <div class="form-group" style="flex: 1; margin-bottom:0;"><input type="text" id="new-cust-phone" placeholder="เบอร์โทร"></div>
                     <button class="btn btn-green" onclick="addCustomer()">บันทึก</button>
                 </div>
             </div>
-            <div class="box-scroll">
+            <div class="box table-responsive">
                 <table>
                     <thead><tr><th>ชื่อลูกค้า</th><th>เบอร์โทร</th><th>จัดการ</th></tr></thead>
                     <tbody id="customer-list-tbody"></tbody>
@@ -179,13 +169,13 @@
         <div id="tab-inventory" class="tab-content">
             <h2>Inventory (ສະຕັອກ)</h2>
             <div class="grid-cards"><div class="card green"><div class="card-title">ຈຳນວນແກ້ວ (Cups) ຄົງເຫຼືອ</div><div class="card-value" id="current-cups">0 ໃບ</div></div></div>
-            <div class="box"><div class="flex-row"><input type="number" id="add-cups-qty" placeholder="ຈຳນວນ..."><button class="btn btn-blue" onclick="addCups()">ເພີ່ມ</button></div></div>
+            <div class="box"><div class="flex-row"><input type="number" id="add-cups-qty" placeholder="ຈຳນວນ..." style="max-width:250px; margin-bottom:0;"><button class="btn btn-blue" onclick="addCups()">ເພີ່ມ</button></div></div>
         </div>
 
         <!-- ITEMS LIST -->
         <div id="tab-items" class="tab-content">
             <h2>Item list (ສິນຄ້າ) <span id="item-count-badge" style="font-size:14px; color:#64748b; font-weight:normal; margin-left:10px;"></span></h2>
-            <div class="box" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div class="box" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                 <div class="flex-row" style="gap: 10px; align-items: center; margin-bottom: 0; flex: 1;">
                     <label style="font-weight: bold; margin: 0;">ກັ່ນຕອງໝວດໝູ່:</label>
                     <select id="filter-category-select" onchange="renderItemListTable()" style="max-width: 250px; margin-bottom: 0;">
@@ -193,14 +183,14 @@
                     </select>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-orange" onclick="seedDefaultMenu()">📥 โหลด 23 เมนู</button>
+                    <button class="btn btn-orange" onclick="seedDefaultMenu()">📥 โหลด 23 เมนูกาแฟ</button>
                     <button class="btn btn-green" onclick="openItemModalForAdd()">+ Add Item</button>
                 </div>
             </div>
-            <div class="box-scroll">
+            <div class="box table-responsive">
                 <table>
-                    <thead><tr><th style="width:60px;">No.</th><th>Image</th><th>Category</th><th>Name</th><th>ລາຄາໜ້າຮ້ານ</th><th>Modifiers</th><th>Delivery</th><th>ຈັດການ</th></tr></thead>
-                    <tbody id="menu-table-body"><tr><td colspan="8" align="center">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr></tbody>
+                    <thead><tr><th style="width:60px;">No.</th><th>Image</th><th>Category</th><th>Name</th><th>ລາຄາ</th><th>ຈັດການ</th></tr></thead>
+                    <tbody id="menu-table-body"><tr><td colspan="6" align="center">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -210,11 +200,11 @@
             <h2>Categories (ໝວດໝູ່) <span id="cat-count-badge" style="font-size:14px; color:#64748b; font-weight:normal; margin-left:10px;"></span></h2>
             <div class="box">
                 <div class="flex-row">
-                    <div class="form-group" style="flex: 2;"><input type="text" id="new-cat-name" placeholder="Category Name"></div>
+                    <div class="form-group" style="flex: 2; margin-bottom:0;"><input type="text" id="new-cat-name" placeholder="Category Name"></div>
                     <button class="btn btn-green" onclick="addCategory()">ADD CATEGORY</button>
                 </div>
             </div>
-            <div class="box-scroll">
+            <div class="box table-responsive">
                 <table>
                     <thead><tr><th style="width:60px;">No.</th><th>Category Name</th><th>ຈັດການ</th></tr></thead>
                     <tbody id="category-table-body"></tbody>
@@ -225,19 +215,14 @@
         <!-- MODIFIERS -->
         <div id="tab-modifiers" class="tab-content">
             <h2>Modifiers (ຕົວເລືອກເສີມ) <span id="mod-count-badge" style="font-size:14px; color:#64748b; font-weight:normal; margin-left:10px;"></span></h2>
-            <div class="box">
-                <div class="item-section">
-                    <h3>Modifier Name</h3>
-                    <div class="form-group"><input type="text" id="new-mod-name" placeholder="ເຊັ່ນ: Sugar Level"></div>
-                </div>
-                <div class="item-section">
-                    <h3>Options</h3>
-                    <div id="mod-options-container"></div>
-                    <button class="btn btn-blue" style="background:none; color:var(--green); border:none; padding:5px 0; font-weight:bold; cursor:pointer;" onclick="addModOptionRow()">+ ADD OPTION</button>
+            <div class="box" style="padding: 25px;">
+                <div class="form-group">
+                    <label>Modifier Name</label>
+                    <input type="text" id="new-mod-name" placeholder="ເຊັ່ນ: Sugar Level">
                 </div>
                 <div style="text-align: right;"><button class="btn btn-green" onclick="saveModifier()">SAVE MODIFIER</button></div>
             </div>
-            <div class="box-scroll">
+            <div class="box table-responsive">
                 <table>
                     <thead><tr><th style="width:60px;">No.</th><th>Modifier Name</th><th>Options</th><th>ຈັດການ</th></tr></thead>
                     <tbody id="modifier-table-body"></tbody>
@@ -249,7 +234,8 @@
         <div id="tab-printer" class="tab-content">
             <h2>🖨️ Printer Settings (ตั้งค่าเครื่องพิมพ์ & ใบเสร็จ)</h2>
             <div class="box">
-                <h3 style="margin-top:0; color:var(--blue);">🧾 โลโก้หัวใบเสร็จ (Receipt Logo)</h3>
+                <h3 style="margin-top:0; font-size:1rem; color:var(--blue);">🧾 โลโก้หัวใบเสร็จ (Receipt Logo)</h3>
+                <p class="hint" style="margin-bottom:15px;">อัปโหลดโลโก้ร้านเพื่อแสดงผลเต็มหน้ากระดาษบนใบเสร็จแคชเชียร์</p>
                 <div class="form-group" style="max-width: 400px;">
                     <input type="file" id="store-logo-file" accept="image/*" onchange="uploadStoreLogo(this)">
                 </div>
@@ -261,11 +247,15 @@
                     </div>
                 </div>
             </div>
+
             <div class="box">
-                <h3 style="margin-top:0; color:var(--blue);">🏷️ เครื่องพิมพ์สติกเกอร์ติดแก้วน้ำ</h3>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><strong>เปิดใช้งานพิมพ์สติกเกอร์ติดแก้วอัตโนมัติ</strong></div>
-                    <label class="switch"><input type="checkbox" id="feat-stickerprinter" onchange="saveFeatureSetting('stickerprinter', this.checked)"><span class="slider"></span></label>
+                <h3 style="margin-top:0; font-size:1rem; color:var(--blue);">🖨️ ตั้งค่าเครื่องพิมพ์ใบเสร็จ (Receipt Printer)</h3>
+                <div class="form-group" style="max-width: 400px; margin-bottom:0;">
+                    <label>ขนาดกระดาษความร้อน (Paper Width)</label>
+                    <select id="printer-paper-size" onchange="savePrinterSetting('paperSize', this.value)">
+                        <option value="58mm">Xprinter 58mm</option>
+                        <option value="80mm">Xprinter 80mm</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -274,45 +264,25 @@
         <div id="tab-settings" class="tab-content">
             <h2>⚙️ System Settings & Features</h2>
             <div class="box">
-                <h3 style="margin-top:0; color:var(--blue);">⚡ Features (เปิด-ปิดฟีเจอร์ระบบ POS)</h3>
-                <div style="display:flex; flex-direction:column; gap:15px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f1f5f9; padding-bottom:12px;">
-                        <div><strong>Table management (ระบบจัดการโต๊ะ)</strong></div>
-                        <label class="switch"><input type="checkbox" id="feat-tables" checked onchange="saveFeatureSetting('tables', this.checked)"><span class="slider"></span></label>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div><strong>Customer loyalty / Directory (ฐานข้อมูลลูกค้า)</strong></div>
-                        <label class="switch"><input type="checkbox" id="feat-customers" checked onchange="saveFeatureSetting('customers', this.checked)"><span class="slider"></span></label>
-                    </div>
+                <h3 style="margin-top:0; font-size:1rem; color:var(--blue);">⚡ Features (เปิด-ปิดฟีเจอร์ระบบ POS)</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><strong>Table management (ระบบจัดการโต๊ะ)</strong></div>
+                    <label class="switch"><input type="checkbox" id="feat-tables" checked onchange="saveFeatureSetting('tables', this.checked)"><span class="slider"></span></label>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ITEM ADD/EDIT MODAL POPUP -->
+    <!-- ITEM ADD MODAL -->
     <div class="modal-overlay" id="item-modal-overlay">
         <div class="modal-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--blue); padding-bottom: 10px; margin-bottom: 20px;">
-                <h3 id="item-modal-title" style="margin: 0; color: var(--blue);">เพิ่ม / แก้ไขสินค้า</h3>
-                <span style="font-size: 1.8rem; cursor: pointer; font-weight: bold;" onclick="closeItemModal()">×</span>
-            </div>
-            <div class="item-section" style="background:#e0f2fe; padding:15px; border-radius:8px;">
-                <div class="flex-row">
-                    <div class="form-group" style="flex: 2;"><label>Name (ຊື່ສິນຄ້າ)</label><input type="text" id="modal-item-name" placeholder="Name"></div>
-                    <div class="form-group" style="flex: 1;"><label>Category (ໝວດໝູ່)</label><select id="modal-item-cat"><option value="">-- ເລືອກ --</option></select></div>
-                </div>
-                <div class="flex-row">
-                    <div class="form-group" style="flex: 1;"><label>Price (ລາຄາ)</label><input type="number" id="modal-item-base-price" placeholder="₭ 0"></div>
-                </div>
-                <div style="margin-top:10px;">
-                    <label style="font-weight:bold; font-size:13px;">Variants (ຕົວເລືອກຂະໜາດ)</label>
-                    <div id="modal-variants-container"></div>
-                    <button class="btn btn-blue" style="background:none; color:var(--green); border:none; padding:5px 0; font-weight:bold; cursor:pointer;" onclick="addVariantRow('modal-variants-container')">+ ADD VARIANTS</button>
-                </div>
-            </div>
-            <div style="text-align: right; margin-top: 20px;">
-                <button class="btn btn-red" onclick="closeItemModal()">ຍົກເລີກ</button>
-                <button class="btn btn-green" onclick="saveItemModalData()">ບັນທຶກສິນຄ້າ</button>
+            <h3 style="margin-top:0; color:var(--blue);">เพิ่มสินค้าใหม่</h3>
+            <div class="form-group"><label>ชื่อสินค้า</label><input type="text" id="modal-item-name" placeholder="Name"></div>
+            <div class="form-group"><label>หมวดหมู่</label><select id="modal-item-cat"><option value="">-- เลือก --</option></select></div>
+            <div class="form-group"><label>ราคา</label><input type="number" id="modal-item-base-price" placeholder="0"></div>
+            <div style="text-align:right; margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+                <button class="btn btn-red" onclick="closeItemModal()" style="padding:10px 15px;">ยกเลิก</button>
+                <button class="btn btn-green" onclick="saveItemModalData()">บันทึก</button>
             </div>
         </div>
     </div>
@@ -325,7 +295,8 @@
         function switchTab(tabId, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+            let tab = document.getElementById(tabId);
+            if(tab) tab.classList.add('active');
             if(el) el.classList.add('active');
         }
 
@@ -347,107 +318,77 @@
                 reader.readAsDataURL(file);
             }
         }
-        function saveFeatureSetting(key, val) { database.ref('settings/features/' + key).set(val); }
-        database.ref('settings/features').on('value', snap => {
-            let f = snap.val() || {};
-            for(let k in f) { let el = document.getElementById('feat-' + k); if(el) el.checked = f[k]; }
+
+        function savePrinterSetting(key, val) { database.ref('settings/printer/' + key).set(val); }
+        database.ref('settings/printer').on('value', snap => {
+            let p = snap.val() || {};
+            if(p.paperSize) document.getElementById('printer-paper-size').value = p.paperSize;
         });
 
-        function addTable() {
-            let name = document.getElementById('new-table-name').value.trim();
-            if(!name) return alert("กรุณาระบุชื่อโต๊ะ!");
-            database.ref('tables').push({ name: name }).then(() => { document.getElementById('new-table-name').value = ""; });
-        }
+        function saveFeatureSetting(key, val) { database.ref('settings/features/' + key).set(val); }
+
         database.ref('tables').on('value', snap => {
             let html = '';
             snap.forEach(child => {
-                let t = child.val(); let id = child.key;
-                html += `<tr><td><strong>${t.name}</strong></td><td>ว่าง</td><td><button class="btn btn-red" onclick="database.ref('tables/${id}').remove()">ลบ</button></td></tr>`;
+                let t = child.val();
+                html += `<tr><td><strong>${t.name}</strong></td><td>ว่าง</td><td><button class="btn btn-red" onclick="database.ref('tables/${child.key}').remove()">ลบ</button></td></tr>`;
             });
-            let tbody = document.getElementById('table-list-tbody');
-            if(tbody) tbody.innerHTML = html || '<tr><td colspan="3" align="center">ยังไม่มีข้อมูลโต๊ะ</td></tr>';
+            document.getElementById('table-list-tbody').innerHTML = html || '<tr><td colspan="3" align="center">ยังไม่มีข้อมูล</td></tr>';
         });
+        function addTable() {
+            let name = document.getElementById('new-table-name').value.trim();
+            if(!name) return alert("ระบุชื่อโต๊ะ!");
+            database.ref('tables').push({ name: name }).then(() => document.getElementById('new-table-name').value = "");
+        }
 
+        database.ref('customers').on('value', snap => {
+            let html = '';
+            snap.forEach(child => {
+                let c = child.val();
+                html += `<tr><td><strong>${c.name}</strong></td><td>${c.phone || '-'}</td><td><button class="btn btn-red" onclick="database.ref('customers/${child.key}').remove()">ลบ</button></td></tr>`;
+            });
+            document.getElementById('customer-list-tbody').innerHTML = html || '<tr><td colspan="3" align="center">ยังไม่มีข้อมูล</td></tr>';
+        });
         function addCustomer() {
             let name = document.getElementById('new-cust-name').value.trim();
             let phone = document.getElementById('new-cust-phone').value.trim();
-            if(!name) return alert("กรุณาระบุชื่อลูกค้า!");
+            if(!name) return alert("ระบุชื่อลูกค้า!");
             database.ref('customers').push({ name: name, phone: phone }).then(() => {
                 document.getElementById('new-cust-name').value = ""; document.getElementById('new-cust-phone').value = "";
             });
         }
-        database.ref('customers').on('value', snap => {
-            let html = '';
-            snap.forEach(child => {
-                let c = child.val(); let id = child.key;
-                html += `<tr><td><strong>${c.name}</strong></td><td>${c.phone || '-'}</td><td><button class="btn btn-red" onclick="database.ref('customers/${id}').remove()">ลบ</button></td></tr>`;
-            });
-            let tbody = document.getElementById('customer-list-tbody');
-            if(tbody) tbody.innerHTML = html || '<tr><td colspan="3" align="center">ยังไม่มีข้อมูลลูกค้า</td></tr>';
-        });
 
-        function addDeliveryPartner() {
-            let name = document.getElementById('new-deliv-name').value.trim(); let comm = parseFloat(document.getElementById('new-deliv-comm').value);
-            if(!name) return;
-            database.ref('delivery_partners').push({ name: name, commission: comm || 0 }).then(() => { document.getElementById('new-deliv-name').value = ""; });
-        }
         database.ref('delivery_partners').on('value', snap => {
             let html = '';
-            snap.forEach(child => { let p = child.val(); html += `<tr><td>${p.name}</td><td>${p.commission}%</td><td><button class="btn btn-red" onclick="database.ref('delivery_partners/${child.key}').remove()">ລົບ</button></td></tr>`; });
-            let tbody = document.getElementById('delivery-partner-table-body');
-            if(tbody) tbody.innerHTML = html || '<tr><td colspan="3">ບໍ່ມີຂໍ້ມູນ</td></tr>';
+            snap.forEach(child => { let p = child.val(); html += `<tr><td>${p.name}</td><td>${p.commission}%</td><td><button class="btn btn-red" onclick="database.ref('delivery_partners/${child.key}').remove()">ลบ</button></td></tr>`; });
+            document.getElementById('delivery-partner-table-body').innerHTML = html || '<tr><td colspan="3" align="center">ไม่มีข้อมูล</td></tr>';
         });
-
-        let globalCategoriesList = [];
-        function addCategory() {
-            let catName = document.getElementById('new-cat-name').value.trim();
-            if(!catName) return alert("ກະລຸນາປ້ອນຊື່ໝວດໝູ່!");
-            database.ref('categories').push({ name: catName, order: Date.now() }).then(() => { document.getElementById('new-cat-name').value = ""; });
+        function addDeliveryPartner() {
+            let name = document.getElementById('new-deliv-name').value.trim();
+            let comm = parseFloat(document.getElementById('new-deliv-comm').value) || 0;
+            if(!name) return;
+            database.ref('delivery_partners').push({ name: name, commission: comm }).then(() => document.getElementById('new-deliv-name').value = "");
         }
+
         database.ref('categories').on('value', snap => {
-            globalCategoriesList = []; let html = ''; let dropdownHtml = '<option value="">-- ເລືອກ --</option>'; let filterHtml = '<option value="ALL">-- ທຸກໝວດໝູ່ (All) --</option>';
-            snap.forEach(child => { let cat = child.val(); cat.id = child.key; globalCategoriesList.push(cat); });
-            globalCategoriesList.forEach((cat, index) => {
-                html += `<tr><td><strong>${index + 1}</strong></td><td><strong>${cat.name}</strong></td><td><button class="btn btn-red" style="padding:4px 8px;" onclick="database.ref('categories/${cat.id}').remove()">ລຶບ</button></td></tr>`;
-                dropdownHtml += `<option value="${cat.name}">${cat.name}</option>`;
-                filterHtml += `<option value="${cat.name}">${cat.name}</option>`;
+            let html = ''; let dropdown = '<option value="">-- เลือก --</option>';
+            let i = 1;
+            snap.forEach(child => {
+                let cat = child.val();
+                html += `<tr><td>${i++}</td><td><strong>${cat.name}</strong></td><td><button class="btn btn-red" onclick="database.ref('categories/${child.key}').remove()">ลบ</button></td></tr>`;
+                dropdown += `<option value="${cat.name}">${cat.name}</option>`;
             });
-            let catTbody = document.getElementById('category-table-body');
-            if(catTbody) catTbody.innerHTML = html || '<tr><td colspan="3" align="center">ຍັງບໍ່ມີໝວດໝູ່</td></tr>';
-            let catBadge = document.getElementById('cat-count-badge');
-            if(catBadge) catBadge.innerText = `(ທັງໝົດ ${globalCategoriesList.length} ໝວດໝູ່)`;
-            let modalCat = document.getElementById('modal-item-cat');
-            if(modalCat) modalCat.innerHTML = dropdownHtml;
-            let filterCat = document.getElementById('filter-category-select');
-            if(filterCat) filterCat.innerHTML = filterHtml;
+            document.getElementById('category-table-body').innerHTML = html || '<tr><td colspan="3" align="center">ไม่มีหมวดหมู่</td></tr>';
+            document.getElementById('modal-item-cat').innerHTML = dropdown;
         });
-
-        function saveModifier() {
-            let name = document.getElementById('new-mod-name').value.trim(); if(!name) return alert("ກະລຸນາປ້ອນຊື່ Modifier");
-            let opts = [];
-            document.querySelectorAll('#mod-options-container .item-row').forEach(r => { let oName = r.querySelector('.var-name').value.trim(); let oPrice = r.querySelector('.var-price').value.trim() || "0"; if(oName) opts.push(`${oName}|${oPrice}`); });
-            database.ref('modifiers').push({ name: name, options: opts.join(',') }).then(() => { document.getElementById('new-mod-name').value = ""; document.getElementById('mod-options-container').innerHTML = ""; alert("บันทึกสำเร็จ!"); });
+        function addCategory() {
+            let name = document.getElementById('new-cat-name').value.trim();
+            if(!name) return alert("ระบุชื่อหมวดหมู่!");
+            database.ref('categories').push({ name: name, order: Date.now() }).then(() => document.getElementById('new-cat-name').value = "");
         }
-        window.addModOptionRow = function(name = "", price = "0") {
-            let container = document.getElementById('mod-options-container'); if(!container) return;
-            let div = document.createElement('div'); div.className = 'variant-row item-row'; 
-            div.innerHTML = `<input type="text" class="var-name" placeholder="ชื่อ" value="${name}" style="flex: 2;"><input type="number" class="var-price" placeholder="ราคา" value="${price}" style="flex: 1;"><button class="btn btn-red" onclick="this.parentElement.remove();" style="padding:4px 8px;">×</button>`; container.appendChild(div);
-        }
-        database.ref('modifiers').on('value', snap => {
-            let html = ''; let i = 1;
-            snap.forEach(child => { let m = child.val(); html += `<tr><td><strong>${i++}</strong></td><td><strong>${m.name}</strong></td><td>${m.options || ''}</td><td><button class="btn btn-red" style="padding:4px 8px;" onclick="database.ref('modifiers/${child.key}').remove()">ลบ</button></td></tr>`; });
-            let modTbody = document.getElementById('modifier-table-body');
-            if(modTbody) modTbody.innerHTML = html || '<tr><td colspan="4" align="center">ไม่มีข้อมูล</td></tr>';
-        });
 
         function openItemModalForAdd() { document.getElementById('item-modal-overlay').style.display = 'flex'; }
         function closeItemModal() { document.getElementById('item-modal-overlay').style.display = 'none'; }
-        window.addVariantRow = function(containerId, name = "", price = "") {
-            let container = document.getElementById(containerId); if(!container) return;
-            let div = document.createElement('div'); div.className = 'variant-row item-row'; 
-            div.innerHTML = `<input type="text" class="var-name" placeholder="Option" value="${name}" style="flex: 2;"><input type="number" class="var-price" placeholder="Price" value="${price}" style="flex: 1;"><button class="btn btn-red" onclick="this.parentElement.remove();" style="padding:4px 8px;">×</button>`; container.appendChild(div);
-        }
-
         function saveItemModalData() {
             let name = document.getElementById('modal-item-name').value.trim();
             let cat = document.getElementById('modal-item-cat').value;
@@ -458,24 +399,18 @@
 
         database.ref('menu_items').on('value', snap => {
             let html = ''; let i = 1;
-            snap.forEach(child => { let item = child.val(); html += `<tr><td><strong>${i++}</strong></td><td><img src="${item.image || 'images/bg.jpg'}" style="width:35px;height:35px;object-fit:cover;"></td><td>${item.category}</td><td><strong>${item.name}</strong></td><td>₭ ${item.priceOptions}</td><td>-</td><td>-</td><td><button class="btn btn-red" onclick="database.ref('menu_items/${child.key}').remove()">ลบ</button></td></tr>`; });
-            let menuTbody = document.getElementById('menu-table-body');
-            if(menuTbody) menuTbody.innerHTML = html || '<tr><td colspan="8" align="center">ไม่มีสินค้า</td></tr>';
+            snap.forEach(child => {
+                let item = child.val();
+                html += `<tr><td>${i++}</td><td><img src="${item.image || 'images/bg.jpg'}" style="width:35px;height:35px;object-fit:cover;border-radius:4px;"></td><td>${item.category}</td><td><strong>${item.name}</strong></td><td>${Number(item.priceOptions||0).toLocaleString()} ₭</td><td><button class="btn btn-red" onclick="database.ref('menu_items/${child.key}').remove()">ลบ</button></td></tr>`;
+            });
+            document.getElementById('menu-table-body').innerHTML = html || '<tr><td colspan="6" align="center">ไม่มีสินค้า</td></tr>';
         });
-
-        window.seedDefaultMenu = function() {
-            if(!confirm("โหลด 23 เมนูกาแฟ?")) return;
-            let cats = [{ name: "BASIC COFFEE" }, { name: "BLACK SIGNATURE" }];
-            let catRef = database.ref('categories'); catRef.remove().then(() => cats.forEach(c => catRef.push(c)));
-            let items = [{ name: "AMERICANO", category: "BASIC COFFEE", priceOptions: "39000", image: "images/bg.jpg" }];
-            let menuRef = database.ref('menu_items'); menuRef.remove().then(() => { items.forEach(i => menuRef.push(i)); alert("โหลดสำเร็จ!"); });
-        }
 
         database.ref('inventory/cups').on('value', snap => {
             let c = document.getElementById('current-cups'); if(c) c.innerText = (snap.val() || 0) + " ໃບ";
         });
         function addCups() {
-            let q = parseInt(document.getElementById('add-cups-qty').value);
+            let q = parseInt(document.getElementById('add-cups-qty').value) || 0;
             database.ref('inventory/cups').once('value').then(s => database.ref('inventory/cups').set((s.val()||0)+q));
         }
 
@@ -485,9 +420,9 @@
                 let o = child.val(); let amt = Number(o.total || 0); total += amt;
                 if(o.source === 'store' || o.source === 'online') store += amt; else delivery += amt;
             });
-            let ts = document.getElementById('total-sales'); if(ts) ts.innerText = total.toLocaleString() + ' LAK';
-            let ss = document.getElementById('store-sales'); if(ss) ss.innerText = store.toLocaleString() + ' LAK';
-            let ds = document.getElementById('delivery-sales'); if(ds) ds.innerText = delivery.toLocaleString() + ' LAK';
+            document.getElementById('total-sales').innerText = total.toLocaleString() + ' LAK';
+            document.getElementById('store-sales').innerText = store.toLocaleString() + ' LAK';
+            document.getElementById('delivery-sales').innerText = delivery.toLocaleString() + ' LAK';
         });
     </script>
 </body>

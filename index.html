@@ -114,7 +114,25 @@
         .variant-option-btn:hover { border-color: var(--green); background: #f0fdf4; }
         .variant-option-btn.selected { border-color: var(--green); background: #f0fdf4; color: #166534; }
 
-        /* ===== จอเตี้ย (แท็บเล็ต/มือถือแนวนอน) ย่อให้แน่นขึ้นอีก ===== */
+        /* ===== สำหรับสั่งพิมพ์ Xprinter (รองรับ 58mm / 80mm ตามค่าที่ตั้งใน Admin) ===== */
+        @media print {
+            body * { visibility: hidden; }
+            #receipt-print-area, #receipt-print-area * { visibility: visible; }
+            #receipt-print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: var(--print-width, 58mm);
+                margin: 0;
+                padding: 4mm;
+                background: white;
+                font-size: 12px;
+                color: black;
+            }
+            .modal-overlay { background: none !important; }
+            .form-group, .modal-actions { display: none !important; }
+        }
+
         @media (max-height: 500px) {
             .menu-section { padding: 8px 12px; }
             .pos-header { margin-bottom: 6px; }
@@ -194,7 +212,7 @@
     <div class="modal-overlay" id="variant-modal">
         <div class="modal-box-large">
             <div class="modal-left">
-                <img id="modal-item-img" src="images/bg.jpg" alt="Item Image">
+                <img id="modal-item-img" alt="Item Image">
             </div>
             <div class="modal-right">
                 <div>
@@ -221,9 +239,9 @@
 
     <!-- RECEIPT PREVIEW & CHECKOUT MODAL -->
     <div class="modal-overlay" id="checkout-modal">
-        <div class="receipt-modal-box">
+        <div class="receipt-modal-box" id="receipt-print-area">
             <div class="receipt-header">
-                <img id="receipt-logo-img" src="" alt="Logo" style="display:none;">
+                <img id="receipt-logo-img" alt="Logo" style="display:none;">
                 <div class="receipt-title">AUGUSTX</div>
                 <div class="receipt-subtitle">HOME COFFEE RECIPE</div>
             </div>
@@ -297,7 +315,6 @@
         let globalDeliveryPartners = [];
         let globalTables = [];
         let globalCustomers = [];
-        let globalStoreLogo = "";
         let currentCategory = 'ALL';
         let currentOrderSource = 'store';
         let currentOrderType = 'Dine-in';
@@ -308,7 +325,13 @@
         let selectedVariantPrice = 0;
         let editingCartIndex = null;
 
-        // Load Tables and Customers for Checkout dropdowns
+        // ซิงค์ขนาดกระดาษจาก Printer settings ใน Admin
+        database.ref('settings/printer').on('value', snap => {
+            let p = snap.val() || {};
+            let width = p.paperSize === '80mm' ? '80mm' : '58mm';
+            document.documentElement.style.setProperty('--print-width', width);
+        });
+
         database.ref('tables').on('value', snap => {
             globalTables = [];
             let html = '<option value="">-- เลือกโต๊ะ --</option>';
@@ -326,7 +349,9 @@
         database.ref('store_logo').on('value', snap => {
             let logoUrl = snap.val();
             let logoImg = document.getElementById('receipt-logo-img');
-            if(logoUrl) { logoImg.src = logoUrl; logoImg.style.display = 'block'; } else { logoImg.style.display = 'none'; }
+            if(logoImg) {
+                if(logoUrl) { logoImg.src = logoUrl; logoImg.style.display = 'block'; } else { logoImg.style.display = 'none'; }
+            }
         });
 
         function setOrderType(type, btn) {
@@ -348,7 +373,6 @@
                 }, 300000);
             }
         }
-        // รองรับทั้งเมาส์และการสัมผัสบนแท็บเล็ต
         window.addEventListener('mousemove', resetInactivityTimer);
         window.addEventListener('keypress', resetInactivityTimer);
         window.addEventListener('touchstart', resetInactivityTimer, { passive: true });
@@ -517,7 +541,7 @@
         function renderCart() {
             let container = document.getElementById('cart-items-container');
             if(cart.length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:#94a3b8; margin-top:40px;">ຍັງບໍ່ມີສິນຄ້າໃນตะกร้า</div>';
+                container.innerHTML = '<div style="text-align:center; color:#94a3b8; margin-top:40px;">ຍັງບໍ່ມີສິນຄ້າในตะกร้า</div>';
                 document.getElementById('cart-item-count').innerText = '0 รายการ';
                 document.getElementById('cart-total-price').innerText = '0 ₭'; return;
             }
@@ -587,6 +611,9 @@
             };
 
             database.ref('orders').push(orderData).then(() => {
+                // สั่งพิมพ์บิลออก Xprinter อัตโนมัติผ่าน Browser Print Dialog
+                window.print();
+
                 alert("🎉 พิมพ์บิล & ส่ง Order เข้าครัวสำเร็จ!");
                 closeCheckoutModal(); clearCart();
                 if(currentOrderSource !== 'store') {
