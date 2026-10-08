@@ -18,7 +18,7 @@
         .menu-section { flex: 1; min-width: 0; min-height: 0; padding: 10px 14px; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
         .cart-section { width: clamp(300px, 34vw, 400px); flex-shrink: 0; height: 100%; min-height: 0; background: var(--white); border-left: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: -2px 0 10px rgba(0,0,0,0.02); }
 
-        /* ===== HEADER (แถวเดียว ไม่ตัดบรรทัด) ===== */
+        /* ===== HEADER ===== */
         .pos-header { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
         .pos-header h1 { margin: 0; color: var(--blue); font-size: 1.25rem; white-space: nowrap; }
 
@@ -26,7 +26,7 @@
         .top-btn { background: var(--blue); color: white; padding: 7px 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
         .top-btn.kitchen { background: var(--orange); }
 
-        /* ===== แถวแท็บ + Dine-in/Take away ===== */
+        /* ===== NAV ROW ===== */
         .nav-row { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
         .nav-tabs-bar { display: flex; gap: 8px; overflow-x: auto; min-width: 0; flex: 1; }
         .nav-tab-btn { padding: 8px 16px; background: white; border: 1px solid var(--border); border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; color: var(--blue); transition: 0.2s; white-space: nowrap; flex-shrink: 0; }
@@ -38,12 +38,12 @@
         .type-btn.active { background: #0f172a; color: white; }
         .type-divider { width: 1px; background: rgba(255,255,255,0.2); }
 
-        /* ===== หมวดหมู่ ===== */
+        /* ===== CATEGORIES ===== */
         .categories-bar { flex-shrink: 0; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 6px; }
         .cat-btn { padding: 7px 14px; background: white; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; white-space: nowrap; flex-shrink: 0; transition: 0.2s; }
         .cat-btn.active, .cat-btn:hover { background: var(--blue); color: white; border-color: var(--blue); }
 
-        /* ===== รายการสินค้า (เลื่อนเฉพาะส่วนนี้) ===== */
+        /* ===== MENU GRID ===== */
         .menu-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; align-content: start; overflow-y: auto; padding-bottom: 10px; -webkit-overflow-scrolling: touch; }
         .menu-card { background: url('images/bg.jpg') center/cover no-repeat; border-radius: 10px; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid transparent; position: relative; }
         .menu-card::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.85); border-radius: 8px; z-index: 1; }
@@ -53,7 +53,7 @@
         .menu-name { font-weight: bold; font-size: 13px; margin-bottom: 3px; color: var(--blue); }
         .menu-price { font-size: 12px; color: #64748b; }
 
-        /* ===== ตะกร้า ===== */
+        /* ===== CART ===== */
         .cart-header { flex-shrink: 0; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 1.05rem; font-weight: bold; color: var(--blue); display: flex; justify-content: space-between; align-items: center; }
         .cart-items { flex: 1; min-height: 0; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; -webkit-overflow-scrolling: touch; }
 
@@ -79,7 +79,7 @@
         .checkout-btn { width: 100%; padding: 12px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .checkout-btn:hover { background: #558b2f; }
 
-        /* ===== Modal ===== */
+        /* ===== MODAL ===== */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal-box-large { background: white; padding: 20px; border-radius: 16px; width: 92%; max-width: 650px; max-height: 90vh; max-height: 90dvh; overflow-y: auto; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; gap: 20px; }
         .modal-left { width: 170px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
@@ -113,50 +113,10 @@
         .variant-option-btn { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 12px 15px; margin-bottom: 8px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .variant-option-btn:hover { border-color: var(--green); background: #f0fdf4; }
         .variant-option-btn.selected { border-color: var(--green); background: #f0fdf4; color: #166534; }
-
-        /* ===== สำหรับสั่งพิมพ์ Xprinter (รองรับ 58mm / 80mm ตามค่าที่ตั้งใน Admin) ===== */
-        @media print {
-            body * { visibility: hidden; }
-            #receipt-print-area, #receipt-print-area * { visibility: visible; }
-            #receipt-print-area {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: var(--print-width, 58mm);
-                margin: 0;
-                padding: 4mm;
-                background: white;
-                font-size: 12px;
-                color: black;
-            }
-            .modal-overlay { background: none !important; }
-            .form-group, .modal-actions { display: none !important; }
-        }
-
-        @media (max-height: 500px) {
-            .menu-section { padding: 8px 12px; }
-            .pos-header { margin-bottom: 6px; }
-            .pos-header h1 { font-size: 1.1rem; }
-            .top-btn { padding: 6px 10px; font-size: 12px; }
-            .nav-row { margin-bottom: 6px; padding-bottom: 6px; }
-            .nav-tab-btn { padding: 6px 14px; font-size: 13px; }
-            .type-btn { padding: 6px 10px; font-size: 12px; }
-            .categories-bar { padding-bottom: 6px; margin-bottom: 4px; }
-            .cat-btn { padding: 6px 12px; font-size: 12px; }
-            .menu-card img { height: 70px; }
-            .cart-header { padding: 8px 12px; font-size: 1rem; }
-            .cart-footer { padding: 8px 12px; }
-            .summary-row { margin-bottom: 3px; font-size: 12px; }
-            .summary-row.total { font-size: 1.05rem; margin-bottom: 6px; }
-            .checkout-btn { padding: 10px; font-size: 1rem; }
-            .modal-left { width: 130px; }
-            .modal-left img { height: 130px; }
-        }
     </style>
 </head>
 <body>
     <div class="pos-container">
-        <!-- MENU SECTION -->
         <div class="menu-section">
             <div class="pos-header">
                 <h1>AUGUSTX - POS</h1>
@@ -166,7 +126,6 @@
                 </div>
             </div>
 
-            <!-- NAVIGATION TABS + ORDER TYPE (แถวเดียวกัน) -->
             <div class="nav-row">
                 <div class="nav-tabs-bar" id="nav-tabs-container">
                     <button class="nav-tab-btn active" onclick="switchMainTab('store', this)">Cashier</button>
@@ -178,16 +137,13 @@
                 </div>
             </div>
 
-            <!-- CATEGORIES BAR -->
             <div class="categories-bar" id="categories-container">
                 <button class="cat-btn active" onclick="filterCategory('ALL', this)">ທຸກເມນູ (All)</button>
             </div>
 
-            <!-- MENU GRID -->
             <div class="menu-grid" id="menu-grid-container"></div>
         </div>
 
-        <!-- CART SECTION -->
         <div class="cart-section">
             <div class="cart-header">
                 <span>ตะกร้าสินค้า (Cart)</span>
@@ -217,18 +173,15 @@
             <div class="modal-right">
                 <div>
                     <h2 id="modal-item-title" style="margin: 0 0 15px 0; color: var(--blue); border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 1.4rem;">MOCHA</h2>
-
                     <div id="variants-section" style="margin-bottom: 15px;">
                         <label style="font-weight:bold; font-size:13px; color:var(--blue); margin-bottom:6px; display:block;">Variants (ขนาด / ประเภท)</label>
                         <div id="variant-buttons-container"></div>
                     </div>
-
                     <div id="modifiers-section" style="margin-bottom: 15px; display: none;">
                         <label style="font-weight:bold; font-size:13px; color:var(--blue); margin-bottom:6px; display:block;">Modifiers (ตัวเลือกเสริม)</label>
                         <div id="modifiers-checkboxes-container" style="display:flex; flex-direction:column; gap:8px;"></div>
                     </div>
                 </div>
-
                 <div class="modal-actions" style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 10px;">
                     <button class="btn btn-red" onclick="closeVariantModal()">ยกเลิก</button>
                     <button id="add-to-cart-confirm-btn" class="btn btn-green" onclick="confirmAddToCartWithOptions()">เพิ่มลงตะกร้า</button>
@@ -237,69 +190,52 @@
         </div>
     </div>
 
-    <!-- RECEIPT PREVIEW & CHECKOUT MODAL -->
+    <!-- CHECKOUT MODAL -->
     <div class="modal-overlay" id="checkout-modal">
-        <div class="receipt-modal-box" id="receipt-print-area">
+        <div class="receipt-modal-box">
             <div class="receipt-header">
-                <img id="receipt-logo-img" alt="Logo" style="display:none;">
                 <div class="receipt-title">AUGUSTX</div>
                 <div class="receipt-subtitle">HOME COFFEE RECIPE</div>
             </div>
 
             <div class="receipt-meta">
                 <div><strong>วันที่:</strong> <span id="receipt-date">--/--/----</span></div>
-                <div><strong>ประเภท:</strong> <span id="receipt-type-text">Dine-in</span> | <strong>ช่องทาง:</strong> <span id="receipt-source-text">Store</span></div>
+                <div><strong>ประเภท:</strong> <span id="receipt-type-text">Dine-in</span></div>
             </div>
 
             <table class="receipt-items-table">
-                <thead>
-                    <tr>
-                        <th>รายการ</th>
-                        <th style="text-align:center;">จำนวน</th>
-                        <th style="text-align:right;">ราคา</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>รายการ</th><th style="text-align:center;">จำนวน</th><th style="text-align:right;">ราคา</th></tr></thead>
                 <tbody id="receipt-items-tbody"></tbody>
             </table>
 
-            <div class="form-group" id="table-select-group">
+            <div class="form-group">
                 <label>เลือกหมายเลขโต๊ะ (Table)</label>
-                <select id="checkout-table-select">
-                    <option value="">-- เลือกโต๊ะ --</option>
-                </select>
-            </div>
-
-            <div class="form-group" id="customer-select-group">
-                <label>เลือกลูกค้า (Customer)</label>
-                <select id="checkout-customer-select">
-                    <option value="">-- เลือกลูกค้าทั่วไป --</option>
-                </select>
+                <select id="checkout-table-select"><option value="">-- เลือกโต๊ะ --</option></select>
             </div>
 
             <div class="form-group">
-                <label>ประเภทการชำระเงิน (Payment Method)</label>
+                <label>ประเภทการชำระเงิน</label>
                 <select id="payment-method" onchange="handlePaymentMethodChange()">
                     <option value="cash">เงินสด (Cash)</option>
-                    <option value="transfer">โอนเงิน QR (BCEL One / Transfer)</option>
+                    <option value="transfer">โอนเงิน QR (BCEL One)</option>
                 </select>
             </div>
 
             <div class="form-group" id="cash-received-group">
-                <label>รับเงินมา (Cash Received)</label>
+                <label>รับเงินมา</label>
                 <input type="number" id="cash-received" placeholder="0" oninput="calculateChange()">
             </div>
 
             <div class="receipt-totals">
-                <div style="display:flex; justify-content:space-between;"><span>ยอดรวมสินค้า:</span> <span id="receipt-subtotal">0 ₭</span></div>
-                <div style="display:flex; justify-content:space-between;" id="receipt-change-row"><span>เงินทอน (Change):</span> <span id="receipt-change" style="color:var(--green); font-weight:bold;">0 ₭</span></div>
-                <div class="total-row" style="margin-top:5px; border-top:1px dashed #333; padding-top:5px;">
-                    <span>ยอดสุทธิ (Total):</span> <span id="receipt-grand-total" style="color:var(--red);">0 ₭</span>
-                </div>
+                <div style="display:flex; justify-content:space-between;"><span>ยอดรวม:</span> <span id="receipt-subtotal">0 ₭</span></div>
+                <div style="display:flex; justify-content:space-between;" id="receipt-change-row"><span>เงินทอน:</span> <span id="receipt-change" style="color:var(--green); font-weight:bold;">0 ₭</span></div>
+                <div class="total-row"><span>ยอดสุทธิ:</span> <span id="receipt-grand-total" style="color:var(--red);">0 ₭</span></div>
             </div>
 
             <div class="modal-actions" style="margin-top:20px;">
                 <button class="btn btn-red" onclick="closeCheckoutModal()">ยกเลิก</button>
-                <button class="btn btn-green" onclick="confirmCheckout()">พิมพ์บิล & ส่งครัว</button>
+                <button class="btn btn-blue" onclick="printViaRawBTDirect()" style="background:#0284c7;" title="พิมพ์ตรงผ่านแอป RawBT">🖨️ พิมพ์ผ่าน RawBT</button>
+                <button class="btn btn-green" onclick="confirmCheckout()">พิมพ์ปกติ & ส่งครัว</button>
             </div>
         </div>
     </div>
@@ -313,70 +249,20 @@
         let globalItems = [];
         let globalModifiersMaster = [];
         let globalDeliveryPartners = [];
-        let globalTables = [];
-        let globalCustomers = [];
         let currentCategory = 'ALL';
         let currentOrderSource = 'store';
         let currentOrderType = 'Dine-in';
         let cart = [];
-
         let activeItemForModal = null;
         let selectedVariantName = '';
         let selectedVariantPrice = 0;
         let editingCartIndex = null;
 
-        // ซิงค์ขนาดกระดาษจาก Printer settings ใน Admin
-        database.ref('settings/printer').on('value', snap => {
-            let p = snap.val() || {};
-            let width = p.paperSize === '80mm' ? '80mm' : '58mm';
-            document.documentElement.style.setProperty('--print-width', width);
-        });
-
         database.ref('tables').on('value', snap => {
-            globalTables = [];
             let html = '<option value="">-- เลือกโต๊ะ --</option>';
-            snap.forEach(child => { let t = child.val(); globalTables.push(t); html += `<option value="${t.name}">${t.name}</option>`; });
+            snap.forEach(child => { let t = child.val(); html += `<option value="${t.name}">${t.name}</option>`; });
             document.getElementById('checkout-table-select').innerHTML = html;
         });
-
-        database.ref('customers').on('value', snap => {
-            globalCustomers = [];
-            let html = '<option value="">-- เลือกลูกค้าทั่วไป --</option>';
-            snap.forEach(child => { let c = child.val(); globalCustomers.push(c); html += `<option value="${c.name} (${c.phone || '-'})">${c.name} (${c.phone || '-'})</option>`; });
-            document.getElementById('checkout-customer-select').innerHTML = html;
-        });
-
-        database.ref('store_logo').on('value', snap => {
-            let logoUrl = snap.val();
-            let logoImg = document.getElementById('receipt-logo-img');
-            if(logoImg) {
-                if(logoUrl) { logoImg.src = logoUrl; logoImg.style.display = 'block'; } else { logoImg.style.display = 'none'; }
-            }
-        });
-
-        function setOrderType(type, btn) {
-            currentOrderType = type;
-            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('cart-type-display').innerText = type;
-            document.getElementById('cart-type-display').style.color = type === 'Dine-in' ? 'var(--green)' : 'var(--orange)';
-        }
-
-        let inactivityTimer = null;
-        function resetInactivityTimer() {
-            if(inactivityTimer) clearTimeout(inactivityTimer);
-            if(currentOrderSource !== 'store') {
-                inactivityTimer = setTimeout(() => {
-                    alert("⏰ อยู่ในหน้า Delivery เกิน 5 นาที ระบบดีดกลับหน้า Cashier Home ให้อัตโนมัติ");
-                    let storeBtn = document.querySelector('.nav-tab-btn');
-                    if(storeBtn) switchMainTab('store', storeBtn);
-                }, 300000);
-            }
-        }
-        window.addEventListener('mousemove', resetInactivityTimer);
-        window.addEventListener('keypress', resetInactivityTimer);
-        window.addEventListener('touchstart', resetInactivityTimer, { passive: true });
-        window.addEventListener('click', resetInactivityTimer);
 
         database.ref('delivery_partners').on('value', snap => {
             globalDeliveryPartners = [];
@@ -398,15 +284,19 @@
             document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById('cart-source-display').innerText = source === 'store' ? 'Cashier (Store)' : source;
-            document.getElementById('cart-source-display').style.color = source === 'store' ? 'var(--blue)' : 'var(--orange)';
-            resetInactivityTimer();
             renderMenuGrid();
+        }
+
+        function setOrderType(type, btn) {
+            currentOrderType = type;
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('cart-type-display').innerText = type;
         }
 
         database.ref('categories').on('value', snap => {
             globalCategories = [];
-            snap.forEach(child => { let cat = child.val(); cat.id = child.key; cat.order = cat.order !== undefined ? cat.order : Date.now(); globalCategories.push(cat); });
-            globalCategories.sort((a,b) => a.order - b.order);
+            snap.forEach(child => { let cat = child.val(); cat.id = child.key; globalCategories.push(cat); });
             let html = `<button class="cat-btn ${currentCategory === 'ALL' ? 'active' : ''}" onclick="filterCategory('ALL', this)">ທຸກເມນູ (All)</button>`;
             globalCategories.forEach(c => { html += `<button class="cat-btn ${currentCategory === c.name ? 'active' : ''}" onclick="filterCategory('${c.name}', this)">${c.name}</button>`; });
             document.getElementById('categories-container').innerHTML = html;
@@ -419,8 +309,7 @@
 
         database.ref('menu_items').on('value', snap => {
             globalItems = [];
-            snap.forEach(child => { let item = child.val(); item.id = child.key; item.order = item.order !== undefined ? item.order : Date.now(); globalItems.push(item); });
-            globalItems.sort((a,b) => a.order - b.order);
+            snap.forEach(child => { let item = child.val(); item.id = child.key; globalItems.push(item); });
             renderMenuGrid();
         });
 
@@ -435,121 +324,46 @@
             let filtered = currentCategory === 'ALL' ? globalItems : globalItems.filter(i => i.category === currentCategory);
             let html = '';
             filtered.forEach(item => {
-                let priceOptions = item.priceOptions;
-                if(currentOrderSource !== 'store' && item.deliveryData && item.deliveryData[currentOrderSource]) {
-                    priceOptions = item.deliveryData[currentOrderSource].priceOptions || item.priceOptions;
-                }
-                let priceDisplay = '';
-                if(priceOptions && priceOptions.includes('|')) {
-                    let parts = priceOptions.split(',');
-                    let prices = parts.map(p => Number(p.split('|')[1]));
-                    let minPrice = Math.min(...prices); let maxPrice = Math.max(...prices);
-                    priceDisplay = minPrice === maxPrice ? (minPrice.toLocaleString() + ' ₭') : (minPrice.toLocaleString() + ' - ' + maxPrice.toLocaleString() + ' ₭');
-                } else {
-                    priceDisplay = (Number(priceOptions || 0)).toLocaleString() + ' ₭';
-                }
-                html += `<div class="menu-card" onclick="handleItemClick('${item.id}')"><img src="${item.image || 'images/bg.jpg'}" alt="${item.name}"><div><div class="menu-name">${item.name}</div><div class="menu-price">${priceDisplay}</div></div></div>`;
+                let price = Number(item.priceOptions || 0);
+                html += `<div class="menu-card" onclick="handleItemClick('${item.id}')"><img src="${item.image || 'images/bg.jpg'}"><div><div class="menu-name">${item.name}</div><div class="menu-price">${price.toLocaleString()} ₭</div></div></div>`;
             });
-            document.getElementById('menu-grid-container').innerHTML = html || '<div style="grid-column: 1/-1; text-align:center; color:#94a3b8; padding:40px;">ບໍ່ມີສິນຄ້າໃນໝວດໝູ່ນີ້</div>';
+            document.getElementById('menu-grid-container').innerHTML = html || '<div style="grid-column:1/-1; text-align:center; color:#94a3b8; padding:40px;">ไม่มีสินค้า</div>';
         }
 
         function handleItemClick(itemId, cartIndex = null) {
             let item = globalItems.find(i => i.id === itemId);
             if(!item) return;
-            activeItemForModal = item; editingCartIndex = cartIndex; selectedVariantName = ''; selectedVariantPrice = 0;
+            activeItemForModal = item; editingCartIndex = cartIndex; selectedVariantName = ''; selectedVariantPrice = Number(item.priceOptions || 0);
             document.getElementById('modal-item-title').innerText = item.name;
             document.getElementById('modal-item-img').src = item.image || 'images/bg.jpg';
-            let priceOptions = item.priceOptions; let assignedMods = item.modifiers || [];
-            if(currentOrderSource !== 'store' && item.deliveryData && item.deliveryData[currentOrderSource]) {
-                let dData = item.deliveryData[currentOrderSource];
-                if(dData.priceOptions) priceOptions = dData.priceOptions;
-                if(dData.modifiers) assignedMods = dData.modifiers;
-            }
-            let existingCartItem = cartIndex !== null ? cart[cartIndex] : null;
-            let varContainer = document.getElementById('variant-buttons-container');
-            if(priceOptions && priceOptions.includes('|')) {
-                document.getElementById('variants-section').style.display = 'block';
-                let varHtml = ''; let first = true;
-                priceOptions.split(',').forEach(v => {
-                    let parts = v.split('|'); let vName = parts[0]; let vPrice = Number(parts[1]);
-                    let isSelected = existingCartItem ? existingCartItem.variant === vName : first;
-                    if(isSelected) { selectedVariantName = vName; selectedVariantPrice = vPrice; }
-                    if(first) first = false;
-                    varHtml += `<button class="variant-option-btn ${vName === selectedVariantName ? 'selected' : ''}" onclick="selectVariant('${vName}', ${vPrice}, this)"><span>${vName}</span><span style="color:var(--green); font-weight:bold;">${vPrice.toLocaleString()} ₭</span></button>`;
-                });
-                varContainer.innerHTML = varHtml;
-            } else {
-                document.getElementById('variants-section').style.display = 'none';
-                selectedVariantName = ''; selectedVariantPrice = Number(priceOptions || 0);
-            }
-            setupModifiersForModal(assignedMods, existingCartItem);
+            document.getElementById('variants-section').style.display = 'none';
+            document.getElementById('modifiers-section').style.display = 'none';
             document.getElementById('variant-modal').style.display = 'flex';
-        }
-
-        function selectVariant(vName, vPrice, btn) {
-            selectedVariantName = vName; selectedVariantPrice = vPrice;
-            document.querySelectorAll('.variant-option-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-        }
-
-        function setupModifiersForModal(assignedMods, existingCartItem = null) {
-            let modContainer = document.getElementById('modifiers-checkboxes-container');
-            let modSection = document.getElementById('modifiers-section');
-            if(assignedMods.length > 0) {
-                modSection.style.display = 'block'; let html = '';
-                assignedMods.forEach(mObj => {
-                    let masterMod = globalModifiersMaster.find(m => m.id === mObj.id || m.name === mObj.name);
-                    if(masterMod && masterMod.options) {
-                        html += `<div style="background:#f8fafc; padding:10px; border-radius:6px; border:1px solid var(--border);"><div style="font-weight:bold; font-size:13px; margin-bottom:5px; color:var(--blue);">${masterMod.name}</div><div style="display:flex; flex-wrap:wrap; gap:12px;">`;
-                        masterMod.options.split(',').forEach(opt => {
-                            let p = opt.split('|'); let optName = p[0]; let optPrice = Number(p[1] || 0);
-                            let isChecked = existingCartItem && existingCartItem.modifiers ? existingCartItem.modifiers.some(m => m.group === masterMod.name && m.option === optName) : false;
-                            html += `<label style="display:flex; align-items:center; gap:5px; font-size:13px; cursor:pointer;"><input type="checkbox" class="modal-mod-option-cb" data-modname="${masterMod.name}" data-optname="${optName}" data-optprice="${optPrice}" ${isChecked ? 'checked' : ''}> ${optName} ${optPrice > 0 ? '(+₭' + optPrice.toLocaleString() + ')' : ''}</label>`;
-                        });
-                        html += `</div></div>`;
-                    }
-                });
-                modContainer.innerHTML = html;
-            } else { modSection.style.display = 'none'; modContainer.innerHTML = ''; }
         }
 
         function confirmAddToCartWithOptions() {
             if(!activeItemForModal) return;
-            let finalPrice = selectedVariantPrice; let selectedModifiersList = [];
-            document.querySelectorAll('.modal-mod-option-cb:checked').forEach(cb => {
-                let mName = cb.dataset.modname; let oName = cb.dataset.optname; let oPrice = Number(cb.dataset.optprice);
-                finalPrice += oPrice; selectedModifiersList.push({ group: mName, option: oName, price: oPrice });
-            });
-            let modKey = selectedModifiersList.map(m => m.group + ':' + m.option).sort().join('_');
-            let cartId = activeItemForModal.id + '_' + (selectedVariantName || 'base') + '_' + modKey;
-            if(editingCartIndex !== null) {
-                cart[editingCartIndex].variant = selectedVariantName; cart[editingCartIndex].modifiers = selectedModifiersList;
-                cart[editingCartIndex].price = finalPrice; cart[editingCartIndex].id = cartId; editingCartIndex = null;
-            } else {
-                let cartItem = { id: cartId, itemId: activeItemForModal.id, name: activeItemForModal.name, variant: selectedVariantName, modifiers: selectedModifiersList, price: finalPrice, quantity: 1, note: '' };
-                let existing = cart.find(c => c.id === cartId);
-                if(existing) existing.quantity++; else cart.push(cartItem);
-            }
+            let cartItem = { id: activeItemForModal.id, name: activeItemForModal.name, price: selectedVariantPrice, quantity: 1, note: '' };
+            let existing = cart.find(c => c.id === cartItem.id);
+            if(existing) existing.quantity++; else cart.push(cartItem);
             renderCart(); closeVariantModal();
         }
 
         function closeVariantModal() { document.getElementById('variant-modal').style.display = 'none'; activeItemForModal = null; editingCartIndex = null; }
-        function updateQty(cartIndex, delta) { cart[cartIndex].quantity += delta; if(cart[cartIndex].quantity <= 0) cart.splice(cartIndex, 1); renderCart(); }
-        function updateCartNote(cartIndex, val) { cart[cartIndex].note = val; }
+        function updateQty(index, delta) { cart[index].quantity += delta; if(cart[index].quantity <= 0) cart.splice(index, 1); renderCart(); }
         function clearCart() { cart = []; renderCart(); }
 
         function renderCart() {
             let container = document.getElementById('cart-items-container');
             if(cart.length === 0) {
-                container.innerHTML = '<div style="text-align:center; color:#94a3b8; margin-top:40px;">ຍັງບໍ່ມີສິນຄ້າในตะกร้า</div>';
+                container.innerHTML = '<div style="text-align:center; color:#94a3b8; margin-top:40px;">ຍັງບໍ່ມີສິນຄ້າໃນตะกร้า</div>';
                 document.getElementById('cart-item-count').innerText = '0 รายการ';
                 document.getElementById('cart-total-price').innerText = '0 ₭'; return;
             }
             let html = ''; let totalQty = 0; let totalPrice = 0;
             cart.forEach((c, index) => {
-                totalQty += c.quantity; let subTotal = c.price * c.quantity; totalPrice += subTotal;
-                let modsText = c.modifiers && c.modifiers.length > 0 ? '<br><span style="color:#0284c7;">' + c.modifiers.map(m => m.option + (m.price > 0 ? ' (+' + m.price.toLocaleString() + ')' : '')).join(', ') + '</span>' : '';
-                html += `<div class="cart-item-card"><div class="cart-item-top"><div class="cart-item-info"><div class="cart-item-name">${c.name}</div><div class="cart-item-details">${c.variant ? '<b>' + c.variant + '</b> | ' : ''}${c.price.toLocaleString()} ₭ ${modsText}</div></div><button class="edit-cart-btn" onclick="handleItemClick('${c.itemId}', ${index})" title="แก้ไขออร์เดอร์">✏️</button></div><div><input type="text" class="cart-item-note-input" placeholder="Noted: (เช่น หวานน้อย...)" value="${c.note || ''}" oninput="updateCartNote(${index}, this.value)"></div><div class="cart-item-actions"><span style="font-size:13px; font-weight:bold; color:var(--blue);">รวม: ${subTotal.toLocaleString()} ₭</span><div class="cart-item-controls"><button class="qty-btn" onclick="updateQty(${index}, -1)">-</button><span>${c.quantity}</span><button class="qty-btn" onclick="updateQty(${index}, 1)">+</button></div></div></div>`;
+                totalQty += c.quantity; let sub = c.price * c.quantity; totalPrice += sub;
+                html += `<div class="cart-item-card"><div class="cart-item-top"><div class="cart-item-name">${c.name}</div><div>${c.price.toLocaleString()} ₭</div></div><div style="display:flex; justify-content:space-between; align-items:center;"><span>รวม: ${sub.toLocaleString()} ₭</span><div><button onclick="updateQty(${index}, -1)">-</button> ${c.quantity} <button onclick="updateQty(${index}, 1)">+</button></div></div></div>`;
             });
             container.innerHTML = html;
             document.getElementById('cart-item-count').innerText = totalQty + ' รายการ';
@@ -557,69 +371,68 @@
         }
 
         function openCheckoutModal() {
-            if(cart.length === 0) return alert("กรุณาเลือกสินค้าใส่ตะกร้าก่อนครับ!");
-            let totalPrice = cart.reduce((sum, c) => sum + (c.price * c.quantity), 0);
+            if(cart.length === 0) return alert("ตะกร้าว่างเปล่า!");
+            let total = cart.reduce((s, c) => s + (c.price * c.quantity), 0);
             document.getElementById('receipt-date').innerText = new Date().toLocaleString('en-GB');
             document.getElementById('receipt-type-text').innerText = currentOrderType;
-            document.getElementById('receipt-source-text').innerText = currentOrderSource === 'store' ? 'Store' : currentOrderSource;
-
-            let tbodyHtml = '';
-            cart.forEach(c => {
-                let sub = c.price * c.quantity;
-                let details = [c.variant, ...(c.modifiers || []).map(m => m.option), c.note ? 'Note: ' + c.note : ''].filter(Boolean).join(' | ');
-                tbodyHtml += `<tr><td><b>${c.name}</b>${details ? '<br><span style="font-size:11px; color:#555;">' + details + '</span>' : ''}</td><td align="center">${c.quantity}</td><td align="right">${sub.toLocaleString()} ₭</td></tr>`;
-            });
-            document.getElementById('receipt-items-tbody').innerHTML = tbodyHtml;
-            document.getElementById('receipt-subtotal').innerText = totalPrice.toLocaleString() + ' ₭';
-            document.getElementById('receipt-grand-total').innerText = totalPrice.toLocaleString() + ' ₭';
-            document.getElementById('cash-received').value = '';
-            document.getElementById('receipt-change').innerText = '0 ₭';
+            let tbody = '';
+            cart.forEach(c => { tbody += `<tr><td>${c.name}</td><td align="center">${c.quantity}</td><td align="right">${(c.price*c.quantity).toLocaleString()} ₭</td></tr>`; });
+            document.getElementById('receipt-items-tbody').innerHTML = tbody;
+            document.getElementById('receipt-subtotal').innerText = total.toLocaleString() + ' ₭';
+            document.getElementById('receipt-grand-total').innerText = total.toLocaleString() + ' ₭';
             document.getElementById('checkout-modal').style.display = 'flex';
         }
 
         function closeCheckoutModal() { document.getElementById('checkout-modal').style.display = 'none'; }
         function handlePaymentMethodChange() {
-            let method = document.getElementById('payment-method').value;
-            document.getElementById('cash-received-group').style.display = method === 'cash' ? 'block' : 'none';
-            document.getElementById('receipt-change-row').style.display = method === 'cash' ? 'flex' : 'none';
+            let m = document.getElementById('payment-method').value;
+            document.getElementById('cash-received-group').style.display = m === 'cash' ? 'block' : 'none';
         }
         function calculateChange() {
-            let totalPrice = cart.reduce((sum, c) => sum + (c.price * c.quantity), 0);
-            let received = parseFloat(document.getElementById('cash-received').value) || 0;
-            let change = received - totalPrice;
-            document.getElementById('receipt-change').innerText = (change >= 0 ? change.toLocaleString() : '0') + ' ₭';
+            let total = cart.reduce((s, c) => s + (c.price * c.quantity), 0);
+            let rec = parseFloat(document.getElementById('cash-received').value) || 0;
+            document.getElementById('receipt-change').innerText = (rec - total >= 0 ? rec - total : 0).toLocaleString() + ' ₭';
+        }
+
+        // ฟังก์ชันสั่งพิมพ์ผ่านแอปตัวกลาง RawBT (Direct Print) ตัดปัญหาหาเครื่องพิมพ์ไม่เจอ
+        function printViaRawBTDirect() {
+            let total = cart.reduce((s, c) => s + (c.price * c.quantity), 0);
+            let table = document.getElementById('checkout-table-select').value;
+            
+            let text = "       AUGUSTX COFFEE\n";
+            text += "--------------------------------\n";
+            text += "Date: " + new Date().toLocaleString('en-GB') + "\n";
+            if(table) text += "Table: " + table + "\n";
+            text += "Type: " + currentOrderType + "\n";
+            text += "--------------------------------\n";
+            cart.forEach(c => {
+                text += `${c.name} x${c.quantity}  ${(c.price*c.quantity).toLocaleString()} K\n`;
+            });
+            text += "--------------------------------\n";
+            text += "TOTAL: " + total.toLocaleString() + " K\n";
+            text += "================================\n";
+            text += "    Thank you for coming!   \n\n\n";
+
+            // ส่งข้อมูลผ่าน Intent ไปยังแอป RawBT
+            let encodedText = encodeURI(text);
+            window.location.href = "rawbt:data:text/plain;charset=utf-8," + encodedText;
         }
 
         function confirmCheckout() {
-            let totalPrice = cart.reduce((sum, c) => sum + (c.price * c.quantity), 0);
-            let tableName = document.getElementById('checkout-table-select').value;
-            let customerName = document.getElementById('checkout-customer-select').value;
-            let finalCustomerStr = tableName ? `โต๊ะ: ${tableName}` : (customerName || (currentOrderSource === 'store' ? 'ทั่วไป' : currentOrderSource + ' Order'));
-            let paymentMethod = document.getElementById('payment-method').value;
-
-            let orderData = {
-                customer: finalCustomerStr,
-                table: tableName,
-                orderType: currentOrderType,
+            let total = cart.reduce((s, c) => s + (c.price * c.quantity), 0);
+            let table = document.getElementById('checkout-table-select').value;
+            database.ref('orders').push({
+                customer: table ? 'โต๊ะ: ' + table : 'ทั่วไป',
+                table: table,
                 items: cart,
-                total: totalPrice,
-                paymentMethod: paymentMethod,
-                source: currentOrderSource,
+                total: total,
                 status: 'pending',
                 date: new Date().toLocaleDateString('en-GB'),
                 timestamp: Date.now()
-            };
-
-            database.ref('orders').push(orderData).then(() => {
-                // สั่งพิมพ์บิลออก Xprinter อัตโนมัติผ่าน Browser Print Dialog
+            }).then(() => {
                 window.print();
-
-                alert("🎉 พิมพ์บิล & ส่ง Order เข้าครัวสำเร็จ!");
+                alert("บันทึกและส่ง Order สำเร็จ!");
                 closeCheckoutModal(); clearCart();
-                if(currentOrderSource !== 'store') {
-                    let storeBtn = document.querySelector('.nav-tab-btn');
-                    if(storeBtn) switchMainTab('store', storeBtn);
-                }
             });
         }
     </script>
