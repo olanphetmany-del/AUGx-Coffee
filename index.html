@@ -384,3 +384,27 @@
     </script>
 </body>
 </html>
+
+// ฟังก์ชันสั่งพิมพ์ผ่าน RawBT แบบเข้ารหัส Base64 (แก้ปัญหาพิมพ์ออกเป็นตัวหนังสือขยะ)
+        function printViaRawBTDirect() {
+            let total = cart.reduce((s, c) => s + (Number(c.price || 0) * c.quantity), 0);
+            let table = document.getElementById('checkout-table-select').value;
+            
+            let text = "AUGUSTX COFFEE\n";
+            text += "--------------------------------\n";
+            text += "Date: " + new Date().toLocaleString('en-GB') + "\n";
+            if(table) text += "Table: " + table + "\n";
+            text += "Type: " + currentOrderType + "\n";
+            text += "--------------------------------\n";
+            cart.forEach(c => {
+                text += `${c.name} x${c.quantity}  ${(Number(c.price||0)*c.quantity).toLocaleString()} K\n`;
+            });
+            text += "--------------------------------\n";
+            text += "TOTAL: " + total.toLocaleString() + " K\n";
+            text += "================================\n";
+            text += "Thank you for coming!\n\n\n";
+
+            // แปลงข้อความให้อยู่ในรูป Base64 เพื่อให้ RawBT ถอดรหัสพิมพ์ออกเครื่องพิมพ์ได้อย่างถูกต้อง 100%
+            let base64Encoder = btoa(unescape(encodeURIComponent(text)));
+            window.location.href = "rawbt:data:base64," + base64Encoder;
+        }
