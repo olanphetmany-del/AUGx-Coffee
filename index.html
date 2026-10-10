@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AUGUSTX - Cashier POS</title>
-    <!-- Google Fonts: Noto Sans Lao -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <style>
+
         :root { --blue: #1a365d; --green: #689f38; --red: #ef4444; --orange: #f59e0b; --bg: #f4f6f8; --white: #ffffff; --text: #334155; --border: #e0e0e0; }
         * { font-family: 'Noto Sans Lao', sans-serif, 'Segoe UI', Tahoma; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html { height: 100%; }
@@ -70,7 +71,12 @@
         .checkout-btn:hover { background: #558b2f; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .receipt-modal-box { background: #fff; width: 90%; max-width: 420px; border-radius: 8px; max-height: 95vh; max-height: 95dvh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px dashed #cbd5e1; }
+        .receipt-modal-box { background: #fff; width: 90%; max-width: 420px; border-radius: 8px; max-height: 95vh; max-height: 95dvh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px dashed #cbd5e1; position: relative; }
+        
+        /* ปุ่มกากบาท (✕) มุมขวาบน */
+        .close-modal-x { position: absolute; top: 12px; right: 15px; background: none; border: none; font-size: 1.4rem; font-weight: bold; color: #64748b; cursor: pointer; }
+        .close-modal-x:hover { color: var(--red); }
+
         .receipt-header { text-align: center; border-bottom: 2px dashed #333; padding-bottom: 12px; margin-bottom: 12px; }
         .receipt-title { font-size: 1.3rem; font-weight: bold; letter-spacing: 1px; margin: 0; color: #000; }
         .receipt-subtitle { font-size: 0.85rem; font-weight: bold; color: #555; margin-top: 2px; }
@@ -92,7 +98,39 @@
         .btn-green { background: var(--green); }
         .btn-red { background: var(--red); }
         .btn-blue { background: var(--blue); }
+    
+
+        /* ---------- เพิ่มใหม่ ---------- */
+        .cart-item-note { font-size: 12px; color: var(--red); margin-top: 2px; }
+        .qty-wrap { display: flex; align-items: center; gap: 8px; }
+        .note-btn { background: none; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 12px; cursor: pointer; color: #64748b; }
+        .opt-title { font-size: 1.15rem; font-weight: bold; color: var(--blue); margin-bottom: 10px; padding-right: 30px; }
+        .opt-group { margin-bottom: 14px; }
+        .opt-gname { font-weight: bold; font-size: 13px; color: #555; margin-bottom: 6px; }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip { padding: 9px 14px; border: 1px solid var(--border); border-radius: 8px; background: #fff; font-size: 13px; font-weight: bold; cursor: pointer; color: var(--text); }
+        .chip.on { background: var(--blue); color: #fff; border-color: var(--blue); }
+        .inline-row { display: flex; gap: 8px; }
+        .inline-row > * { flex: 1; }
+        .quick-btn { padding: 6px 10px; font-size: 12px; background: #e2e8f0; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 6px; }
+        .btn:disabled { opacity: .5; cursor: not-allowed; }
+        .receipt-totals .minus { color: var(--red); }
+
+        /* ---------- ใบเสร็จสำหรับพิมพ์ ---------- */
+        #print-area { display: none; }
+        @media print {
+            html, body { height: auto !important; overflow: visible !important; background: #fff !important; }
+            .pos-container, .modal-overlay, #conn-banner, #toast-box, #login-overlay { display: none !important; }
+            #print-area { display: block; margin: 0 auto; color: #000; font-size: 12px; line-height: 1.4; }
+            #print-area .r-center { text-align: center; }
+            #print-area .r-title { font-size: 16px; font-weight: bold; }
+            #print-area .r-line { border-top: 1px dashed #000; margin: 6px 0; }
+            #print-area .r-row { display: flex; justify-content: space-between; gap: 6px; }
+            #print-area .r-bold { font-weight: bold; }
+            #print-area img { max-width: 100%; max-height: 70px; }
+        }
     </style>
+    <style id="print-page-style"></style>
 </head>
 <body>
     <div class="pos-container">
@@ -106,9 +144,7 @@
             </div>
 
             <div class="nav-row">
-                <div class="nav-tabs-bar" id="nav-tabs-container">
-                    <button class="nav-tab-btn active" onclick="switchMainTab('store', this)">Cashier</button>
-                </div>
+                <div class="nav-tabs-bar" id="nav-tabs-container"></div>
                 <div class="order-type-switch">
                     <button class="type-btn active" id="btn-dine-in" onclick="setOrderType('Dine-in', this)">Dine-in</button>
                     <div class="type-divider"></div>
@@ -116,10 +152,7 @@
                 </div>
             </div>
 
-            <div class="categories-bar" id="categories-container">
-                <button class="cat-btn active" onclick="filterCategory('ALL', this)">ທຸກເມນູ (All)</button>
-            </div>
-
+            <div class="categories-bar" id="categories-container"></div>
             <div class="menu-grid" id="menu-grid-container"></div>
         </div>
 
@@ -128,9 +161,7 @@
                 <span>ตะกร้าสินค้า (Cart)</span>
                 <button onclick="clearCart()" style="background:none; border:none; color:var(--red); font-size:13px; cursor:pointer; font-weight:bold; padding:6px;">ล้างตะกร้า</button>
             </div>
-            <div class="cart-items" id="cart-items-container">
-                <div style="text-align:center; color:#94a3b8; margin-top:40px;">ຍັງບໍ່ມີສິນຄ້າໃນตะกร้า</div>
-            </div>
+            <div class="cart-items" id="cart-items-container"></div>
             <div class="cart-footer">
                 <div class="summary-row">
                     <span>ประเภท: <strong id="cart-type-display" style="color:var(--green);">Dine-in</strong></span>
@@ -143,12 +174,19 @@
         </div>
     </div>
 
+    <!-- OPTION MODAL (เลือกไซส์ / ตัวเลือกเสริม) -->
+    <div class="modal-overlay" id="option-modal">
+        <div class="receipt-modal-box" id="option-modal-box"></div>
+    </div>
+
     <!-- CHECKOUT MODAL -->
     <div class="modal-overlay" id="checkout-modal">
         <div class="receipt-modal-box">
+            <button class="close-modal-x" onclick="closeCheckoutModal()">✕</button>
+
             <div class="receipt-header">
-                <div class="receipt-title">AUGUSTX</div>
-                <div class="receipt-subtitle">HOME COFFEE RECIPE</div>
+                <div class="receipt-title" id="rc-shop-name">AUGUSTX</div>
+                <div class="receipt-subtitle" id="rc-shop-sub">HOME COFFEE RECIPE</div>
             </div>
 
             <div class="receipt-meta">
@@ -161,9 +199,25 @@
                 <tbody id="receipt-items-tbody"></tbody>
             </table>
 
-            <div class="form-group">
+            <div class="form-group" id="table-group">
                 <label>เลือกหมายเลขโต๊ะ (Table)</label>
                 <select id="checkout-table-select"><option value="">-- เลือกโต๊ะ --</option></select>
+            </div>
+
+            <div class="form-group">
+                <label>ลูกค้า (ไม่บังคับ)</label>
+                <select id="checkout-customer-select"><option value="">-- ลูกค้าทั่วไป --</option></select>
+            </div>
+
+            <div class="form-group">
+                <label>ส่วนลด</label>
+                <div class="inline-row">
+                    <select id="discount-type" onchange="updateCheckoutTotals()">
+                        <option value="amount">จำนวนเงิน (₭)</option>
+                        <option value="percent">เปอร์เซ็นต์ (%)</option>
+                    </select>
+                    <input type="number" id="discount-value" placeholder="0" min="0" oninput="updateCheckoutTotals()">
+                </div>
             </div>
 
             <div class="form-group">
@@ -175,212 +229,475 @@
             </div>
 
             <div class="form-group" id="cash-received-group">
-                <label>รับเงินมา</label>
-                <input type="number" id="cash-received" placeholder="0" oninput="calculateChange()">
+                <label>รับเงินมา (เว้นว่าง = พอดี)</label>
+                <input type="number" id="cash-received" placeholder="0" min="0" oninput="updateCheckoutTotals()">
+                <button class="quick-btn" onclick="setExactCash()">พอดี</button>
             </div>
 
             <div class="receipt-totals">
                 <div style="display:flex; justify-content:space-between;"><span>ยอดรวม:</span> <span id="receipt-subtotal">0 ₭</span></div>
+                <div style="display:flex; justify-content:space-between;" id="receipt-discount-row"><span>ส่วนลด:</span> <span id="receipt-discount" class="minus">0 ₭</span></div>
                 <div style="display:flex; justify-content:space-between;" id="receipt-change-row"><span>เงินทอน:</span> <span id="receipt-change" style="color:var(--green); font-weight:bold;">0 ₭</span></div>
                 <div class="total-row"><span>ยอดสุทธิ:</span> <span id="receipt-grand-total" style="color:var(--red);">0 ₭</span></div>
             </div>
 
-            <div class="modal-actions" style="margin-top:20px;">
-                <button class="btn btn-red" onclick="closeCheckoutModal()">ยกเลิก</button>
-                <button class="btn btn-blue" onclick="printViaRawBTDirect()" style="background:#0284c7;">🖨️ พิมพ์ผ่าน RawBT</button>
-                <button class="btn btn-green" onclick="confirmCheckout()">พิมพ์ปกติ & ส่งครัว</button>
+            <div style="margin-top:20px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; gap: 8px; width: 100%;">
+                    <button class="btn btn-red act-btn" onclick="sendToKitchenOnly()" style="flex: 1;">👨‍🍳 เข้าครัว (ยังไม่ชำระ)</button>
+                    <button class="btn act-btn" onclick="printStickerOnly()" style="background:#f59e0b; flex: 1; color: white;">🏷️ สติกเกอร์อย่างเดียว<br><small>(ไม่บันทึกออร์เดอร์)</small></button>
+                </div>
+                <div style="display: flex; gap: 8px; width: 100%;">
+                    <button class="btn btn-green act-btn" onclick="confirmCheckout()" style="flex: 1;">🧾 ชำระเงิน พิมพ์บิล & เข้าครัว</button>
+                    <button class="btn btn-blue act-btn" onclick="printStickerAndKitchenDelivery()" style="background:#0284c7; flex: 1; color: white;">🚀 สติกเกอร์ & ครัว (Delivery)</button>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- พื้นที่ใบเสร็จสำหรับพิมพ์ -->
+    <div id="print-area"></div>
+
+    <script src="shared.js"></script>
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyDAJUEFUwkieMGFxRIZ6vRwzLbXF31c_BM", authDomain: "augx-d75c2.firebaseapp.com", databaseURL: "https://augx-d75c2-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "augx-d75c2", storageBucket: "augx-d75c2.firebasestorage.app" };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        let globalCategories = [], globalItems = [], globalPartners = [], globalModifiers = [], globalCustomers = [];
+        let settings = { paperSize: '58mm', shopName: 'AUGUSTX', shopSub: 'HOME COFFEE RECIPE', address: '', phone: '', footer: 'ขอบคุณที่ใช้บริการ' };
+        let featureTables = true, storeLogo = '';
+        let currentCategory = 'ALL', currentOrderSource = 'store', currentOrderType = 'Dine-in';
+        let cart = [], submitting = false, opt = null;
 
-        let globalCategories = [];
-        let globalItems = [];
-        let globalDeliveryPartners = [];
-        let currentCategory = 'ALL';
-        let currentOrderSource = 'store';
-        let currentOrderType = 'Dine-in';
-        let cart = [];
+        /* ---------------- โหลดข้อมูลจาก Firebase ---------------- */
+        function startListeners() {
+            database.ref('tables').on('value', snap => {
+                const el = document.getElementById('checkout-table-select');
+                const keep = el.value;
+                let html = '<option value="">-- เลือกโต๊ะ --</option>';
+                snap.forEach(child => { const t = child.val(); html += `<option value="${esc(t.name)}">${esc(t.name)}</option>`; });
+                el.innerHTML = html; el.value = keep;
+            });
 
-        database.ref('tables').on('value', snap => {
-            let html = '<option value="">-- เลือกโต๊ะ --</option>';
-            snap.forEach(child => { let t = child.val(); html += `<option value="${t.name}">${t.name}</option>`; });
-            document.getElementById('checkout-table-select').innerHTML = html;
-        });
+            database.ref('customers').on('value', snap => {
+                globalCustomers = [];
+                snap.forEach(child => { const c = child.val(); c.id = child.key; globalCustomers.push(c); });
+                const el = document.getElementById('checkout-customer-select');
+                const keep = el.value;
+                let html = '<option value="">-- ลูกค้าทั่วไป --</option>';
+                globalCustomers.forEach(c => { html += `<option value="${esc(c.id)}">${esc(c.name)}${c.phone ? ' (' + esc(c.phone) + ')' : ''}</option>`; });
+                el.innerHTML = html; el.value = keep;
+            });
 
-        database.ref('delivery_partners').on('value', snap => {
-            globalDeliveryPartners = [];
-            snap.forEach(child => { let p = child.val(); p.id = child.key; globalDeliveryPartners.push(p); });
-            renderNavTabs();
-        });
+            database.ref('delivery_partners').on('value', snap => {
+                globalPartners = [];
+                snap.forEach(child => { const p = child.val(); p.id = child.key; globalPartners.push(p); });
+                if (currentOrderSource !== 'store' && !globalPartners.some(p => p.name === currentOrderSource)) {
+                    currentOrderSource = 'store';
+                    document.getElementById('cart-source-display').innerText = 'Cashier (Store)';
+                }
+                renderNavTabs();
+            });
 
+            database.ref('categories').on('value', snap => {
+                globalCategories = [];
+                snap.forEach(child => { const cat = child.val(); cat.id = child.key; globalCategories.push(cat); });
+                if (currentCategory !== 'ALL' && !globalCategories.some(c => c.name === currentCategory)) currentCategory = 'ALL';
+                renderCategories();
+                renderMenuGrid();
+            });
+
+            database.ref('modifiers').on('value', snap => {
+                globalModifiers = [];
+                snap.forEach(child => { const m = child.val(); m.id = child.key; globalModifiers.push(normalizeModifier(m)); });
+            });
+
+            database.ref('menu_items').on('value', snap => {
+                globalItems = [];
+                snap.forEach(child => {
+                    const item = child.val();
+                    item.id = child.key;
+                    item.prices = parsePrices(item.priceOptions);
+                    globalItems.push(item);
+                });
+                renderMenuGrid();
+            });
+
+            database.ref('settings/printer').on('value', snap => {
+                const p = snap.val() || {};
+                Object.keys(p).forEach(k => { if (p[k] !== '' && p[k] != null) settings[k] = p[k]; });
+                if (!p.address) settings.address = '';
+                if (!p.phone) settings.phone = '';
+                document.getElementById('rc-shop-name').innerText = settings.shopName;
+                document.getElementById('rc-shop-sub').innerText = settings.shopSub;
+            });
+            database.ref('settings/features/tables').on('value', snap => {
+                featureTables = snap.val() !== false;
+                document.getElementById('table-group').style.display = featureTables ? 'block' : 'none';
+            });
+            database.ref('store_logo').on('value', snap => { storeLogo = snap.val() || ''; });
+        }
+
+        /* ---------------- แท็บช่องทาง / ประเภท / หมวด ---------------- */
         function renderNavTabs() {
-            let html = `<button class="nav-tab-btn ${currentOrderSource === 'store' ? 'active' : ''}" onclick="switchMainTab('store', this)">Cashier</button>`;
-            globalDeliveryPartners.forEach(p => {
-                let isActive = currentOrderSource === p.name ? 'active' : '';
-                html += `<button class="nav-tab-btn delivery-tab ${isActive}" onclick="switchMainTab('${p.name}', this)">${p.name}</button>`;
+            let html = `<button class="nav-tab-btn ${currentOrderSource === 'store' ? 'active' : ''}" data-src="store" onclick="switchMainTab(this.dataset.src)">Cashier</button>`;
+            globalPartners.forEach(p => {
+                html += `<button class="nav-tab-btn delivery-tab ${currentOrderSource === p.name ? 'active' : ''}" data-src="${esc(p.name)}" onclick="switchMainTab(this.dataset.src)">${esc(p.name)}</button>`;
             });
             document.getElementById('nav-tabs-container').innerHTML = html;
         }
-
-        function switchMainTab(source, btn) {
+        function switchMainTab(source) {
             currentOrderSource = source;
-            document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
             document.getElementById('cart-source-display').innerText = source === 'store' ? 'Cashier (Store)' : source;
-            renderMenuGrid();
+            renderNavTabs();
         }
-
         function setOrderType(type, btn) {
             currentOrderType = type;
             document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById('cart-type-display').innerText = type;
         }
-
-        database.ref('categories').on('value', snap => {
-            globalCategories = [];
-            snap.forEach(child => { let cat = child.val(); cat.id = child.key; globalCategories.push(cat); });
-            let html = `<button class="cat-btn ${currentCategory === 'ALL' ? 'active' : ''}" onclick="filterCategory('ALL', this)">ທຸກເມນູ (All)</button>`;
-            globalCategories.forEach(c => { html += `<button class="cat-btn ${currentCategory === c.name ? 'active' : ''}" onclick="filterCategory('${c.name}', this)">${c.name}</button>`; });
-            document.getElementById('categories-container').innerHTML = html;
-        });
-
-        database.ref('menu_items').on('value', snap => {
-            globalItems = [];
-            snap.forEach(child => { 
-                let item = child.val(); 
-                item.id = child.key; 
-                let rawPrice = item.priceOptions;
-                if (typeof rawPrice === 'string' && rawPrice.includes('|')) {
-                    rawPrice = rawPrice.split(',')[0].split('|')[1];
-                }
-                item.parsedPrice = parseFloat(rawPrice) || 0;
-                globalItems.push(item); 
+        function renderCategories() {
+            let html = `<button class="cat-btn ${currentCategory === 'ALL' ? 'active' : ''}" data-cat="ALL" onclick="filterCategory(this.dataset.cat)">ທຸກເມນູ (All)</button>`;
+            globalCategories.forEach(c => {
+                html += `<button class="cat-btn ${currentCategory === c.name ? 'active' : ''}" data-cat="${esc(c.name)}" onclick="filterCategory(this.dataset.cat)">${esc(c.name)}</button>`;
             });
-            renderMenuGrid();
-        });
-
-        function filterCategory(catName, btn) {
+            document.getElementById('categories-container').innerHTML = html;
+        }
+        function filterCategory(catName) {
             currentCategory = catName;
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            renderCategories();
             renderMenuGrid();
         }
 
         function renderMenuGrid() {
-            let filtered = currentCategory === 'ALL' ? globalItems : globalItems.filter(i => i.category === currentCategory);
+            const filtered = currentCategory === 'ALL' ? globalItems : globalItems.filter(i => i.category === currentCategory);
             let html = '';
             filtered.forEach(item => {
-                let price = item.parsedPrice;
-                html += `<div class="menu-card" onclick="addToCart('${item.id}')"><img src="${item.image || 'images/bg.jpg'}"><div><div class="menu-name">${item.name}</div><div class="menu-price">${price.toLocaleString()} ₭</div></div></div>`;
+                const prices = item.prices.map(p => p.price);
+                const min = prices.length ? Math.min.apply(null, prices) : 0;
+                const label = prices.length > 1 ? 'เริ่ม ' + money(min) : money(min);
+                html += `<div class="menu-card" data-id="${esc(item.id)}" onclick="onItemClick(this.dataset.id)"><img src="${esc(item.image || 'images/bg.jpg')}"><div><div class="menu-name">${esc(item.name)}</div><div class="menu-price">${label}</div></div></div>`;
             });
             document.getElementById('menu-grid-container').innerHTML = html || '<div style="grid-column:1/-1; text-align:center; color:#94a3b8; padding:40px;">ไม่มีสินค้า</div>';
         }
 
-        function addToCart(id) {
-            let item = globalItems.find(i => i.id === id);
-            if(!item) return;
-            let price = item.parsedPrice;
-            let existing = cart.find(c => c.itemId === id);
-            if(existing) { existing.quantity++; } 
-            else { cart.push({ itemId: id, name: item.name, price: price, quantity: 1 }); }
-            renderCart();
+        /* ---------------- เลือกสินค้า / ตัวเลือกเสริม ---------------- */
+        function getItemGroups(item) {
+            return String(item.modifierIds || '').split(',').filter(Boolean)
+                .map(id => globalModifiers.find(m => m.id === id)).filter(m => m && m.options.length);
+        }
+        function onItemClick(id) {
+            const item = globalItems.find(i => i.id === id);
+            if (!item) return;
+            const groups = getItemGroups(item);
+            if (item.prices.length <= 1 && groups.length === 0) {
+                const p = item.prices[0] || { label: '', price: 0 };
+                addLine(item, p.label, p.price, [], '');
+                return;
+            }
+            opt = { item: item, variantIdx: 0, sel: {}, note: '' };
+            groups.forEach(g => { opt.sel[g.id] = []; });
+            renderOptionModal();
+            document.getElementById('option-modal').style.display = 'flex';
+        }
+        function optionPrice() {
+            const item = opt.item;
+            let price = (item.prices[opt.variantIdx] || { price: 0 }).price;
+            getItemGroups(item).forEach(g => { (opt.sel[g.id] || []).forEach(i => { price += Number(g.options[i].price || 0); }); });
+            return price;
+        }
+        function renderOptionModal() {
+            const item = opt.item, groups = getItemGroups(item);
+            let html = `<button class="close-modal-x" onclick="closeOptionModal()">✕</button><div class="opt-title">${esc(item.name)}</div>`;
+            if (item.prices.length > 1) {
+                html += '<div class="opt-group"><div class="opt-gname">ขนาด / ประเภท</div><div class="chips">';
+                item.prices.forEach((p, i) => {
+                    html += `<button class="chip ${opt.variantIdx === i ? 'on' : ''}" onclick="pickVariant(${i})">${esc(p.label || '-')} · ${money(p.price)}</button>`;
+                });
+                html += '</div></div>';
+            }
+            groups.forEach(g => {
+                html += `<div class="opt-group"><div class="opt-gname">${esc(g.name)}${g.multi ? ' (เลือกได้หลายอย่าง)' : ''}</div><div class="chips">`;
+                g.options.forEach((o, i) => {
+                    const on = (opt.sel[g.id] || []).includes(i);
+                    html += `<button class="chip ${on ? 'on' : ''}" onclick="pickMod('${esc(g.id)}', ${i})">${esc(o.name)}${o.price ? ' +' + money(o.price) : ''}</button>`;
+                });
+                html += '</div></div>';
+            });
+            html += `<div class="opt-group"><div class="opt-gname">หมายเหตุ</div><input type="text" id="opt-note" value="${esc(opt.note)}" placeholder="เช่น ไม่ใส่น้ำแข็ง" oninput="opt.note = this.value" style="width:100%; padding:10px 8px; border:1px solid var(--border); border-radius:4px; font-size:14px;"></div>`;
+            html += `<button class="btn btn-green" style="width:100%;" onclick="confirmOption()">เพิ่มลงตะกร้า (${money(optionPrice())})</button>`;
+            document.getElementById('option-modal-box').innerHTML = html;
+        }
+        function pickVariant(i) { opt.variantIdx = i; renderOptionModal(); }
+        function pickMod(gid, i) {
+            const g = globalModifiers.find(m => m.id === gid);
+            let cur = opt.sel[gid] || [];
+            if (cur.includes(i)) cur = cur.filter(x => x !== i);
+            else cur = g && g.multi ? cur.concat([i]) : [i];
+            opt.sel[gid] = cur;
+            renderOptionModal();
+        }
+        function closeOptionModal() { document.getElementById('option-modal').style.display = 'none'; opt = null; }
+        function confirmOption() {
+            const item = opt.item;
+            const v = item.prices[opt.variantIdx] || { label: '', price: 0 };
+            const mods = [];
+            getItemGroups(item).forEach(g => {
+                (opt.sel[g.id] || []).forEach(i => { mods.push({ group: g.name, option: g.options[i].name, price: Number(g.options[i].price || 0) }); });
+            });
+            const price = optionPrice();
+            const note = (opt.note || '').trim();
+            closeOptionModal();
+            addLine(item, v.label, price, mods, note);
         }
 
+        /* ---------------- ตะกร้า ---------------- */
+        function lineKey(itemId, variant, mods, note) {
+            return [itemId, variant, mods.map(m => m.group + ':' + m.option).sort().join('+'), note].join('|');
+        }
+        function addLine(item, variant, price, mods, note) {
+            const key = lineKey(item.id, variant, mods, note);
+            const existing = cart.find(c => c.key === key);
+            if (existing) existing.quantity++;
+            else cart.push({ key: key, itemId: item.id, name: item.name, variant: variant || '', price: price, quantity: 1, modifiers: mods, note: note || '' });
+            renderCart();
+        }
         function updateQty(index, delta) {
             cart[index].quantity += delta;
-            if(cart[index].quantity <= 0) cart.splice(index, 1);
+            if (cart[index].quantity <= 0) cart.splice(index, 1);
             renderCart();
         }
-
-        function clearCart() { cart = []; renderCart(); }
-
+        function editNote(index) {
+            const n = prompt('หมายเหตุสำหรับรายการนี้', cart[index].note || '');
+            if (n === null) return;
+            cart[index].note = n.trim();
+            cart[index].key = lineKey(cart[index].itemId, cart[index].variant, cart[index].modifiers, cart[index].note);
+            renderCart();
+        }
+        function clearCart() {
+            if (cart.length && !confirm('ล้างตะกร้าทั้งหมด?')) return;
+            cart = []; renderCart();
+        }
+        function cartSubtotal() { return cart.reduce((s, c) => s + Number(c.price || 0) * c.quantity, 0); }
+        function lineDetails(c) {
+            return [c.variant].concat((c.modifiers || []).map(m => m.option)).filter(Boolean).join(' | ');
+        }
         function renderCart() {
-            let container = document.getElementById('cart-items-container');
-            if(cart.length === 0) {
+            const container = document.getElementById('cart-items-container');
+            if (cart.length === 0) {
                 container.innerHTML = '<div style="text-align:center; color:#94a3b8; margin-top:40px;">ຍັງບໍ່ມີສິນຄ້າໃນตะกร้า</div>';
                 document.getElementById('cart-item-count').innerText = '0 รายการ';
-                document.getElementById('cart-total-price').innerText = '0 ₭'; return;
+                document.getElementById('cart-total-price').innerText = '0 ₭';
+                return;
             }
-            let html = ''; let totalQty = 0; let totalPrice = 0;
+            let html = '', totalQty = 0;
             cart.forEach((c, index) => {
-                totalQty += c.quantity; let sub = Number(c.price || 0) * c.quantity; totalPrice += sub;
-                html += `<div class="cart-item-card"><div class="cart-item-top"><div class="cart-item-name">${c.name}</div><div>${Number(c.price||0).toLocaleString()} ₭</div></div><div style="display:flex; justify-content:space-between; align-items:center;"><span>รวม: ${sub.toLocaleString()} ₭</span><div><button onclick="updateQty(${index}, -1)">-</button> ${c.quantity} <button onclick="updateQty(${index}, 1)">+</button></div></div></div>`;
+                totalQty += c.quantity;
+                const sub = Number(c.price || 0) * c.quantity;
+                const det = lineDetails(c);
+                html += `<div class="cart-item-card">
+                    <div class="cart-item-top"><div class="cart-item-info"><div class="cart-item-name">${esc(c.name)}</div>${det ? `<div class="cart-item-details">${esc(det)}</div>` : ''}${c.note ? `<div class="cart-item-note">หมายเหตุ: ${esc(c.note)}</div>` : ''}</div><div>${money(c.price)}</div></div>
+                    <div class="cart-item-actions"><span>รวม: ${money(sub)}</span>
+                    <div class="qty-wrap"><button class="note-btn" onclick="editNote(${index})">📝</button><button class="qty-btn" onclick="updateQty(${index}, -1)">-</button><b>${c.quantity}</b><button class="qty-btn" onclick="updateQty(${index}, 1)">+</button></div></div></div>`;
             });
             container.innerHTML = html;
             document.getElementById('cart-item-count').innerText = totalQty + ' รายการ';
-            document.getElementById('cart-total-price').innerText = totalPrice.toLocaleString() + ' ₭';
+            document.getElementById('cart-total-price').innerText = money(cartSubtotal());
         }
 
+        /* ---------------- ชำระเงิน ---------------- */
+        function calcTotals() {
+            const subtotal = cartSubtotal();
+            const type = document.getElementById('discount-type').value;
+            const val = Math.max(0, parseFloat(document.getElementById('discount-value').value) || 0);
+            let discount = type === 'percent' ? subtotal * Math.min(val, 100) / 100 : val;
+            discount = Math.round(Math.min(discount, subtotal));
+            const net = subtotal - discount;
+            const recRaw = document.getElementById('cash-received').value;
+            const received = recRaw === '' ? net : (parseFloat(recRaw) || 0);
+            return { subtotal, discount, discountType: type, discountValue: val, net, received, change: Math.max(0, received - net) };
+        }
+        function updateCheckoutTotals() {
+            const t = calcTotals();
+            document.getElementById('receipt-subtotal').innerText = money(t.subtotal);
+            document.getElementById('receipt-discount').innerText = '- ' + money(t.discount);
+            document.getElementById('receipt-discount-row').style.display = t.discount > 0 ? 'flex' : 'none';
+            document.getElementById('receipt-grand-total').innerText = money(t.net);
+            document.getElementById('receipt-change').innerText = money(t.change);
+        }
+        function setExactCash() { document.getElementById('cash-received').value = ''; updateCheckoutTotals(); }
+
         function openCheckoutModal() {
-            if(cart.length === 0) return alert("ตะกร้าว่างเปล่า!");
-            let total = cart.reduce((s, c) => s + (Number(c.price || 0) * c.quantity), 0);
+            if (cart.length === 0) return toast('ตะกร้าว่างเปล่า!', false);
             document.getElementById('receipt-date').innerText = new Date().toLocaleString('en-GB');
             document.getElementById('receipt-type-text').innerText = currentOrderType;
             let tbody = '';
-            cart.forEach(c => { tbody += `<tr><td>${c.name}</td><td align="center">${c.quantity}</td><td align="right">${(Number(c.price||0)*c.quantity).toLocaleString()} ₭</td></tr>`; });
+            cart.forEach(c => {
+                const det = lineDetails(c);
+                tbody += `<tr><td>${esc(c.name)}${det ? `<div style="font-size:11px;color:#64748b;">${esc(det)}</div>` : ''}${c.note ? `<div style="font-size:11px;color:#ef4444;">* ${esc(c.note)}</div>` : ''}</td><td align="center">${c.quantity}</td><td align="right">${money(Number(c.price || 0) * c.quantity)}</td></tr>`;
+            });
             document.getElementById('receipt-items-tbody').innerHTML = tbody;
-            document.getElementById('receipt-subtotal').innerText = total.toLocaleString() + ' ₭';
-            document.getElementById('receipt-grand-total').innerText = total.toLocaleString() + ' ₭';
+            document.getElementById('discount-value').value = '';
+            document.getElementById('cash-received').value = '';
+            document.getElementById('checkout-customer-select').value = '';
+            handlePaymentMethodChange();
+            updateCheckoutTotals();
             document.getElementById('checkout-modal').style.display = 'flex';
         }
-
         function closeCheckoutModal() { document.getElementById('checkout-modal').style.display = 'none'; }
         function handlePaymentMethodChange() {
-            let m = document.getElementById('payment-method').value;
+            const m = document.getElementById('payment-method').value;
             document.getElementById('cash-received-group').style.display = m === 'cash' ? 'block' : 'none';
-        }
-        function calculateChange() {
-            let total = cart.reduce((s, c) => s + (Number(c.price || 0) * c.quantity), 0);
-            let rec = parseFloat(document.getElementById('cash-received').value) || 0;
-            document.getElementById('receipt-change').innerText = (rec - total >= 0 ? rec - total : 0).toLocaleString() + ' ₭';
+            document.getElementById('receipt-change-row').style.display = m === 'cash' ? 'flex' : 'none';
+            updateCheckoutTotals();
         }
 
-        // ฟังก์ชันสั่งพิมพ์ผ่าน RawBT แบบ Base64 เรียบร้อยสมบูรณ์
-        function printViaRawBTDirect() {
-            let total = cart.reduce((s, c) => s + (Number(c.price || 0) * c.quantity), 0);
-            let table = document.getElementById('checkout-table-select').value;
-            
-            let text = "AUGUSTX COFFEE\n";
-            text += "--------------------------------\n";
-            text += "Date: " + new Date().toLocaleString('en-GB') + "\n";
-            if(table) text += "Table: " + table + "\n";
-            text += "Type: " + currentOrderType + "\n";
-            text += "--------------------------------\n";
+        /* ---------------- บันทึกออร์เดอร์ ---------------- */
+        function nextOrderNo(dk) {
+            const tx = database.ref('counters/orders/' + dk).transaction(n => (n || 0) + 1).then(r => r.snapshot.val());
+            const timeout = new Promise(res => setTimeout(() => res(null), 3000));
+            return Promise.race([tx, timeout]).then(v => v != null ? v : 'T' + String(Date.now()).slice(-5));
+        }
+        function setBusy(b) {
+            submitting = b;
+            document.querySelectorAll('.act-btn').forEach(btn => { btn.disabled = b; });
+        }
+        function cupsInCart() {
+            let n = 0;
             cart.forEach(c => {
-                text += `${c.name} x${c.quantity}  ${(Number(c.price||0)*c.quantity).toLocaleString()} K\n`;
+                const it = globalItems.find(i => i.id === c.itemId);
+                if (!it || it.usesCup !== false) n += c.quantity;
             });
-            text += "--------------------------------\n";
-            text += "TOTAL: " + total.toLocaleString() + " K\n";
-            text += "================================\n";
-            text += "Thank you for coming!\n\n\n";
-
-            let base64Encoder = btoa(unescape(encodeURIComponent(text)));
-            window.location.href = "rawbt:data:base64," + base64Encoder;
+            return n;
         }
 
-        function confirmCheckout() {
-            let total = cart.reduce((s, c) => s + (Number(c.price || 0) * c.quantity), 0);
-            let table = document.getElementById('checkout-table-select').value;
-            database.ref('orders').push({
-                customer: table ? 'โต๊ะ: ' + table : 'ทั่วไป',
-                table: table,
-                items: cart,
-                total: total,
-                status: 'pending',
-                date: new Date().toLocaleDateString('en-GB'),
-                timestamp: Date.now()
-            }).then(() => {
-                window.print();
-                alert("บันทึกและส่ง Order สำเร็จ!");
-                closeCheckoutModal(); clearCard();
-            });
+        // kind: 'kitchen' | 'bill' | 'delivery'
+        async function saveOrder(kind) {
+            if (submitting) return;
+            if (cart.length === 0) return toast('ตะกร้าว่างเปล่า!', false);
+            const t = calcTotals();
+            const method = document.getElementById('payment-method').value;
+            if (kind === 'bill' && method === 'cash' && t.received < t.net) {
+                return toast('รับเงินมาน้อยกว่ายอดสุทธิ', false);
+            }
+            setBusy(true);
+            try {
+                const now = Date.now(), dk = dayKey(now);
+                const orderNo = await nextOrderNo(dk);
+                const table = featureTables ? document.getElementById('checkout-table-select').value : '';
+                const cust = globalCustomers.find(c => c.id === document.getElementById('checkout-customer-select').value);
+                const source = kind === 'delivery' ? (currentOrderSource !== 'store' ? currentOrderSource : 'Delivery') : currentOrderSource;
+                const paid = kind !== 'kitchen';
+                const payMethod = kind === 'delivery' ? 'delivery' : (kind === 'bill' ? method : '');
+                const cups = cupsInCart();
+                let display;
+                if (kind === 'delivery' || source !== 'store') display = source;
+                else if (table) display = 'โต๊ะ: ' + table;
+                else display = cust ? cust.name : 'ทั่วไป';
+
+                const order = {
+                    orderNo: orderNo,
+                    customer: display,
+                    customerName: cust ? cust.name : '',
+                    customerPhone: cust ? (cust.phone || '') : '',
+                    table: table || '',
+                    items: cart.map(c => ({ itemId: c.itemId, name: c.name, variant: c.variant || '', price: c.price, quantity: c.quantity, modifiers: c.modifiers || [], note: c.note || '' })),
+                    subtotal: t.subtotal,
+                    discount: t.discount,
+                    discountType: t.discountType,
+                    discountValue: t.discountValue,
+                    total: t.net,
+                    status: 'pending',
+                    source: source,
+                    orderType: currentOrderType,
+                    paid: paid,
+                    paymentMethod: payMethod,
+                    cashReceived: kind === 'bill' && method === 'cash' ? t.received : 0,
+                    change: kind === 'bill' && method === 'cash' ? t.change : 0,
+                    cups: cups,
+                    date: new Date(now).toLocaleDateString('en-GB'),
+                    dayKey: dk,
+                    timestamp: now
+                };
+                // ไม่รอ server ตอบ เพื่อไม่ให้หน้าค้างตอนเน็ตหลุด (Firebase จะส่งให้เองเมื่อกลับมาออนไลน์)
+                database.ref('orders').push(order).catch(e => toast('บันทึกออร์เดอร์ไม่สำเร็จ: ' + e.message, false));
+                if (cups > 0) database.ref('inventory/cups').transaction(c => Math.max(0, (c || 0) - cups));
+
+                if (kind === 'bill') printReceipt(order);
+                if (kind === 'delivery') printStickerText(stickerText('DELIVERY STICKER', order.orderNo, order.source, cart));
+                toast('ส่งออร์เดอร์ #' + orderNo + ' เข้าครัวแล้ว');
+                closeCheckoutModal();
+                cart = []; renderCart();
+            } catch (e) {
+                toast('เกิดข้อผิดพลาด: ' + e.message, false);
+            } finally {
+                setBusy(false);
+            }
         }
+        function sendToKitchenOnly() { saveOrder('kitchen'); }
+        function confirmCheckout() { saveOrder('bill'); }
+        function printStickerAndKitchenDelivery() { saveOrder('delivery'); }
+
+        /* ---------------- พิมพ์ ---------------- */
+        function stickerText(title, orderNo, typeText, lines) {
+            let text = '=== ' + title + ' ===\n';
+            if (orderNo) text += '#' + orderNo + '  ';
+            text += typeText + '\n--------------------\n';
+            lines.forEach(c => {
+                text += c.name + ' x' + c.quantity + '\n';
+                const det = lineDetails(c);
+                if (det) text += '  ' + det + '\n';
+                if (c.note) text += '  * ' + c.note + '\n';
+            });
+            return text + '====================\n\n\n';
+        }
+        function printStickerText(text) {
+            const b64 = btoa(unescape(encodeURIComponent(text)));
+            window.location.href = 'rawbt:data:base64,' + b64;
+        }
+        function printStickerOnly() {
+            if (cart.length === 0) return toast('ตะกร้าว่างเปล่า!', false);
+            printStickerText(stickerText('STICKER', '', currentOrderType, cart));
+            closeCheckoutModal();
+        }
+
+        function printReceipt(o) {
+            const narrow = settings.paperSize !== '80mm';
+            const width = narrow ? '48mm' : '72mm';
+            let h = '<div class="r-center">';
+            if (storeLogo) h += `<img src="${esc(storeLogo)}"><br>`;
+            h += `<div class="r-title">${esc(settings.shopName)}</div><div>${esc(settings.shopSub)}</div>`;
+            if (settings.address) h += `<div>${esc(settings.address)}</div>`;
+            if (settings.phone) h += `<div>โทร ${esc(settings.phone)}</div>`;
+            h += '</div><div class="r-line"></div>';
+            h += `<div class="r-row"><span>บิล #${esc(o.orderNo)}</span><span>${esc(o.date)} ${timeHHMM(o.timestamp)}</span></div>`;
+            h += `<div class="r-row"><span>${esc(o.orderType)}</span><span>${esc(o.table ? 'โต๊ะ ' + o.table : (o.source === 'store' ? '' : o.source))}</span></div>`;
+            h += '<div class="r-line"></div>';
+            o.items.forEach(c => {
+                h += `<div class="r-row"><span>${esc(c.name)} x${c.quantity}</span><span>${Number(c.price * c.quantity).toLocaleString()}</span></div>`;
+                const det = lineDetails(c);
+                if (det) h += `<div style="padding-left:8px;font-size:11px;">${esc(det)}</div>`;
+                if (c.note) h += `<div style="padding-left:8px;font-size:11px;">* ${esc(c.note)}</div>`;
+            });
+            h += '<div class="r-line"></div>';
+            h += `<div class="r-row"><span>รวม</span><span>${Number(o.subtotal).toLocaleString()}</span></div>`;
+            if (o.discount > 0) h += `<div class="r-row"><span>ส่วนลด</span><span>-${Number(o.discount).toLocaleString()}</span></div>`;
+            h += `<div class="r-row r-bold" style="font-size:14px;"><span>ยอดสุทธิ</span><span>${Number(o.total).toLocaleString()} ₭</span></div>`;
+            if (o.paymentMethod === 'cash') {
+                h += `<div class="r-row"><span>เงินสด</span><span>${Number(o.cashReceived).toLocaleString()}</span></div>`;
+                h += `<div class="r-row"><span>เงินทอน</span><span>${Number(o.change).toLocaleString()}</span></div>`;
+            } else if (o.paymentMethod === 'transfer') {
+                h += '<div class="r-row"><span>ชำระโดย</span><span>โอนเงิน QR</span></div>';
+            }
+            h += `<div class="r-line"></div><div class="r-center">${esc(settings.footer)}</div>`;
+            const area = document.getElementById('print-area');
+            area.style.width = width;
+            area.innerHTML = h;
+            document.getElementById('print-page-style').textContent = `@page { size: ${narrow ? '58mm' : '80mm'} auto; margin: 2mm; }`;
+            setTimeout(() => window.print(), 150);
+        }
+
+        renderNavTabs();
+        renderCategories();
+        renderCart();
+        startApp('staff', startListeners);
     </script>
 </body>
 </html>

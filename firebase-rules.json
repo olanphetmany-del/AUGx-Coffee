@@ -1,0 +1,16 @@
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null && auth.token.email === 'เปลี่ยนเป็นอีเมลเจ้าของร้าน@example.com'",
+    "orders": {
+      ".indexOn": ["timestamp"],
+      ".write": "auth != null"
+    },
+    "counters": {
+      ".write": "auth != null"
+    },
+    "inventory": {
+      ".write": "auth != null"
+    }
+  }
+}
