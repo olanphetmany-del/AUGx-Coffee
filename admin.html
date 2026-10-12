@@ -344,7 +344,8 @@
                     <div class="form-group"><label>กว้าง (mm)</label><input type="number" id="stk-w" value="60" oninput="stkRefresh()"></div>
                     <div class="form-group"><label>สูง (mm)</label><input type="number" id="stk-h" value="40" oninput="stkRefresh()"></div>
                     <div class="form-group"><label>ความละเอียด</label><select id="stk-dpi" onchange="stkRefresh()"><option value="203">203 dpi</option><option value="300">300 dpi</option></select></div>
-                    <div class="form-group"><label>ความกว้างหัวพิมพ์ (จุด)</label><select id="stk-head" onchange="stkRefresh()"><option value="640">640 (80mm)</option><option value="576">576 (72mm)</option><option value="480">480 (60mm)</option></select></div>
+                    <div class="form-group"><label>วิธีขยับภาพ (ESC/POS)</label><select id="stk-shift" onchange="stkRefresh()"><option value="margin">ใช้คำสั่งเว้นขอบของเครื่อง (แนะนำ)</option><option value="pad">เติมขอบขาวในภาพ (ถ้าเครื่องไม่รับคำสั่งเว้นขอบ)</option></select></div>
+                    <div class="form-group"><label>ความกว้างหัวพิมพ์ (จุด) ใช้เมื่อเลือก "เติมขอบขาว"</label><select id="stk-head" onchange="stkRefresh()"><option value="640">640 (80mm)</option><option value="576">576 (72mm)</option><option value="480">480 (60mm)</option></select></div>
                     <div class="form-group"><label>ขยับไปทางขวา (mm)</label><input type="number" id="stk-ox" value="0" step="0.5" oninput="stkRefresh()"></div>
                     <div class="form-group"><label>ขยับลง (mm) ติดลบ = ขึ้น</label><input type="number" id="stk-oy" value="0" step="0.5" oninput="stkRefresh()"></div>
                     <div class="form-group"><label>ความเข้ม (100 จาง - 200 เข้ม)</label><input type="number" id="stk-dark" value="140" step="10" min="60" max="220" oninput="stkRefresh()"></div>
@@ -586,7 +587,7 @@
         function stickerFormCfg() {
             return {
                 method: $s('stk-method').value, widthMm: +$s('stk-w').value || 60, heightMm: +$s('stk-h').value || 40, dpi: +$s('stk-dpi').value || 203,
-                headDots: +$s('stk-head').value || 640, offsetX: +$s('stk-ox').value || 0, offsetY: +$s('stk-oy').value || 0, darkness: +$s('stk-dark').value || 140,
+                headDots: +$s('stk-head').value || 640, shiftMode: $s('stk-shift').value, offsetX: +$s('stk-ox').value || 0, offsetY: +$s('stk-oy').value || 0, darkness: +$s('stk-dark').value || 140,
                 showName: $s('stk-name').checked, nameFallback: $s('stk-fallback').value, showType: $s('stk-type').checked, showTime: $s('stk-time').checked,
                 showShop: $s('stk-shop').checked, shopText: $s('stk-shoptext').value.trim(),
                 qrOn: $s('stk-qron').checked, qrUrl: $s('stk-qrurl').value.trim(), qrLabel: $s('stk-qrlabel').value.trim(), qrSizeMm: +$s('stk-qrsize').value || 16
@@ -594,7 +595,7 @@
         }
         function fillStickerForm() {
             const c = stickerCfg();
-            $s('stk-method').value = c.method; $s('stk-w').value = c.widthMm; $s('stk-h').value = c.heightMm; $s('stk-dpi').value = c.dpi; $s('stk-head').value = String(c.headDots);
+            $s('stk-method').value = c.method; $s('stk-w').value = c.widthMm; $s('stk-h').value = c.heightMm; $s('stk-dpi').value = c.dpi; $s('stk-head').value = String(c.headDots); $s('stk-shift').value = c.shiftMode || 'margin';
             $s('stk-ox').value = c.offsetX; $s('stk-oy').value = c.offsetY; $s('stk-dark').value = c.darkness;
             $s('stk-name').checked = !!c.showName; $s('stk-fallback').value = c.nameFallback; $s('stk-type').checked = !!c.showType; $s('stk-time').checked = !!c.showTime;
             $s('stk-shop').checked = !!c.showShop; $s('stk-shoptext').value = c.shopText || '';
