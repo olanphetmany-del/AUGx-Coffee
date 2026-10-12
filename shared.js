@@ -1958,6 +1958,7 @@ return {QRCode:R2('index'),ECL:R2('QRErrorCorrectLevel')};})();
 var STK = {
     cfg: null,
     defaults: {
+        paper: 'label',           // label = ม้วนสติกเกอร์ | receipt = ม้วนใบเสร็จ 58mm (ฉีก/ตัดเอง)
         method: 'esc',            // esc | tspl | cpcl | text
         widthMm: 60, heightMm: 40, dpi: 203,
         headDots: 640,            // ความกว้างหัวพิมพ์ (ใช้กับ esc/cpcl แบบเติมขอบ)
@@ -2081,6 +2082,9 @@ function stkPaint(c, d, data, cfg, x0, y0) {
         var lw = c.measureText(left).width, sh = stkFit(c, cfg.shopText, d.w - 2 * pad - lw - pad, Math.round(26 * s), 16, '');
         c.font = sh.px + 'px ' + STK_FONT; c.textAlign = 'right'; c.fillText(sh.text, d.w - pad, fy + Math.round(8 * s)); c.textAlign = 'left';
     }
+    if (cfg.paper === 'receipt') { /* เส้นประสำหรับตัด/ฉีก */
+        for (var dx = 0; dx < d.w; dx += 20) c.fillRect(dx, d.h - 4, 12, 2);
+    }
     c.restore();
 }
 function stkRuler(c, cw, h, k) {
@@ -2130,6 +2134,7 @@ function stkEscJobs(pre, bits, bw, h, post, cfg) {
     b[0] = stkCat([pre, b[0]]); b[b.length - 1] = stkCat([b[b.length - 1], post]);
     return b;
 }
+function stkPost(cfg) { return cfg.paper === 'receipt' ? Uint8Array.of(0x1B, 0x4A, 16) : Uint8Array.of(0x0C); }
 // ข้อมูล 1 ใบ (หรือแถบวัดถ้า data = null) -> รายการงาน (Uint8Array[]) ที่ส่งเครื่องพิมพ์ตามลำดับ
 function stkBytes(data, cfg) {
     var d = stkDims(cfg), thr = Number(cfg.darkness) || 140, m = cfg.method, k, c, ruler = !data;
@@ -2142,7 +2147,7 @@ function stkBytes(data, cfg) {
         k = document.createElement('canvas'); k.width = d.w; k.height = d.h; c = k.getContext('2d');
         if (ruler) stkRuler(c, d.w, d.h, d.k); else stkPaint(c, d, data, cfg, Math.min(0, d.ox), d.oy);
         var mg = Math.max(0, d.ox), bw2 = d.w / 8;
-        return stkEscJobs(Uint8Array.of(0x1B, 0x40, 0x1D, 0x4C, mg & 255, mg >> 8), stkBits(k, thr, false), bw2, d.h, Uint8Array.of(0x0C), cfg);
+        return stkEscJobs(Uint8Array.of(0x1B, 0x40, 0x1D, 0x4C, mg & 255, mg >> 8), stkBits(k, thr, false), bw2, d.h, stkPost(cfg), cfg);
     }
     var hd = stkHead(cfg, d);
     k = document.createElement('canvas'); k.width = hd; k.height = d.h; c = k.getContext('2d');
@@ -2150,10 +2155,17 @@ function stkBytes(data, cfg) {
     if (ruler) stkRuler(c, hd, d.h, d.k); else stkPaint(c, d, data, cfg, d.ox, d.oy);
     var bits = stkBits(k, thr, false), bw = hd / 8;
     if (m === 'cpcl') return [stkCat([stkEnc('! 0 ' + cfg.dpi + ' ' + cfg.dpi + ' ' + d.h + ' 1\r\nPW ' + hd + '\r\nEG ' + bw + ' ' + d.h + ' 0 0 '), bits, stkEnc('\r\nFORM\r\nPRINT\r\n')])];
-    return stkEscJobs(Uint8Array.of(0x1B, 0x40), bits, bw, d.h, Uint8Array.of(0x0C), cfg);
+    return stkEscJobs(Uint8Array.of(0x1B, 0x40), bits, bw, d.h, stkPost(cfg), cfg);
 }
 // ส่งทีละใบ เว้นช่วงให้ RawBT รับทันทีละงาน
 function stkSendAll(list, cfg) {
+    if (!(Number(cfg.chunkRows) > 0)) { /* รวมทุกใบเป็นงานเดียว (RawBT ไม่ต้องต่อเครื่องซ้ำ) */
+        var parts = [];
+        list.forEach(function (it) { stkBytes(it === 'RULER' ? null : it, cfg).forEach(function (b) { parts.push(b); }); });
+        if (cfg.paper === 'receipt') parts.push(Uint8Array.of(0x1B, 0x64, 4)); /* เลื่อนกระดาษพ้นแท่นฉีก */
+        window.location.href = 'rawbt:base64,' + stkB64(stkCat(parts));
+        return;
+    }
     var i = 0, delay = Math.max(100, Number(cfg.chunkDelay) || 600);
     function sendJobs(jobs, done) {
         var j = 0;

@@ -337,6 +337,8 @@
                 <div style="overflow-x:auto; background:#fff; border:1px solid #cbd5e1; margin-bottom:6px;"><canvas id="stk-preview" style="display:block;"></canvas></div>
                 <p class="hint" style="margin-top:0;">เส้นประสีน้ำเงิน = ขอบสติกเกอร์ (ไม่ถูกพิมพ์)</p>
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; max-width:760px;">
+                    <div class="form-group"><label>ชนิดกระดาษ / เครื่องพิมพ์</label>
+                        <select id="stk-paper" onchange="stkPaperChange()"><option value="label">ม้วนสติกเกอร์ (DP30S ฯลฯ)</option><option value="receipt">เครื่องพิมพ์บิล 58mm - ม้วนใบเสร็จ (ตัด/ฉีกเอง)</option></select></div>
                     <div class="form-group"><label>ภาษาคำสั่งเครื่องพิมพ์</label>
                         <select id="stk-method" onchange="stkRefresh()">
                             <option value="esc">ESC/POS (รูปภาพ)</option><option value="tspl">TSPL (รูปภาพ)</option><option value="cpcl">CPCL (รูปภาพ)</option><option value="text">ตัวอักษรล้วน (เครื่องพิมพ์สลิปที่มีฟอนต์ไทย)</option>
@@ -588,7 +590,7 @@
         const $s = id => document.getElementById(id);
         function stickerFormCfg() {
             return {
-                method: $s('stk-method').value, widthMm: +$s('stk-w').value || 60, heightMm: +$s('stk-h').value || 40, dpi: +$s('stk-dpi').value || 203,
+                paper: $s('stk-paper').value, method: $s('stk-method').value, widthMm: +$s('stk-w').value || 60, heightMm: +$s('stk-h').value || 40, dpi: +$s('stk-dpi').value || 203,
                 headDots: +$s('stk-head').value || 640, shiftMode: $s('stk-shift').value, chunkRows: +$s('stk-chunk').value || 0, chunkDelay: +$s('stk-cdelay').value || 600, offsetX: +$s('stk-ox').value || 0, offsetY: +$s('stk-oy').value || 0, darkness: +$s('stk-dark').value || 140,
                 showName: $s('stk-name').checked, nameFallback: $s('stk-fallback').value, showType: $s('stk-type').checked, showTime: $s('stk-time').checked,
                 showShop: $s('stk-shop').checked, shopText: $s('stk-shoptext').value.trim(),
@@ -597,7 +599,7 @@
         }
         function fillStickerForm() {
             const c = stickerCfg();
-            $s('stk-method').value = c.method; $s('stk-w').value = c.widthMm; $s('stk-h').value = c.heightMm; $s('stk-dpi').value = c.dpi; $s('stk-head').value = String(c.headDots); $s('stk-shift').value = c.shiftMode || 'margin'; $s('stk-chunk').value = String(c.chunkRows || 0); $s('stk-cdelay').value = c.chunkDelay || 600;
+            $s('stk-paper').value = c.paper || 'label'; $s('stk-method').value = c.method; $s('stk-w').value = c.widthMm; $s('stk-h').value = c.heightMm; $s('stk-dpi').value = c.dpi; $s('stk-head').value = String(c.headDots); $s('stk-shift').value = c.shiftMode || 'margin'; $s('stk-chunk').value = String(c.chunkRows || 0); $s('stk-cdelay').value = c.chunkDelay || 600;
             $s('stk-ox').value = c.offsetX; $s('stk-oy').value = c.offsetY; $s('stk-dark').value = c.darkness;
             $s('stk-name').checked = !!c.showName; $s('stk-fallback').value = c.nameFallback; $s('stk-type').checked = !!c.showType; $s('stk-time').checked = !!c.showTime;
             $s('stk-shop').checked = !!c.showShop; $s('stk-shoptext').value = c.shopText || '';
@@ -616,6 +618,11 @@
             if (!cfg.showName) data.name = ''; if (!cfg.showType) data.type = ''; if (!cfg.showTime) data.time = '';
             stkPaint(c, d, data, cfg, d.ox, d.oy);
             c.strokeStyle = '#2563eb'; c.setLineDash([6, 5]); c.strokeRect(d.ox + .5, d.oy + .5, d.w - 1, d.h - 1);
+        }
+        function stkPaperChange() { /* เลือกชนิดกระดาษแล้วตั้งค่าที่เหมาะให้เลย */
+            if ($s('stk-paper').value === 'receipt') { $s('stk-method').value = 'esc'; $s('stk-shift').value = 'margin'; $s('stk-chunk').value = '0'; $s('stk-w').value = 48; $s('stk-h').value = 32; $s('stk-dpi').value = '203'; $s('stk-ox').value = 0; $s('stk-oy').value = 0; $s('stk-qrsize').value = 14; }
+            else { $s('stk-w').value = 60; $s('stk-h').value = 40; }
+            stkRefresh();
         }
         function saveSticker() {
             database.ref('settings/sticker').set(stickerFormCfg()).then(() => toast('บันทึกการตั้งค่าสติกเกอร์แล้ว')).catch(e => toast('ไม่สำเร็จ: ' + e.message, false));
