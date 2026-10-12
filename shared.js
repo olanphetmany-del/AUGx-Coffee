@@ -1960,7 +1960,8 @@ var STK = {
     defaults: {
         method: 'esc',            // esc | tspl | cpcl | text
         widthMm: 60, heightMm: 40, dpi: 203,
-        headDots: 640,            // ความกว้างหัวพิมพ์ (ใช้กับ esc/cpcl)
+        headDots: 640,            // ความกว้างหัวพิมพ์ (ใช้กับ esc/cpcl แบบเติมขอบ)
+        shiftMode: 'margin',      // margin = ใช้คำสั่งเว้นขอบของเครื่อง (ข้อมูลน้อย) | pad = เติมขอบขาวในภาพ
         offsetX: 0, offsetY: 0,   // ขยับภาพ (mm)
         darkness: 140,            // เกณฑ์ขาว/ดำ (ยิ่งมากยิ่งดำ)
         showName: true, nameFallback: 'table', showType: true, showTime: true,
@@ -2110,6 +2111,16 @@ function stkCat(parts) {
 function stkEnc(s) { return new TextEncoder().encode(s); }
 function stkB64(u) { var s = ''; for (var i = 0; i < u.length; i += 8192) s += String.fromCharCode.apply(null, u.subarray(i, i + 8192)); return btoa(s); }
 function stkHead(cfg, d) { return Math.max(8, Math.ceil(Math.max(Number(cfg.headDots) || 640, d.ox + d.w) / 8) * 8); }
+// ภาพแบบ ESC/POS แบ่งเป็นแถบสูง band แถว (เครื่องราคาถูกมักรับภาพสูงในคำสั่งเดียวไม่ไหว)
+function stkEscRaster(bits, bw, h, band) {
+    var parts = [];
+    for (var y = 0; y < h; y += band) {
+        var n = Math.min(band, h - y);
+        parts.push(Uint8Array.of(0x1D, 0x76, 0x30, 0, bw & 255, bw >> 8, n & 255, n >> 8));
+        parts.push(bits.subarray(y * bw, (y + n) * bw));
+    }
+    return stkCat(parts);
+}
 // ข้อมูล 1 ใบ (หรือแถบวัดถ้า data = null) -> ไบต์ที่ส่งเครื่องพิมพ์
 function stkBytes(data, cfg) {
     var d = stkDims(cfg), thr = Number(cfg.darkness) || 140, m = cfg.method, k, c, ruler = !data;
@@ -2118,13 +2129,19 @@ function stkBytes(data, cfg) {
         if (ruler) stkRuler(c, d.w, d.h, d.k); else stkPaint(c, d, data, cfg, Math.min(0, d.ox), Math.min(0, d.oy));
         return stkCat([stkEnc('SIZE ' + cfg.widthMm + ' mm,' + cfg.heightMm + ' mm\r\nGAP 2 mm,0 mm\r\nDIRECTION 1\r\nCLS\r\nBITMAP ' + Math.max(0, d.ox) + ',' + Math.max(0, d.oy) + ',' + (d.w / 8) + ',' + d.h + ',0,'), stkBits(k, thr, true), stkEnc('\r\nPRINT 1,1\r\n')]);
     }
+    if (m === 'esc' && cfg.shiftMode !== 'pad') { /* เว้นขอบซ้ายด้วย GS L แล้วส่งภาพกว้างเท่าสติกเกอร์เท่านั้น */
+        k = document.createElement('canvas'); k.width = d.w; k.height = d.h; c = k.getContext('2d');
+        if (ruler) stkRuler(c, d.w, d.h, d.k); else stkPaint(c, d, data, cfg, Math.min(0, d.ox), d.oy);
+        var mg = Math.max(0, d.ox), bw2 = d.w / 8;
+        return stkCat([Uint8Array.of(0x1B, 0x40, 0x1D, 0x4C, mg & 255, mg >> 8), stkEscRaster(stkBits(k, thr, false), bw2, d.h, 40), Uint8Array.of(0x0C)]);
+    }
     var hd = stkHead(cfg, d);
     k = document.createElement('canvas'); k.width = hd; k.height = d.h; c = k.getContext('2d');
     c.fillStyle = '#fff'; c.fillRect(0, 0, hd, d.h);
     if (ruler) stkRuler(c, hd, d.h, d.k); else stkPaint(c, d, data, cfg, d.ox, d.oy);
     var bits = stkBits(k, thr, false), bw = hd / 8;
     if (m === 'cpcl') return stkCat([stkEnc('! 0 ' + cfg.dpi + ' ' + cfg.dpi + ' ' + d.h + ' 1\r\nPW ' + hd + '\r\nEG ' + bw + ' ' + d.h + ' 0 0 '), bits, stkEnc('\r\nFORM\r\nPRINT\r\n')]);
-    return stkCat([Uint8Array.of(0x1B, 0x40, 0x1D, 0x76, 0x30, 0, bw & 255, bw >> 8, d.h & 255, d.h >> 8), bits, Uint8Array.of(0x0C)]);
+    return stkCat([Uint8Array.of(0x1B, 0x40), stkEscRaster(bits, bw, d.h, 40), Uint8Array.of(0x0C)]);
 }
 // ส่งทีละใบ เว้นช่วงให้ RawBT รับทันทีละงาน
 function stkSendAll(list, cfg) {
