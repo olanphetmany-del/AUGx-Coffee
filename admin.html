@@ -204,14 +204,15 @@
                 <h3 style="margin-top:0; font-size:1rem; color:var(--blue);">เพิ่มข้อมูลลูกค้า</h3>
                 <div class="flex-row">
                     <div class="form-group" style="flex: 1; margin-bottom:0;"><input type="text" id="new-cust-name" placeholder="ชื่อลูกค้า"></div>
-                    <div class="form-group" style="flex: 1; margin-bottom:0;"><input type="text" id="new-cust-phone" placeholder="เบอร์โทร"></div>
+                    <div class="form-group" style="flex: 1; margin-bottom:0;"><input type="text" id="new-cust-phone" placeholder="เบอร์โทร (WhatsApp)"></div>
+                    <div class="form-group" style="flex: 1; margin-bottom:0;"><input type="email" id="new-cust-email" placeholder="อีเมล (ไม่บังคับ)"></div>
                     <button class="btn btn-green" onclick="addCustomer()">บันทึก</button>
                 </div>
-                <p class="hint">ลูกค้าที่บันทึกไว้จะเลือกได้ในหน้าชำระเงินของแคชเชียร์ และชื่อจะถูกบันทึกลงออร์เดอร์</p>
+                <p class="hint">แคชเชียร์พิมพ์เบอร์โทร ระบบจะเติมชื่อลูกค้าเดิมให้ และใช้เบอร์/อีเมลนี้ตอนส่งใบเสร็จทาง WhatsApp หรืออีเมล</p>
             </div>
             <div class="box table-responsive">
                 <table>
-                    <thead><tr><th>ชื่อลูกค้า</th><th>เบอร์โทร</th><th>จัดการ</th></tr></thead>
+                    <thead><tr><th>ชื่อลูกค้า</th><th>เบอร์โทร</th><th>อีเมล</th><th>จัดการ</th></tr></thead>
                     <tbody id="customer-list-tbody"></tbody>
                 </table>
             </div>
@@ -241,8 +242,8 @@
             </div>
             <div class="box table-responsive">
                 <table>
-                    <thead><tr><th style="width:60px;">No.</th><th>Image</th><th>Category</th><th>Name</th><th>ລາຄາ</th><th>ตัวเลือกเสริม</th><th>ຈັດການ</th></tr></thead>
-                    <tbody id="menu-table-body"><tr><td colspan="7" align="center">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr></tbody>
+                    <thead><tr><th style="width:60px;">No.</th><th>Image</th><th>Category</th><th>Name</th><th>ລາຄາ</th><th>ตัวเลือกเสริม</th><th>ช่องทางขาย</th><th>ຈັດການ</th></tr></thead>
+                    <tbody id="menu-table-body"><tr><td colspan="8" align="center">ກຳລັງໂຫຼດຂໍ້ມູນ...</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -274,8 +275,10 @@
                     <input type="text" id="new-mod-name" placeholder="ເຊັ່ນ: Sugar Level">
                 </div>
                 <div class="form-group">
-                    <label>ตัวเลือก (คั่นด้วยคอมมา , ใส่ราคาเพิ่มหลังเครื่องหมาย | ถ้าไม่มีราคาเพิ่มไม่ต้องใส่)</label>
-                    <textarea id="new-mod-options" placeholder="ตัวอย่าง: หวาน 0%, หวาน 50%, หวาน 100%, Extra shot|10000, Oat milk|8000"></textarea>
+                    <label>ตัวเลือกในกลุ่มนี้ (ราคาเพิ่ม ใส่หรือไม่ใส่ก็ได้)</label>
+                    <div id="mod-option-rows"></div>
+                    <button class="btn btn-gray btn-sm" type="button" onclick="addModRow()" style="margin-top:6px;">+ เพิ่มตัวเลือก</button>
+                    <div class="hint">เช่น กลุ่ม "Sugar Level": หวาน 0%, หวาน 50%, หวาน 100%  |  กลุ่ม "Topping": Extra shot (+10000), Oat milk (+8000)</div>
                 </div>
                 <div class="form-group"><label style="display:flex;align-items:center;gap:8px;font-weight:normal;"><input type="checkbox" id="new-mod-multi" style="width:auto;"> เลือกได้หลายอย่างในกลุ่มนี้ (เช่น ท็อปปิ้ง)</label></div>
                 <div style="text-align: right; display:flex; gap:8px; justify-content:flex-end;">
@@ -359,11 +362,17 @@
             <div class="form-group"><label>ชื่อสินค้า</label><input type="text" id="modal-item-name" placeholder="Name"></div>
             <div class="form-group"><label>หมวดหมู่</label><select id="modal-item-cat"><option value="">-- เลือก --</option></select></div>
             <div class="form-group">
-                <label>ราคา</label>
-                <input type="text" id="modal-item-base-price" placeholder="เช่น 35000  หรือหลายแบบ  Hot|30000, Iced|35000">
-                <div class="hint">ราคาเดียว: พิมพ์ตัวเลข  |  หลายไซส์/แบบ: ชื่อ|ราคา คั่นด้วยคอมมา</div>
+                <label>ราคา / แบบสินค้า (Variants)</label>
+                <div id="variant-rows"></div>
+                <button class="btn btn-gray btn-sm" type="button" onclick="addVariantRow()" style="margin-top:6px;">+ เพิ่มแบบ (เช่น HOT / ICED / FRAPPE)</button>
+                <div class="hint">มีแบบเดียว: ใส่แค่ราคา ไม่ต้องใส่ชื่อ  |  มีหลายแบบ: ใส่ชื่อและราคาของแต่ละแบบ แคชเชียร์จะให้เลือกตอนสั่ง</div>
             </div>
             <div class="form-group"><label>ตัวเลือกเสริม (Modifiers)</label><div class="chk-list" id="modal-item-mods"></div></div>
+            <div class="form-group">
+                <label>ช่องทางที่ขายสินค้านี้</label>
+                <div class="chk-list" id="modal-item-channels"></div>
+                <div class="hint">ไม่ติ๊กช่องทางไหน สินค้านี้จะไม่แสดงในแท็บของช่องทางนั้นที่หน้าแคชเชียร์</div>
+            </div>
             <div class="form-group"><label style="display:flex;align-items:center;gap:8px;font-weight:normal;"><input type="checkbox" id="modal-item-cup" style="width:auto;" checked> สินค้านี้ใช้แก้ว (ตัดสต็อกแก้วอัตโนมัติ)</label></div>
             <div class="form-group">
                 <label>รูปสินค้า (ไม่บังคับ)</label>
@@ -381,7 +390,7 @@
     <script>
         let globalCategories = [], globalItems = [], globalModifiers = [], globalPartners = [];
         let reportRef = null, reportOrders = [];
-        let editingItemId = null, modalImage = '', editingModId = null;
+        let editingItemId = null, modalImage = '', editingModId = null, variantRows = [], modRows = [];
 
         function switchTab(tabId, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -427,6 +436,7 @@
 
         /* ---------- โหลดข้อมูลทั้งหมด ---------- */
         function startListeners() {
+            receiptInit();
             database.ref('store_logo').on('value', snap => {
                 const url = snap.val();
                 const prev = document.getElementById('current-logo-preview'), txt = document.getElementById('no-logo-text');
@@ -453,8 +463,8 @@
 
             database.ref('customers').on('value', snap => {
                 let html = '';
-                snap.forEach(child => { const c = child.val(); html += `<tr><td><strong>${esc(c.name)}</strong></td><td>${esc(c.phone || '-')}</td><td>${delBtn('customers/' + child.key, c.name)}</td></tr>`; });
-                document.getElementById('customer-list-tbody').innerHTML = html || emptyRow(3, 'ยังไม่มีข้อมูล');
+                snap.forEach(child => { const c = child.val(); html += `<tr><td><strong>${esc(c.name)}</strong></td><td>${esc(c.phone || '-')}</td><td>${esc(c.email || '-')}</td><td>${delBtn('customers/' + child.key, c.name)}</td></tr>`; });
+                document.getElementById('customer-list-tbody').innerHTML = html || emptyRow(4, 'ยังไม่มีข้อมูล');
             });
 
             database.ref('delivery_partners').on('value', snap => {
@@ -466,6 +476,7 @@
                 });
                 document.getElementById('delivery-partner-table-body').innerHTML = html || emptyRow(3, 'ไม่มีข้อมูล');
                 renderReport();
+                renderItemListTable();
             });
 
             database.ref('categories').on('value', snap => {
@@ -501,6 +512,7 @@
                 : '<span class="badge warn">ยังไม่ได้เปิดระบบล็อกอิน</span> ใครมีลิงก์ก็เข้าหน้านี้ได้ — ทำตามไฟล์ SETUP-คู่มือ.md เพื่อเปิดใช้งาน';
             if (APP_CONFIG.REQUIRE_LOGIN) document.getElementById('logout-btn').style.display = 'inline-flex';
 
+            resetModifierForm();
             setRange('today');
         }
 
@@ -542,8 +554,8 @@
             const name = document.getElementById('new-cust-name').value.trim();
             const phone = document.getElementById('new-cust-phone').value.trim();
             if (!name) return toast('ระบุชื่อลูกค้า!', false);
-            database.ref('customers').push({ name: name, phone: phone }).then(() => {
-                document.getElementById('new-cust-name').value = ''; document.getElementById('new-cust-phone').value = '';
+            database.ref('customers').push({ name: name, phone: phone, email: document.getElementById('new-cust-email').value.trim() }).then(() => {
+                document.getElementById('new-cust-name').value = ''; document.getElementById('new-cust-phone').value = ''; document.getElementById('new-cust-email').value = '';
             });
         }
         function addDeliveryPartner() {
@@ -617,10 +629,12 @@
             list.forEach((item, i) => {
                 const prices = parsePrices(item.priceOptions);
                 const priceTxt = prices.length ? prices.map(p => (p.label ? esc(p.label) + ' ' : '') + Number(p.price).toLocaleString()).join(' / ') + ' ₭' : '-';
+                const hiddenNames = channelNames(item.hiddenChannels);
+                const chanTxt = hiddenNames ? 'ซ่อนใน: ' + esc(hiddenNames) : 'ทุกช่องทาง';
                 const mods = String(item.modifierIds || '').split(',').filter(Boolean).map(id => globalModifiers.find(m => m.id === id)).filter(Boolean).map(m => esc(m.name)).join(', ') || '-';
-                html += `<tr><td>${i + 1}</td><td><img class="thumb" src="${esc(item.image || 'images/bg.jpg')}"></td><td>${esc(item.category)}</td><td><strong>${esc(item.name)}</strong></td><td class="wrap">${priceTxt}</td><td class="wrap">${mods}</td><td><div class="actions-cell"><button class="btn btn-blue btn-sm" data-id="${esc(item.id)}" onclick="openItemModalForEdit(this.dataset.id)">แก้ไข</button>${delBtn('menu_items/' + item.id, item.name)}</div></td></tr>`;
+                html += `<tr><td>${i + 1}</td><td><img class="thumb" src="${esc(item.image || 'images/bg.jpg')}"></td><td>${esc(item.category)}</td><td><strong>${esc(item.name)}</strong></td><td class="wrap">${priceTxt}</td><td class="wrap">${mods}</td><td class="wrap">${chanTxt}</td><td><div class="actions-cell"><button class="btn btn-blue btn-sm" data-id="${esc(item.id)}" onclick="openItemModalForEdit(this.dataset.id)">แก้ไข</button>${delBtn('menu_items/' + item.id, item.name)}</div></td></tr>`;
             });
-            document.getElementById('menu-table-body').innerHTML = html || emptyRow(7, 'ไม่มีสินค้า');
+            document.getElementById('menu-table-body').innerHTML = html || emptyRow(8, 'ไม่มีสินค้า');
             document.getElementById('item-count-badge').innerText = '(' + list.length + ')';
         }
         function renderItemModalMods(selectedIds) {
@@ -645,7 +659,8 @@
             document.getElementById('item-modal-title').innerText = 'เพิ่มสินค้าใหม่';
             document.getElementById('modal-item-name').value = '';
             document.getElementById('modal-item-cat').value = '';
-            document.getElementById('modal-item-base-price').value = '';
+            variantRows = [{ label: '', price: '' }]; renderVariantRows();
+            renderItemModalChannels('');
             document.getElementById('modal-item-cup').checked = true;
             document.getElementById('modal-item-image').value = '';
             renderItemModalMods('');
@@ -659,24 +674,51 @@
             document.getElementById('item-modal-title').innerText = 'แก้ไขสินค้า';
             document.getElementById('modal-item-name').value = it.name || '';
             document.getElementById('modal-item-cat').value = it.category || '';
-            document.getElementById('modal-item-base-price').value = it.priceOptions == null ? '' : it.priceOptions;
+            variantRows = parsePrices(it.priceOptions).map(p => ({ label: p.label, price: String(p.price) }));
+            if (!variantRows.length) variantRows = [{ label: '', price: '' }];
+            renderVariantRows();
+            renderItemModalChannels(it.hiddenChannels);
             document.getElementById('modal-item-cup').checked = it.usesCup !== false;
             document.getElementById('modal-item-image').value = '';
             renderItemModalMods(it.modifierIds);
             showItemPreview();
             document.getElementById('item-modal-overlay').style.display = 'flex';
         }
+        function channelNames(hiddenStr) {
+            return String(hiddenStr || '').split(',').filter(Boolean)
+                .map(id => id === 'store' ? 'Cashier' : (globalPartners.find(p => p.id === id) || {}).name)
+                .filter(Boolean).join(', ');
+        }
+        function renderItemModalChannels(hiddenStr) {
+            const hidden = String(hiddenStr || '').split(',').filter(Boolean);
+            const chans = [{ id: 'store', name: 'Cashier (หน้าร้าน)' }].concat(globalPartners.map(p => ({ id: p.id, name: p.name })));
+            document.getElementById('modal-item-channels').innerHTML = chans.map(c =>
+                `<label><input type="checkbox" value="${esc(c.id)}" ${hidden.includes(c.id) ? '' : 'checked'}> ${esc(c.name)}</label>`).join('');
+        }
+        function renderVariantRows() {
+            const box = document.getElementById('variant-rows');
+            box.innerHTML = variantRows.map((r, i) =>
+                `<div style="display:flex; gap:8px; margin-bottom:6px; align-items:center;">
+                    <input type="text" placeholder="ชื่อแบบ เช่น HOT" value="${esc(r.label)}" oninput="variantRows[${i}].label = this.value" style="flex:2;">
+                    <input type="number" placeholder="ราคา" min="0" value="${esc(r.price)}" oninput="variantRows[${i}].price = this.value" style="flex:1;">
+                    <button class="btn btn-red btn-sm" type="button" onclick="removeVariantRow(${i})" ${variantRows.length <= 1 ? 'disabled style="opacity:.4;"' : ''}>✕</button>
+                </div>`).join('');
+        }
+        function addVariantRow() { variantRows.push({ label: '', price: '' }); renderVariantRows(); }
+        function removeVariantRow(i) { if (variantRows.length > 1) { variantRows.splice(i, 1); renderVariantRows(); } }
         function closeItemModal() { document.getElementById('item-modal-overlay').style.display = 'none'; }
         function saveItemModalData() {
             const name = document.getElementById('modal-item-name').value.trim();
             const cat = document.getElementById('modal-item-cat').value;
-            const prices = parsePrices(document.getElementById('modal-item-base-price').value);
+            const prices = variantRows.map(r => ({ label: String(r.label || '').trim().replace(/[,|]/g, ' '), price: parseFloat(r.price) })).filter(r => !isNaN(r.price) && r.price >= 0);
             if (!name || !cat) return toast('กรุณาใส่ชื่อและหมวดหมู่!', false);
-            if (!prices.length) return toast('ราคาไม่ถูกต้อง (ตัวอย่าง: 35000 หรือ Hot|30000, Iced|35000)', false);
+            if (!prices.length) return toast('กรุณาใส่ราคาอย่างน้อย 1 แบบ', false);
+            if (prices.length > 1 && prices.some(p => !p.label)) return toast('มีหลายแบบ ต้องใส่ชื่อแบบให้ครบทุกแถว (เช่น HOT, ICED)', false);
             const priceStr = (prices.length === 1 && !prices[0].label) ? String(prices[0].price) : prices.map(p => p.label + '|' + p.price).join(',');
             const modIds = Array.from(document.querySelectorAll('#modal-item-mods input:checked')).map(x => x.value).join(',');
             const data = {
                 name: name, category: cat, priceOptions: priceStr, modifierIds: modIds,
+                hiddenChannels: Array.from(document.querySelectorAll('#modal-item-channels input:not(:checked)')).map(x => x.value).join(','),
                 usesCup: document.getElementById('modal-item-cup').checked,
                 image: modalImage || 'images/bg.jpg'
             };
@@ -696,10 +738,21 @@
             document.getElementById('modifier-table-body').innerHTML = html || emptyRow(4, 'ยังไม่มีกลุ่มตัวเลือก');
             document.getElementById('mod-count-badge').innerText = '(' + globalModifiers.length + ')';
         }
+        function renderModRows() {
+            document.getElementById('mod-option-rows').innerHTML = modRows.map((r, i) =>
+                `<div style="display:flex; gap:8px; margin-bottom:6px; align-items:center;">
+                    <input type="text" placeholder="ชื่อตัวเลือก เช่น หวาน 50%" value="${esc(r.name)}" oninput="modRows[${i}].name = this.value" style="flex:2;">
+                    <input type="number" placeholder="ราคาเพิ่ม (ถ้ามี)" min="0" value="${esc(r.price)}" oninput="modRows[${i}].price = this.value" style="flex:1;">
+                    <button class="btn btn-red btn-sm" type="button" onclick="removeModRow(${i})" ${modRows.length <= 1 ? 'disabled style="opacity:.4;"' : ''}>✕</button>
+                </div>`).join('');
+        }
+        function addModRow() { modRows.push({ name: '', price: '' }); renderModRows(); }
+        function removeModRow(i) { if (modRows.length > 1) { modRows.splice(i, 1); renderModRows(); } }
         function resetModifierForm() {
             editingModId = null;
+            modRows = [{ name: '', price: '' }, { name: '', price: '' }];
+            renderModRows();
             document.getElementById('new-mod-name').value = '';
-            document.getElementById('new-mod-options').value = '';
             document.getElementById('new-mod-multi').checked = false;
             document.getElementById('mod-form-title').innerText = 'เพิ่มกลุ่มตัวเลือกใหม่';
             document.getElementById('mod-cancel-btn').style.display = 'none';
@@ -708,8 +761,10 @@
             const m = globalModifiers.find(x => x.id === id);
             if (!m) return;
             editingModId = id;
+            modRows = m.options.map(o => ({ name: o.name, price: o.price ? String(o.price) : '' }));
+            if (!modRows.length) modRows = [{ name: '', price: '' }];
+            renderModRows();
             document.getElementById('new-mod-name').value = m.name;
-            document.getElementById('new-mod-options').value = m.options.map(o => o.price ? o.name + '|' + o.price : o.name).join(', ');
             document.getElementById('new-mod-multi').checked = !!m.multi;
             document.getElementById('mod-form-title').innerText = 'แก้ไขกลุ่มตัวเลือก: ' + m.name;
             document.getElementById('mod-cancel-btn').style.display = 'inline-flex';
@@ -717,9 +772,11 @@
         }
         function saveModifier() {
             const name = document.getElementById('new-mod-name').value.trim();
-            const options = parseOptions(document.getElementById('new-mod-options').value);
+            const options = modRows
+                .map(r => ({ name: String(r.name || '').trim().replace(/[,|]/g, ' '), price: parseFloat(r.price) || 0 }))
+                .filter(r => r.name);
             if (!name) return toast('ระบุชื่อกลุ่ม', false);
-            if (!options.length) return toast('ใส่ตัวเลือกอย่างน้อย 1 อย่าง', false);
+            if (!options.length) return toast('ใส่ชื่อตัวเลือกอย่างน้อย 1 อย่าง', false);
             const data = { name: name, options: options, multi: document.getElementById('new-mod-multi').checked };
             const p = editingModId ? database.ref('modifiers/' + editingModId).set(data) : database.ref('modifiers').push(data);
             p.then(() => { toast('บันทึกกลุ่มตัวเลือกแล้ว'); resetModifierForm(); }).catch(e => toast('ไม่สำเร็จ: ' + e.message, false));
@@ -765,8 +822,11 @@
         function isStoreSource(o) { return !o.source || o.source === 'store' || o.source === 'online'; }
 
         function renderReport() {
-            const valid = reportOrders.filter(o => o.status !== 'void');
-            const voided = reportOrders.length - valid.length;
+            const valid = reportOrders.filter(o => o.status !== 'void' && !isOpenBill(o));
+            const voided = reportOrders.filter(o => o.status === 'void').length;
+            const openList = reportOrders.filter(o => o.status !== 'void' && isOpenBill(o));
+            let refunded = 0, refundPending = 0;
+            reportOrders.forEach(o => { if (o.status === 'void' && o.voidedWasPaid && o.refund) { if (o.refund.status === 'refunded') refunded += Number(o.refund.amount || 0); else refundPending += Number(o.refund.amount || 0); } });
             let total = 0, store = 0, delivery = 0, cash = 0, transfer = 0, unpaid = 0, discount = 0, commission = 0;
             const byPartner = {}, itemMap = {};
             valid.forEach(o => {
@@ -774,10 +834,9 @@
                 total += amt; discount += Number(o.discount || 0);
                 if (isStoreSource(o)) store += amt;
                 else { delivery += amt; const p = byPartner[o.source] || (byPartner[o.source] = { bills: 0, sales: 0 }); p.bills++; p.sales += amt; }
-                if (o.paid === false) unpaid += amt;
-                else if (o.paymentMethod === 'cash') cash += amt;
+                if (o.paymentMethod === 'cash') cash += amt;
                 else if (o.paymentMethod === 'transfer') transfer += amt;
-                (o.items || []).forEach(it => {
+                arr(o.items).forEach(it => {
                     const m = itemMap[it.name] || (itemMap[it.name] = { qty: 0, rev: 0 });
                     m.qty += Number(it.quantity || 0); m.rev += Number(it.price || 0) * Number(it.quantity || 0);
                 });
@@ -794,6 +853,7 @@
             });
             document.getElementById('report-partners').innerHTML = pHtml || emptyRow(6, 'ไม่มียอด Delivery ในช่วงนี้');
 
+            unpaid = openList.reduce((s, o) => s + Number(o.total || 0), 0);
             const bills = valid.length;
             const cards = [
                 ['ຍອດຂາຍລວມທັງໝົດ', money(total), ''],
@@ -801,7 +861,9 @@
                 ['ຍອດຂາຍ Delivery', money(delivery), 'green'],
                 ['เงินสด (ชำระแล้ว)', money(cash), 'green'],
                 ['โอนเงิน (ชำระแล้ว)', money(transfer), 'green'],
-                ['ค้างชำระ', money(unpaid), unpaid > 0 ? 'red' : 'gray'],
+                ['บิลที่ยังเปิดอยู่ (' + openList.length + ' บิล ยังไม่นับเป็นยอดขาย)', money(unpaid), unpaid > 0 ? 'red' : 'gray'],
+                ['ต้องคืนเงินลูกค้า (ยังไม่คืน)', money(refundPending), refundPending > 0 ? 'red' : 'gray'],
+                ['คืนเงินแล้ว (ยกเลิกหลังจ่าย)', money(refunded), 'gray'],
                 ['จำนวนบิล', bills + (voided ? ' (ยกเลิก ' + voided + ')' : ''), 'orange'],
                 ['เฉลี่ยต่อบิล', money(bills ? Math.round(total / bills) : 0), 'orange'],
                 ['ส่วนลดรวม', money(discount), 'gray'],
@@ -817,54 +879,55 @@
         }
 
         function orderSummary(o) {
-            return (o.items || []).map(it => {
-                const det = [it.variant].concat((it.modifiers || []).map(m => m.option)).filter(Boolean).join('/');
+            return arr(o.items).map(it => {
+                const det = [it.variant].concat(arr(it.modifiers).map(m => m.option)).filter(Boolean).join('/');
                 return it.name + (det ? ' (' + det + ')' : '') + ' x' + it.quantity;
             }).join(', ');
         }
         function payBadge(o) {
             if (o.status === 'void') return '<span class="badge gray">-</span>';
-            if (o.paid === false) return '<span class="badge warn">ค้างชำระ</span>';
+            if (isOpenBill(o)) return '<span class="badge warn">ค้างชำระ</span>';
             const m = { cash: 'เงินสด', transfer: 'โอน', delivery: 'แพลตฟอร์ม' }[o.paymentMethod];
             return `<span class="badge ok">${m || 'ชำระแล้ว'}</span>`;
+        }
+        function statusCell(o) {
+            if (o.status === 'void') {
+                let t = 'ยกเลิก';
+                if (o.voidReason) t += ': ' + esc(o.voidReason);
+                if (o.voidedWasPaid && o.refund) t += o.refund.status === 'refunded' ? ' <span class="badge ok">คืนเงินแล้ว</span>' : ' <span class="badge warn">ยังไม่คืนเงิน</span>';
+                return t;
+            }
+            return isOpenBill(o) ? 'เปิดอยู่' : 'ชำระแล้ว';
         }
         function renderOrdersTable() {
             const list = reportOrders.slice().sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
             document.getElementById('orders-count').innerText = '(' + list.length + ' บิล' + (list.length > 300 ? ' แสดง 300 บิลล่าสุด' : '') + ')';
-            const stText = { pending: 'รอทำ', cooking: 'กำลังทำ', completed: 'เสร็จแล้ว', void: 'ยกเลิก' };
             let html = '';
             list.slice(0, 300).forEach(o => {
-                const st = o.status || 'pending';
-                const acts = [];
-                if (st !== 'void' && o.paid === false) acts.push(`<button class="btn btn-green btn-sm" data-id="${esc(o.id)}" onclick="settleOrder(this.dataset.id)">รับชำระ</button>`);
+                const st = o.status || 'pending', acts = [];
+                if (st !== 'void' && !isOpenBill(o)) {
+                    acts.push(`<button class="btn btn-blue btn-sm" data-id="${esc(o.id)}" onclick="reprintOrder(this.dataset.id)">🖨️ พิมพ์ซ้ำ</button>`);
+                    acts.push(`<button class="btn btn-gray btn-sm" data-id="${esc(o.id)}" onclick="shareOrder(this.dataset.id)">📤 ส่ง</button>`);
+                }
                 if (st !== 'void') acts.push(`<button class="btn btn-red btn-sm" data-id="${esc(o.id)}" onclick="voidOrder(this.dataset.id)">ยกเลิกบิล</button>`);
-                html += `<tr style="${st === 'void' ? 'opacity:.5;' : ''}"><td>${o.orderNo ? '#' + esc(o.orderNo) : '-'}</td><td>${o.timestamp ? esc(dayKey(o.timestamp)) + ' ' + timeHHMM(o.timestamp) : esc(o.date || '')}</td><td>${esc(o.source || 'store')}</td><td>${esc(o.orderType || '-')}</td><td>${esc(o.table || o.customerName || '-')}</td><td class="wrap">${esc(orderSummary(o))}</td><td>${money(o.total)}</td><td>${payBadge(o)}</td><td>${esc(stText[st] || st)}</td><td><div class="actions-cell">${acts.join('')}</div></td></tr>`;
+                html += `<tr style="${st === 'void' ? 'opacity:.6;' : ''}"><td>${o.orderNo ? '#' + esc(o.orderNo) : '-'}${o.printCount ? ' <span class="badge gray">พิมพ์ ' + o.printCount + '</span>' : ''}</td><td>${o.timestamp ? esc(dayKey(o.timestamp)) + ' ' + timeHHMM(o.timestamp) : esc(o.date || '')}</td><td>${esc(o.source || 'store')}${o.appOrderNo ? '<br><small>' + esc(o.appOrderNo) + '</small>' : ''}</td><td>${esc(o.orderType || '-')}</td><td>${esc(o.table || o.customerName || '-')}</td><td class="wrap">${esc(orderSummary(o))}</td><td>${money(o.total)}</td><td>${payBadge(o)}</td><td class="wrap">${statusCell(o)}</td><td><div class="actions-cell">${acts.join('')}</div></td></tr>`;
             });
             document.getElementById('report-orders').innerHTML = html || emptyRow(10, 'ไม่มีออร์เดอร์ในช่วงนี้');
         }
-        function voidOrder(id) {
-            const o = reportOrders.find(x => x.id === id);
-            if (!o) return;
-            if (!confirm('ยกเลิกบิล ' + (o.orderNo ? '#' + o.orderNo : '') + ' ยอด ' + money(o.total) + ' ?\nบิลจะไม่ถูกนับในรายงาน และหายจากจอครัว')) return;
-            database.ref('orders/' + id).update({ status: 'void', voidedAt: Date.now() }).then(() => {
-                if (o.cups > 0) database.ref('inventory/cups').transaction(c => (c || 0) + o.cups);
-                toast('ยกเลิกบิลแล้ว');
-            }).catch(e => toast('ไม่สำเร็จ: ' + e.message, false));
-        }
-        function settleOrder(id) {
-            const m = prompt('รับชำระด้วยอะไร?\nพิมพ์ 1 = เงินสด\nพิมพ์ 2 = โอน', '1');
-            if (m === null) return;
-            database.ref('orders/' + id).update({ paid: true, paymentMethod: m.trim() === '2' ? 'transfer' : 'cash', paidAt: Date.now() }).then(() => toast('บันทึกการรับชำระแล้ว'));
-        }
+        function findReportOrder(id) { return reportOrders.find(x => x.id === id); }
+        function voidOrder(id) { const o = findReportOrder(id); if (o) openVoidDialog(id, o, 'admin'); }
+        function reprintOrder(id) { const o = findReportOrder(id); if (o) printReceipt(o, true, id); }
+        function shareOrder(id) { const o = findReportOrder(id); if (o) openShareModal(o); }
         function csvCell(v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
         function exportOrdersCSV() {
             if (!reportOrders.length) return toast('ไม่มีข้อมูลในช่วงที่เลือก', false);
-            const head = ['เลขที่บิล', 'วันที่', 'เวลา', 'ช่องทาง', 'ประเภท', 'โต๊ะ', 'ลูกค้า', 'รายการ', 'ยอดรวม', 'ส่วนลด', 'ยอดสุทธิ', 'ชำระแล้ว', 'วิธีชำระ', 'สถานะ'];
+            const head = ['เลขที่บิล', 'วันที่', 'เวลา', 'ช่องทาง', 'ประเภท', 'โต๊ะ', 'ลูกค้า', 'รายการ', 'ยอดรวม', 'ส่วนลด', 'ยอดสุทธิ', 'ชำระแล้ว', 'วิธีชำระ', 'สถานะ', 'เลขออร์เดอร์แอป', 'เหตุผลยกเลิก', 'คืนเงิน'];
             const rows = reportOrders.slice().sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)).map(o => [
                 o.orderNo || '', o.timestamp ? dayKey(o.timestamp) : (o.date || ''), o.timestamp ? timeHHMM(o.timestamp) : '',
                 o.source || 'store', o.orderType || '', o.table || '', o.customerName || '', orderSummary(o),
                 o.subtotal != null ? o.subtotal : o.total, o.discount || 0, o.total || 0,
-                o.paid === false ? 'ไม่' : 'ใช่', o.paymentMethod || '', o.status || 'pending'
+                isOpenBill(o) ? 'ไม่' : (o.status === 'void' ? '-' : 'ใช่'), o.paymentMethod || '', o.status || 'pending',
+                o.appOrderNo || '', o.voidReason || '', o.refund ? (o.refund.status === 'refunded' ? 'คืนแล้ว' : 'ยังไม่คืน') : ''
             ]);
             const csv = '\ufeff' + [head].concat(rows).map(r => r.map(csvCell).join(',')).join('\r\n');
             downloadFile('orders-' + document.getElementById('rep-from').value + '_to_' + document.getElementById('rep-to').value + '.csv', csv, 'text/csv;charset=utf-8');

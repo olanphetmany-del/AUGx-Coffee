@@ -6,6 +6,13 @@
       ".indexOn": ["timestamp"],
       ".write": "auth != null"
     },
+    "tickets": {
+      ".indexOn": ["timestamp"],
+      ".write": "auth != null"
+    },
+    "customers": {
+      ".write": "auth != null"
+    },
     "counters": {
       ".write": "auth != null"
     },

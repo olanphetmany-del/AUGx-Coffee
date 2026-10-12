@@ -69,6 +69,12 @@
         .wait-badge { display: inline-block; font-size: 12px; font-weight: bold; padding: 3px 8px; border-radius: 6px; background: #e0f2fe; color: #0369a1; margin-left: 8px; }
         .wait-badge.warn { background: #ffedd5; color: #c2410c; }
         .wait-badge.late { background: #fee2e2; color: #b91c1c; }
+        .kind-badge { display: inline-block; font-size: 12px; font-weight: bold; padding: 3px 8px; border-radius: 6px; margin-left: 8px; }
+        .kind-badge.add { background: #fef3c7; color: #92400e; }
+        .kind-badge.cancel { background: #ef4444; color: #fff; }
+        .order-card.cancel { border-color: #ef4444 !important; background: #fef2f2; box-shadow: 0 0 0 3px rgba(239,68,68,.25); }
+        .order-card.cancel .item-name-qty { color: #b91c1c; text-decoration: line-through; }
+        .cancel-note { color: #b91c1c; font-weight: bold; font-size: 13px; margin-bottom: 6px; }
         .unpaid-badge { font-size: 12px; font-weight: bold; padding: 3px 8px; border-radius: 6px; background: #fee2e2; color: #b91c1c; margin-left: 6px; }
         .footer-btns { display: flex; gap: 6px; align-items: center; }
         .undo-btn { padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-weight: bold; cursor: pointer; color: #64748b; }
@@ -146,11 +152,12 @@
             }
         }
         function playNewOrderSound() { beep(2); speak('New order received'); }
+        function playCancelSound() { beep(4); speak('Order cancelled'); }
         function playReminderSound() { beep(1); speak('Pending orders waiting'); }
 
         /* ---------------- ช่วยทั่วไป ---------------- */
         function isOpen(o) { return !o.status || o.status === 'pending' || o.status === 'cooking'; }
-        function openOrders() { return activeOrders.filter(isOpen).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)); }
+        function openOrders() { return activeOrders.filter(isOpen).sort((a, b) => ((b.kind === 'cancel') - (a.kind === 'cancel')) || ((a.timestamp || 0) - (b.timestamp || 0))); }
 
         function switchTab(tabName) {
             currentTab = tabName;
@@ -188,16 +195,17 @@
 
             // โหลดเฉพาะออร์เดอร์ย้อนหลัง ACTIVE_DAYS วัน (ไม่ดึงทั้งฐานข้อมูล)
             const since = Date.now() - ACTIVE_DAYS * 86400000;
-            database.ref('orders').orderByChild('timestamp').startAt(since).on('value', snap => {
+            database.ref('tickets').orderByChild('timestamp').startAt(since).on('value', snap => {
                 activeOrders = [];
                 snap.forEach(child => { const o = child.val(); o.id = child.key; activeOrders.push(o); });
 
                 const pendingIds = openOrders().map(o => o.id);
                 if (knownIds === null) knownIds = new Set(pendingIds);
                 else {
-                    const hasNew = pendingIds.some(id => !knownIds.has(id));
+                    const fresh = openOrders().filter(o => !knownIds.has(o.id));
                     pendingIds.forEach(id => knownIds.add(id));
-                    if (hasNew) playNewOrderSound();
+                    if (fresh.some(o => o.kind === 'cancel')) playCancelSound();
+                    else if (fresh.length) playNewOrderSound();
                 }
                 checkQueueAlertVisibility();
                 renderOrders();
@@ -214,7 +222,7 @@
             if (historyRef) { historyRef.off(); historyRef = null; }
             if (!dateStr) { historyOrders = []; renderOrders(); return; }
             const r = dayRange(dateStr);
-            historyRef = database.ref('orders').orderByChild('timestamp').startAt(r.start).endAt(r.end);
+            historyRef = database.ref('tickets').orderByChild('timestamp').startAt(r.start).endAt(r.end);
             historyRef.on('value', snap => {
                 historyOrders = [];
                 snap.forEach(child => { const o = child.val(); o.id = child.key; historyOrders.push(o); });
@@ -227,21 +235,23 @@
             const container = document.getElementById('kitchen-orders-container');
             let list;
             if (currentTab === 'main') list = openOrders().slice(0, 6);
-            else list = historyOrders.filter(o => o.status === 'completed').sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+            else list = historyOrders.filter(o => o.status === 'completed' || o.status === 'canceled').sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
             let html = '';
             const now = Date.now();
             list.forEach(order => {
                 const status = order.status || 'pending';
-                let cardClass = '', btnText = '', btnClass = '';
+                const isCancel = order.kind === 'cancel';
+                let cardClass = isCancel ? 'cancel' : '', btnText = '', btnClass = '';
                 if (currentTab === 'main') {
-                    if (status === 'cooking') { cardClass = 'cooking'; btnText = 'กำลังทำอยู่... (กดเมื่อเสร็จ)'; btnClass = 'cooking'; }
+                    if (isCancel) { btnText = 'รับทราบการยกเลิก'; btnClass = 'cooking'; }
+                    else if (status === 'cooking') { cardClass = 'cooking'; btnText = 'กำลังทำอยู่... (กดเมื่อเสร็จ)'; btnClass = 'cooking'; }
                     else btnText = 'รับออร์เดอร์ (เริ่มทำ)';
-                } else { cardClass = 'completed'; btnText = 'เสร็จสิ้น ✓'; btnClass = 'completed'; }
+                } else { cardClass = isCancel ? 'cancel' : 'completed'; btnText = order.status === 'canceled' ? 'ยกเลิกแล้ว' : 'เสร็จสิ้น ✓'; btnClass = 'completed'; }
 
                 let itemsHtml = '';
-                (order.items || []).forEach(item => {
-                    const details = [item.variant].concat((item.modifiers || []).map(m => m.option)).filter(Boolean).join(' | ');
+                Object.values(order.items || {}).forEach(item => {
+                    const details = [item.variant].concat(Object.values(item.modifiers || {}).map(m => m.option)).filter(Boolean).join(' | ');
                     itemsHtml += `<div class="order-item-row"><div><div class="item-name-qty"><b>${esc(item.quantity)}x</b> ${esc(item.name)} ${details ? '(' + esc(details) + ')' : ''}</div>${item.note ? '<div class="item-note">Note: ' + esc(item.note) + '</div>' : ''}</div></div>`;
                 });
 
@@ -252,18 +262,19 @@
                     waitHtml = `<span class="wait-badge ${cls}">รอ ${mins} นาที</span>`;
                 }
                 const noHtml = order.orderNo ? `<span class="order-no">#${esc(order.orderNo)}</span>` : '';
-                const unpaid = order.paid === false ? '<span class="unpaid-badge">ยังไม่ชำระ</span>' : '';
+                const kindBadge = isCancel ? '<span class="kind-badge cancel">ยกเลิก</span>' : (order.kind === 'add' ? '<span class="kind-badge add">เพิ่ม รอบ ' + esc(order.round || '') + '</span>' : '');
+                const noteHtml = isCancel && order.note ? `<div class="cancel-note">${esc(order.note)}</div>` : '';
                 const undo = (currentTab === 'main' && status === 'cooking') ? `<button class="undo-btn" title="ย้อนกลับเป็นรอรับ" onclick="revertStatus('${esc(order.id)}')">↩</button>` : '';
 
                 html += `<div class="order-card ${cardClass}">
                     <div class="order-card-header">
-                        <span class="order-table-badge">${esc(order.customer || 'โต๊ะทั่วไป')}${noHtml}</span>
+                        <span class="order-table-badge">${esc(order.name || 'ลูกค้าทั่วไป')}${noHtml}${kindBadge}</span>
                         <span class="order-time">${order.timestamp ? timeHHMM(order.timestamp) : esc(order.date || '')}${waitHtml}</span>
                     </div>
-                    <div class="order-card-body">${itemsHtml}</div>
+                    <div class="order-card-body">${noteHtml}${itemsHtml}</div>
                     <div class="order-card-footer">
-                        <span><span class="order-source-badge">${esc(order.source || 'store')} (${esc(order.orderType || 'Dine-in')})</span>${unpaid}</span>
-                        <div class="footer-btns">${undo}<button class="action-btn ${btnClass}" onclick="advanceOrderStatus('${esc(order.id)}', '${esc(status)}')">${btnText}</button></div>
+                        <span><span class="order-source-badge">${esc(order.source || 'store')} (${esc(order.orderType || '-')})</span></span>
+                        <div class="footer-btns">${undo}<button class="action-btn ${btnClass}" onclick="advanceOrderStatus('${esc(order.id)}', '${esc(status)}', '${isCancel ? 'c' : ''}')">${btnText}</button></div>
                     </div>
                 </div>`;
             });
@@ -274,13 +285,14 @@
             } else container.innerHTML = html;
         }
 
-        function advanceOrderStatus(orderId, currentStatus) {
+        function advanceOrderStatus(orderId, currentStatus, isCancelTicket) {
             if (currentStatus === 'completed' || currentStatus === 'void') return;
-            const next = currentStatus === 'pending' ? 'cooking' : 'completed';
-            database.ref('orders/' + orderId).update({ status: next });
+            if (currentStatus === 'canceled') return;
+            const next = (currentStatus === 'pending' && !isCancelTicket) ? 'cooking' : 'completed';
+            database.ref('tickets/' + orderId).update({ status: next });
         }
         function revertStatus(orderId) {
-            database.ref('orders/' + orderId).update({ status: 'pending' });
+            database.ref('tickets/' + orderId).update({ status: 'pending' });
         }
 
         startApp('staff', startListeners);
