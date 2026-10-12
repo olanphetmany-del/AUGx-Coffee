@@ -330,6 +330,50 @@
                 <div class="form-group" style="max-width: 400px;"><label>ข้อความท้ายใบเสร็จ</label><input type="text" id="set-shop-footer" placeholder="ขอบคุณที่ใช้บริการ"></div>
                 <button class="btn btn-green" onclick="savePrinterSettings()">บันทึกการตั้งค่า</button>
             </div>
+
+            <div class="box" id="sticker-box">
+                <h3 style="margin-top:0; font-size:1rem; color:var(--blue);">🏷️ สติกเกอร์แก้ว (Cup Sticker)</h3>
+                <p class="hint" style="margin-bottom:12px;">ตั้งค่าครั้งเดียวต่อเครื่องพิมพ์ ถ้าเปลี่ยนเครื่องพิมพ์ให้กลับมาตั้งค่าตรงนี้ แล้วกด "พิมพ์ทดสอบ" ปรับจนข้อความอยู่ครบในสติกเกอร์ แล้วกดบันทึก (ใช้ได้เมื่อเปิดผ่านแอป RawBT บน Android)</p>
+                <div style="overflow-x:auto; background:#fff; border:1px solid #cbd5e1; margin-bottom:6px;"><canvas id="stk-preview" style="display:block;"></canvas></div>
+                <p class="hint" style="margin-top:0;">เส้นประสีน้ำเงิน = ขอบสติกเกอร์ (ไม่ถูกพิมพ์)</p>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; max-width:760px;">
+                    <div class="form-group"><label>ภาษาคำสั่งเครื่องพิมพ์</label>
+                        <select id="stk-method" onchange="stkRefresh()">
+                            <option value="esc">ESC/POS (รูปภาพ)</option><option value="tspl">TSPL (รูปภาพ)</option><option value="cpcl">CPCL (รูปภาพ)</option><option value="text">ตัวอักษรล้วน (เครื่องพิมพ์สลิปที่มีฟอนต์ไทย)</option>
+                        </select></div>
+                    <div class="form-group"><label>กว้าง (mm)</label><input type="number" id="stk-w" value="60" oninput="stkRefresh()"></div>
+                    <div class="form-group"><label>สูง (mm)</label><input type="number" id="stk-h" value="40" oninput="stkRefresh()"></div>
+                    <div class="form-group"><label>ความละเอียด</label><select id="stk-dpi" onchange="stkRefresh()"><option value="203">203 dpi</option><option value="300">300 dpi</option></select></div>
+                    <div class="form-group"><label>ความกว้างหัวพิมพ์ (จุด)</label><select id="stk-head" onchange="stkRefresh()"><option value="640">640 (80mm)</option><option value="576">576 (72mm)</option><option value="480">480 (60mm)</option></select></div>
+                    <div class="form-group"><label>ขยับไปทางขวา (mm)</label><input type="number" id="stk-ox" value="0" step="0.5" oninput="stkRefresh()"></div>
+                    <div class="form-group"><label>ขยับลง (mm) ติดลบ = ขึ้น</label><input type="number" id="stk-oy" value="0" step="0.5" oninput="stkRefresh()"></div>
+                    <div class="form-group"><label>ความเข้ม (100 จาง - 200 เข้ม)</label><input type="number" id="stk-dark" value="140" step="10" min="60" max="220" oninput="stkRefresh()"></div>
+                </div>
+                <h4 style="margin:14px 0 6px;">สิ่งที่แสดงบนสติกเกอร์</h4>
+                <div style="display:flex; flex-wrap:wrap; gap:14px; font-size:14px;">
+                    <label><input type="checkbox" id="stk-name" checked onchange="stkRefresh()"> ชื่อลูกค้า</label>
+                    <label><input type="checkbox" id="stk-type" checked onchange="stkRefresh()"> Dine-in / Take away</label>
+                    <label><input type="checkbox" id="stk-time" checked onchange="stkRefresh()"> เวลา</label>
+                </div>
+                <div class="form-group" style="max-width:400px; margin-top:10px;"><label>ถ้าลูกค้าไม่มีชื่อ</label>
+                    <select id="stk-fallback" onchange="stkRefresh()"><option value="table">แสดงชื่อโต๊ะ (ถ้ามี)</option><option value="blank">เว้นว่าง</option></select></div>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:end; max-width:760px;">
+                    <label style="font-size:14px;"><input type="checkbox" id="stk-shop" onchange="stkRefresh()"> ชื่อร้านที่บรรทัดล่าง</label>
+                    <div class="form-group" style="flex:1; min-width:180px; margin:0;"><input type="text" id="stk-shoptext" placeholder="เช่น AUGUSTX" oninput="stkRefresh()"></div>
+                </div>
+                <h4 style="margin:14px 0 6px;">QR โค้ด (ไม่บังคับ)</h4>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; max-width:760px;">
+                    <label style="font-size:14px;"><input type="checkbox" id="stk-qron" onchange="stkRefresh()"> แสดง QR บนสติกเกอร์</label>
+                    <div class="form-group" style="margin:0;"><label>ลิงก์ที่ QR พาไป</label><input type="text" id="stk-qrurl" placeholder="https://facebook.com/ชื่อเพจ" oninput="stkRefresh()"></div>
+                    <div class="form-group" style="margin:0;"><label>ข้อความใต้ QR</label><input type="text" id="stk-qrlabel" placeholder="ติดตามร้าน" oninput="stkRefresh()"></div>
+                    <div class="form-group" style="margin:0;"><label>ขนาด QR (mm)</label><input type="number" id="stk-qrsize" value="16" oninput="stkRefresh()"></div>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;">
+                    <button class="btn btn-green" onclick="saveSticker()">บันทึกการตั้งค่า</button>
+                    <button class="btn btn-blue" onclick="testSticker(false)">🖨️ พิมพ์ทดสอบ</button>
+                    <button class="btn" style="background:#64748b;color:#fff;" onclick="testSticker(true)">📏 พิมพ์แถบวัด</button>
+                </div>
+            </div>
         </div>
 
         <!-- FEATURES & SETTINGS -->
@@ -535,6 +579,51 @@
                 phone: document.getElementById('set-shop-phone').value.trim(),
                 footer: document.getElementById('set-shop-footer').value.trim()
             }).then(() => toast('บันทึกการตั้งค่าแล้ว')).catch(e => toast('ไม่สำเร็จ: ' + e.message, false));
+        }
+
+        /* ---- สติกเกอร์แก้ว ---- */
+        const $s = id => document.getElementById(id);
+        function stickerFormCfg() {
+            return {
+                method: $s('stk-method').value, widthMm: +$s('stk-w').value || 60, heightMm: +$s('stk-h').value || 40, dpi: +$s('stk-dpi').value || 203,
+                headDots: +$s('stk-head').value || 640, offsetX: +$s('stk-ox').value || 0, offsetY: +$s('stk-oy').value || 0, darkness: +$s('stk-dark').value || 140,
+                showName: $s('stk-name').checked, nameFallback: $s('stk-fallback').value, showType: $s('stk-type').checked, showTime: $s('stk-time').checked,
+                showShop: $s('stk-shop').checked, shopText: $s('stk-shoptext').value.trim(),
+                qrOn: $s('stk-qron').checked, qrUrl: $s('stk-qrurl').value.trim(), qrLabel: $s('stk-qrlabel').value.trim(), qrSizeMm: +$s('stk-qrsize').value || 16
+            };
+        }
+        function fillStickerForm() {
+            const c = stickerCfg();
+            $s('stk-method').value = c.method; $s('stk-w').value = c.widthMm; $s('stk-h').value = c.heightMm; $s('stk-dpi').value = c.dpi; $s('stk-head').value = String(c.headDots);
+            $s('stk-ox').value = c.offsetX; $s('stk-oy').value = c.offsetY; $s('stk-dark').value = c.darkness;
+            $s('stk-name').checked = !!c.showName; $s('stk-fallback').value = c.nameFallback; $s('stk-type').checked = !!c.showType; $s('stk-time').checked = !!c.showTime;
+            $s('stk-shop').checked = !!c.showShop; $s('stk-shoptext').value = c.shopText || '';
+            $s('stk-qron').checked = !!c.qrOn; $s('stk-qrurl').value = c.qrUrl || ''; $s('stk-qrlabel').value = c.qrLabel || ''; $s('stk-qrsize').value = c.qrSizeMm;
+            stkRefresh();
+        }
+        STK.onChange = fillStickerForm;
+        const STK_SAMPLE = { no: 12, k: 1, n: 2, name: 'คุณสมชาย', item: 'LATTE', details: 'ICED | หวาน 50% | นมโอ๊ต', note: 'ไม่ใส่น้ำแข็งเยอะ', type: 'Take away', time: '20:26' };
+        function stkRefresh() {
+            const cfg = stickerFormCfg(), d = stkDims(cfg), cv = $s('stk-preview');
+            const hd = stkHead(cfg, d);
+            cv.width = hd; cv.height = d.h; cv.style.width = hd + 'px';
+            const c = cv.getContext('2d');
+            c.fillStyle = '#fff'; c.fillRect(0, 0, hd, d.h);
+            const data = Object.assign({}, STK_SAMPLE);
+            if (!cfg.showName) data.name = ''; if (!cfg.showType) data.type = ''; if (!cfg.showTime) data.time = '';
+            stkPaint(c, d, data, cfg, d.ox, d.oy);
+            c.strokeStyle = '#2563eb'; c.setLineDash([6, 5]); c.strokeRect(d.ox + .5, d.oy + .5, d.w - 1, d.h - 1);
+        }
+        function saveSticker() {
+            database.ref('settings/sticker').set(stickerFormCfg()).then(() => toast('บันทึกการตั้งค่าสติกเกอร์แล้ว')).catch(e => toast('ไม่สำเร็จ: ' + e.message, false));
+        }
+        function testSticker(ruler) {
+            const cfg = stickerFormCfg();
+            if (cfg.method === 'text') { window.location.href = 'rawbt:base64,' + stkB64(stkEnc('#12  Take away\nLATTE\nICED | หวาน 50%\n1/2\n====================\n\n\n')); return; }
+            const data = Object.assign({}, STK_SAMPLE);
+            if (!cfg.showName) data.name = ''; if (!cfg.showType) data.type = ''; if (!cfg.showTime) data.time = '';
+            stkSendAll([ruler ? 'RULER' : data], cfg);
+            toast('ส่งไปที่ RawBT แล้ว');
         }
         function saveFeatureSetting(key, val) { database.ref('settings/features/' + key).set(val); }
         function backupAll() {

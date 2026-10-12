@@ -744,11 +744,21 @@
             return out;
         }
         function printStickers(bill, items) {
-            const blocks = stickerBlocks(bill, items);
-            if (!blocks.length) { toast('ไม่มีสินค้าที่ใช้แก้ว จึงไม่พิมพ์สติกเกอร์', false); return 0; }
-            const b64 = btoa(unescape(encodeURIComponent(blocks.join(''))));
-            window.location.href = 'rawbt:data:base64,' + b64;
-            return blocks.length;
+            const cfg = stickerCfg();
+            if (cfg.method === 'text') {
+                const blocks = stickerBlocks(bill, items);
+                if (!blocks.length) { toast('ไม่มีสินค้าที่ใช้แก้ว จึงไม่พิมพ์สติกเกอร์', false); return 0; }
+                window.location.href = 'rawbt:data:base64,' + btoa(unescape(encodeURIComponent(blocks.join(''))));
+                return blocks.length;
+            }
+            const list = [];
+            arr(items).forEach(c => {
+                if (c.cup === false) return;
+                for (let k = 1; k <= c.quantity; k++) list.push(stkData(bill, c, k, c.quantity, cfg));
+            });
+            if (!list.length) { toast('ไม่มีสินค้าที่ใช้แก้ว จึงไม่พิมพ์สติกเกอร์', false); return 0; }
+            stkSendAll(list, cfg);
+            return list.length;
         }
 
         /* ================= บิลที่เปิดอยู่ / บิลวันนี้ / รายละเอียดบิล ================= */
